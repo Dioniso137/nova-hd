@@ -1858,6 +1858,7 @@ async function initCloud(session){
   document.getElementById('stSlot').value=st.slot_minutes||60;
   renderAvailEditor(st.availability||{});
   await loadClients();
+  renderPlanBadge();
   await loadAgenda();
 }
 async function saveSettings(){
@@ -1887,9 +1888,13 @@ function flash(t){ const f=document.getElementById('flash'); f.textContent=t; f.
 async function loadClients(){
   const {data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});
   if(error){ alert(error.message); return; }
-  CLIENTS=data||[]; renderClients();
+  CLIENTS=data||[]; renderClients(); if(SETTINGS) renderPlanBadge();
 }
 async function addClient(){
+  if(SETTINGS && SETTINGS.max_clients && CLIENTS.length>=SETTINGS.max_clients){
+    alert('Hai raggiunto il limite di '+SETTINGS.max_clients+' clienti del piano '+(SETTINGS.plan||'Starter').toUpperCase()+'.\nPer aggiungerne altri passa a un piano superiore dalla pagina principale (index.html).');
+    return;
+  }
   const name=document.getElementById('clName').value.trim();
   const email=document.getElementById('clEmail').value.trim();
   const d=document.getElementById('clDate').value, t=document.getElementById('clTime').value;
@@ -2015,6 +2020,20 @@ if(!sb || SUPABASE_URL.startsWith('INCOLLA')){
   sb.auth.getSession().then(({data})=>{ if(data.session) initCloud(data.session); });
 }
 
+
+function renderPlanBadge(){
+  if(!SETTINGS) return;
+  const names={starter:'Starter',pro:'Pro',custom:'Custom'};
+  let el=document.getElementById('planBadge');
+  if(!el){ el=document.createElement('span'); el.id='planBadge'; el.className='hint'; el.style.margin='0 6px';
+    const w=document.getElementById('whoami'); w.parentNode.insertBefore(el, w.nextSibling); }
+  let txt=(names[SETTINGS.plan]||'Starter')+' · '+CLIENTS.length+'/'+(SETTINGS.max_clients||5)+' clienti';
+  if(SETTINGS.trial_ends){
+    const d=Math.ceil((new Date(SETTINGS.trial_ends)-Date.now())/86400000);
+    if(d>0) txt+=' · prova: '+d+'g rimasti';
+  }
+  el.textContent=txt;
+}
 </script>
 </body>
 </html>
