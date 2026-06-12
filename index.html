@@ -89,6 +89,18 @@ footer{border-top:1px solid var(--line);padding:34px 0;text-align:center;color:v
 .authCard .alt b{color:var(--gold);cursor:pointer}
 #authMsg{font-size:12px;margin-top:12px;line-height:1.5;min-height:16px;color:var(--dim)}
 .trust{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:40px;font-family:'Space Grotesk',monospace;font-size:11px;color:var(--dim);letter-spacing:.06em}
+
+@media(max-width:760px){ nav a:not(.btn){display:none} .hero{padding:56px 0 46px} nav{gap:12px} }
+.card,.price{transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease}
+.card:hover{transform:translateY(-4px);border-color:rgba(227,184,100,.4)}
+.price:hover{transform:translateY(-4px)}
+.hero{position:relative}
+.ring{position:absolute;inset:0;display:flex;justify-content:center;pointer-events:none;overflow:hidden;z-index:-1}
+.ring svg{width:720px;height:720px;margin-top:-210px;opacity:.09;animation:spin 240s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion: reduce){.ring svg{animation:none}}
+.btn:disabled{opacity:.6;cursor:default}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
 </style>
 </head>
 <body>
@@ -105,6 +117,7 @@ footer{border-top:1px solid var(--line);padding:34px 0;text-align:center;color:v
 </nav>
 
 <header class="hero">
+  <div class="ring" aria-hidden="true"><svg viewBox="0 0 600 600"><circle cx="300" cy="300" r="250" fill="none" stroke="#e3b864" stroke-width="1.2"/><circle cx="300" cy="300" r="250" fill="none" stroke="#e3b864" stroke-width="16" stroke-dasharray="2 22.54"/><circle cx="300" cy="300" r="198" fill="none" stroke="#e3b864" stroke-width="1"/><circle cx="300" cy="300" r="294" fill="none" stroke="#e3b864" stroke-width=".8"/></svg></div>
   <div class="eyebrow">Per coach e analisti di Human Design</div>
   <h1>Il tuo studio di Human Design, <br>completamente digitale.</h1>
   <p>Gestisci i clienti, genera carte con precisione astronomica reale, consegna a ognuno la sua app personale brandizzata — con guida AI che conosce la sua carta e calendario per prenotare le tue call.</p>
@@ -353,7 +366,7 @@ function refreshModal(){
     s.innerHTML='Non hai un account? <b onclick="switchMode()">Registrati</b>';
   }
 }
-function msg(t,err){ const m=document.getElementById('authMsg'); m.textContent=t; m.style.color=err?'#e4506e':'#8a93b5'; }
+function msg(t,err){ const m=document.getElementById('authMsg'); m.textContent=t; m.style.color=err?'#e4506e':'#8a93b5'; if(err){ const g=document.getElementById('auGo'); if(g) g.disabled=false; } }
 
 async function savePlan(uid){
   if(!PLAN) return;
@@ -367,7 +380,7 @@ async function doAuth(){
   const email=document.getElementById('auEmail').value.trim(),
         pass=document.getElementById('auPass').value;
   if(!email||pass.length<8){ msg('Email valida e password di almeno 8 caratteri.',1); return; }
-  msg(MODE==='signup'?'Creazione account…':'Accesso…');
+  msg(MODE==='signup'?'Creazione account…':'Accesso…'); document.getElementById('auGo').disabled=true;
   if(MODE==='signup'){
     if(!PLAN){ msg('Scegli prima un piano dalla sezione Prezzi.',1); return; }
     const {data,error}=await sb.auth.signUp({email,password:pass});
@@ -380,6 +393,7 @@ async function doAuth(){
     } else {
       msg('Quasi fatto! Controlla la tua email e clicca il link di conferma, poi torna qui e accedi: il piano scelto verrà attivato al primo accesso.');
       try{ localStorage.setItem('nova_pending_plan', JSON.stringify(PLAN)); }catch(e){}
+      document.getElementById('auGo').disabled=false;
     }
   } else {
     const {error}=await sb.auth.signInWithPassword({email,password:pass});
@@ -393,6 +407,8 @@ async function doAuth(){
   }
 }
 document.getElementById('authModal').addEventListener('click',e=>{ if(e.target.id==='authModal') closeAuth(); });
+['auEmail','auPass'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') doAuth(); }));
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeAuth(); });
 </script>
 </body>
 </html>

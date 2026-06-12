@@ -174,6 +174,20 @@ p.pageIntro{color:var(--dim);font-size:12.5px;line-height:1.6;margin:8px 0 18px}
 #authCard h1{font-family:'Marcellus',serif;font-size:22px;letter-spacing:.1em;text-align:center}
 #authCard .sub{text-align:center;color:var(--gold);font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:.26em;margin:4px 0 18px}
 #authMsg{font-size:12px;color:var(--dim);margin-top:12px;line-height:1.55;min-height:18px}
+
+@media(max-width:920px){
+  #topbar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:4px;padding:10px 12px}
+  #topbar::-webkit-scrollbar{display:none}
+  #topbar .brand{font-size:16px;flex-shrink:0}
+  .tabBtn{white-space:nowrap;padding:7px 10px;font-size:12.5px;flex-shrink:0}
+  .iconBtn{flex-shrink:0;white-space:nowrap}
+}
+.tab.active{animation:tabIn .28s ease}
+@keyframes tabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(90px);background:#11152a;border:1px solid var(--gold);color:var(--ink);border-radius:12px;padding:12px 22px;font-size:13.5px;z-index:300;opacity:0;transition:all .35s cubic-bezier(.2,.8,.3,1);box-shadow:0 12px 44px rgba(0,0,0,.5);max-width:92vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+button:disabled{opacity:.55;cursor:default}
 </style>
 </head>
 <body>
@@ -225,6 +239,9 @@ p.pageIntro{color:var(--dim);font-size:12.5px;line-height:1.6;margin:8px 0 18px}
       <div><label>Ora locale</label><input type="time" id="clTime" step="60"></div>
       <div><label>Fuso (UTC ±)</label><input type="number" id="clTz" value="1" step="0.25"></div>
     </div>
+    <label>Paese di nascita</label>
+    <select id="clPlace"><option value="it" selected>Italia · fuso automatico</option><option value="manual">Altro · manuale</option></select>
+    <p class="hint" id="clTzHint" style="margin-top:4px"></p>
     <label>Note (opzionale)</label><input type="text" id="clNotes" style="font-family:'Outfit'">
     <button class="primary" id="clAdd">Aggiungi cliente</button>
 
@@ -315,7 +332,9 @@ p.pageIntro{color:var(--dim);font-size:12.5px;line-height:1.6;margin:8px 0 18px}
       <div><label for="btime">Ora locale</label><input type="time" id="btime" value="12:30" step="60"></div>
       <div><label for="tz">Fuso (UTC ±)</label><input type="number" id="tz" value="1" step="0.25" min="-12" max="14"></div>
     </div>
-    <p class="hint">Includi l'ora legale se attiva alla nascita (Italia: inverno +1, estate +2).</p>
+    <label for="birthPlace">Paese di nascita</label>
+    <select id="birthPlace"><option value="it" selected>Italia · fuso automatico</option><option value="manual">Altro paese · fuso manuale</option></select>
+    <p class="hint" id="tzHint">Fuso e ora legale impostati automaticamente in base alla data.</p>
     <button class="ghost noprint" id="tzAuto">Usa il fuso del dispositivo</button>
     <button class="primary" id="go">Genera il Bodygraph</button>
 
@@ -1329,7 +1348,7 @@ function run(){
   const dStr=document.getElementById('bdate').value;
   const tStr=document.getElementById('btime').value;
   const tz=parseFloat(document.getElementById('tz').value);
-  if(!dStr||!tStr||isNaN(tz)){ alert('Inserisci data, ora e fuso orario.'); return; }
+  if(!dStr||!tStr||isNaN(tz)){ toast('Inserisci data, ora e fuso orario.'); return; }
   const [y,m,d]=dStr.split('-').map(Number);
   const [hh,mm]=tStr.split(':').map(Number);
   currentChart = computeChart(y,m,d,hh+mm/60,tz);
@@ -1464,7 +1483,7 @@ document.getElementById('libImportBtn').addEventListener('click',()=>document.ge
 document.getElementById('libImport').addEventListener('change',ev=>{
   const f=ev.target.files[0]; if(!f)return;
   const r=new FileReader();
-  r.onload=()=>{ try{ const arr=JSON.parse(r.result); if(Array.isArray(arr)){ LIB=LIB.concat(arr.filter(e=>e.d&&e.t&&'tz'in e&&e.name)); renderLibSelects(); } }catch(e){ alert('File non valido'); } };
+  r.onload=()=>{ try{ const arr=JSON.parse(r.result); if(Array.isArray(arr)){ LIB=LIB.concat(arr.filter(e=>e.d&&e.t&&'tz'in e&&e.name)); renderLibSelects(); } }catch(e){ toast('File non valido'); } };
   r.readAsText(f);
 });
 
@@ -1575,7 +1594,7 @@ function showConnGate(gate, A, B, nA, nB){
 function computeConn(){
   const A = getConnChart('cnA', false);
   const B = getConnChart('cnB', true);
-  if (!A || !B){ alert('Scegli la Persona A dalla libreria (o genera la carta attuale) e la Persona B (libreria o dati manuali).'); return; }
+  if (!A || !B){ toast('Scegli la Persona A dalla libreria (o genera la carta attuale) e la Persona B (libreria o dati manuali).'); return; }
   const cA=A.chart, cB=B.chart;
   const union = new Set([...cA.allGates, ...cB.allGates]);
   const comboCh = channelsFrom(union);
@@ -1861,7 +1880,7 @@ async function doReset(){
 async function handleRecovery(){
   if(!location.hash.includes('type=recovery')) return;
   const np=prompt('Imposta la nuova password (min 8 caratteri):');
-  if(np&&np.length>=8){ await sb.auth.updateUser({password:np}); alert('Password aggiornata!'); }
+  if(np&&np.length>=8){ await sb.auth.updateUser({password:np}); toast('Password aggiornata!'); }
   history.replaceState(null,'',location.pathname);
 }
 
@@ -1903,20 +1922,20 @@ async function saveSettings(){
     availability, updated_at:new Date().toISOString()
   };
   const {error}=await sb.from('coach_settings').update(patch).eq('id',ME.id);
-  if(error) alert('Errore salvataggio: '+error.message);
+  if(error) toast('Errore salvataggio: '+error.message);
   else { SETTINGS={...SETTINGS,...patch}; flash('Impostazioni salvate ✓'); }
 }
-function flash(t){ const f=document.getElementById('flash'); f.textContent=t; f.style.opacity=1; setTimeout(()=>f.style.opacity=0,2200); }
+function flash(t){ toast(t); }
 
 /* ── Clienti ── */
 async function loadClients(){
   const {data,error}=await sb.from('clients').select('*').order('created_at',{ascending:false});
-  if(error){ alert(error.message); return; }
+  if(error){ toast(error.message); return; }
   CLIENTS=data||[]; renderClients(); if(SETTINGS) renderPlanBadge();
 }
 async function addClient(){
   if(SETTINGS && SETTINGS.max_clients && CLIENTS.length>=SETTINGS.max_clients){
-    alert('Hai raggiunto il limite di '+SETTINGS.max_clients+' clienti del piano '+(SETTINGS.plan||'Starter').toUpperCase()+'.\nPer aggiungerne altri passa a un piano superiore dalla pagina principale (index.html).');
+    toast('Hai raggiunto il limite di '+SETTINGS.max_clients+' clienti del piano '+(SETTINGS.plan||'Starter').toUpperCase()+'.\nPer aggiungerne altri passa a un piano superiore dalla pagina principale (index.html).');
     return;
   }
   const name=document.getElementById('clName').value.trim();
@@ -1924,12 +1943,12 @@ async function addClient(){
   const d=document.getElementById('clDate').value, t=document.getElementById('clTime').value;
   const tz=parseFloat(document.getElementById('clTz').value);
   const notes=document.getElementById('clNotes').value.trim();
-  if(!name||!d||!t||isNaN(tz)){ alert('Servono almeno nome, data, ora e fuso.'); return; }
+  if(!name||!d||!t||isNaN(tz)){ toast('Servono almeno nome, data, ora e fuso.'); return; }
   let summary='—';
   try{ const [y,m,dd]=d.split('-').map(Number); const [hh,mm]=t.split(':').map(Number);
     const c=computeChart(y,m,dd,hh+mm/60,tz); summary=`${c.type} · ${c.profKey} · ${c.authority}`; }catch(e){}
   const {error}=await sb.from('clients').insert({coach_id:ME.id,name,email,birth_date:d,birth_time:t,tz,notes,summary});
-  if(error){ alert('Errore: '+error.message); return; }
+  if(error){ toast('Errore: '+error.message); return; }
   ['clName','clEmail','clNotes'].forEach(id=>document.getElementById(id).value='');
   await loadClients(); flash('Cliente aggiunto ✓');
 }
@@ -2188,6 +2207,40 @@ function doPrevisioni(){
   document.getElementById('brBox').innerHTML=bh;
 }
 
+
+/* ════════════════════════ 19 · UX (toast, fuso automatico, tastiera) ════════════════════════ */
+function toast(t,err){
+  let el=document.getElementById('toast');
+  if(!el){ el=document.createElement('div'); el.id='toast'; document.body.appendChild(el); }
+  el.textContent=t;
+  el.classList.toggle('err',!!err); el.classList.add('show');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'), 3400);
+}
+function lastSundayUTC(y,m){ const d=new Date(Date.UTC(y,m+1,0)); d.setUTCDate(d.getUTCDate()-d.getUTCDay()); return d.getTime(); }
+function italyTz(dateStr){
+  const [y,m,d]=String(dateStr||'').split('-').map(Number);
+  if(!y) return null;
+  if(y<1980) return {tz:null, note:'⚠ Prima del 1980 l\'ora legale italiana variava anno per anno: verifica il fuso manualmente (inverno +1, estate +2).'};
+  const t=Date.UTC(y,m-1,d);
+  const dst = t>=lastSundayUTC(y,2) && t<lastSundayUTC(y, y>=1996?9:8);
+  return {tz: dst?2:1, note:'Italia, '+y+': '+(dst?'ora legale → UTC+2':'ora solare → UTC+1')+' (modificabile).'};
+}
+function bindAutoTz(placeId,dateId,tzId,hintId){
+  const apply=()=>{
+    const hint=document.getElementById(hintId);
+    if(document.getElementById(placeId).value!=='it'){ hint.textContent='Inserisci il fuso UTC del luogo di nascita, includendo l\'eventuale ora legale.'; return; }
+    const r=italyTz(document.getElementById(dateId).value);
+    if(!r){ hint.textContent='Fuso e ora legale impostati automaticamente in base alla data.'; return; }
+    if(r.tz!==null) document.getElementById(tzId).value=r.tz;
+    hint.textContent=r.note;
+  };
+  document.getElementById(placeId).addEventListener('change',apply);
+  document.getElementById(dateId).addEventListener('change',apply);
+  apply();
+}
+bindAutoTz('birthPlace','bdate','tz','tzHint');
+bindAutoTz('clPlace','clDate','clTz','clTzHint');
+['auEmail','auPass'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); }));
 </script>
 </body>
 </html>

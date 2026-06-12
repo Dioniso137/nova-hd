@@ -105,6 +105,15 @@ details .body p{margin-bottom:10px}
   font-family:'Marcellus',serif;font-size:16px;letter-spacing:.08em;color:#0b0d18;width:100%;
   background:linear-gradient(120deg,var(--gold),#f4dca0 50%,var(--gold))}
 .banner{border:1px dashed var(--line);border-radius:12px;padding:14px;color:var(--dim);font-size:12.5px;line-height:1.55}
+
+#bnav{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:3px;background:rgba(14,17,32,.92);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:30px;padding:6px;z-index:60;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+#bnav a{color:var(--dim);text-decoration:none;font-size:11.5px;padding:9px 13px;border-radius:20px;white-space:nowrap;transition:all .2s}
+#bnav a.on{color:#0b0d18;background:var(--gold)}
+[id]{scroll-margin-top:14px}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
+.reveal.in{opacity:1;transform:none}
+#chatSend:disabled{opacity:.5}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
 footer{margin-top:34px;text-align:center;color:var(--dim);font-size:11px;line-height:1.7;padding:0 10px}
 footer b{color:var(--gold);font-weight:500}
 #errView{display:none;text-align:center;padding:80px 24px}
@@ -134,7 +143,7 @@ footer b{color:var(--gold);font-weight:500}
     <div class="sub" id="hBirth">—</div>
   </header>
 
-  <div class="typeCard">
+  <div class="typeCard" id="secSintesi">
     <div class="t" id="rType">—</div>
     <div class="p" id="rProfile">—</div>
     <div class="kv">
@@ -185,6 +194,14 @@ footer b{color:var(--gold);font-weight:500}
     <p style="margin-top:10px">Calcoli astronomici di precisione · NOVA HD Engine</p>
   </footer>
 </div>
+
+<nav id="bnav" aria-label="Navigazione rapida">
+  <a href="#secSintesi" class="on">Sintesi</a>
+  <a href="#chatBox">Guida</a>
+  <a href="#paper">Carta</a>
+  <a href="#todayBox">Oggi</a>
+  <a href="#bookEyebrow" id="bnavBook" style="display:none">Prenota</a>
+</nav>
 
 <script>
 /* ── Mini Supabase client v2 (inline, zero dipendenze) ── */
@@ -1072,6 +1089,7 @@ async function sendChat(text){
   document.getElementById('chatInput').value='';
   if(!ai){ addMsg('ai','La guida AI non è ancora attiva. Esplora la lettura qui sotto o prenota una call!'); return; }
   const th=addMsg('ai','La tua guida sta riflettendo…','ai thinking');
+  const _send=document.getElementById('chatSend'); _send.disabled=true;
   try{
     const r=await fetch(ai,{method:'POST',headers:{'content-type':'application/json'},
       body:JSON.stringify({system:sysPrompt(), messages:CHAT.slice(-12)})});
@@ -1079,8 +1097,8 @@ async function sendChat(text){
     const j=await r.json();
     const reply=j.text||'Risposta vuota.';
     th.classList.remove('thinking'); th.textContent=reply;
-    CHAT.push({role:'assistant', content:reply});
-  }catch(e){ th.classList.remove('thinking'); th.textContent='La guida AI non è raggiungibile ora. Riprova tra poco.'; CHAT.pop(); }
+    CHAT.push({role:'assistant', content:reply}); _send.disabled=false;
+  }catch(e){ th.classList.remove('thinking'); th.textContent='La guida AI non è raggiungibile ora. Riprova tra poco.'; CHAT.pop(); _send.disabled=false; }
 }
 
 /* ── Prenotazione integrata ── */
@@ -1103,11 +1121,11 @@ async function renderBooking(){
   if(!co.booking_enabled){
     if(co.booking_url){
       const b=document.getElementById('bookBtn'); b.href=co.booking_url; b.style.display='block';
-      document.getElementById('bookEyebrow').style.display='flex';
+      document.getElementById('bookEyebrow').style.display='flex'; const _bb=document.getElementById('bnavBook'); if(_bb) _bb.style.display='';
     }
     return;
   }
-  document.getElementById('bookEyebrow').style.display='flex';
+  document.getElementById('bookEyebrow').style.display='flex'; const _bb=document.getElementById('bnavBook'); if(_bb) _bb.style.display='';
   wrap.style.display='block';
   const from=new Date(); const to=new Date(Date.now()+15*86400000);
   let busy=[];
@@ -1223,6 +1241,15 @@ function setupPWA(accent, studio, name){
     addMsg('ai',`Ciao ${(DATA.name||'').split(' ')[0]}! Sono la tua guida Human Design: conosco la tua carta nei dettagli. Chiedimi del tuo tipo, delle decisioni, del tema di oggi — o prenota una call col tuo coach qui sotto.`);
     document.getElementById('aiHint').textContent='Risposte generate da Claude Fable 5 sulla base della tua carta. Per le decisioni importanti, parlane in call con il tuo coach.';
   } else addMsg('ai','La chat AI verrà attivata dal tuo coach. Intanto esplora la tua lettura completa qui sotto!');
+
+  // navigazione attiva su scroll + reveal delle sezioni
+  (function(){
+    const links=[...document.querySelectorAll('#bnav a')];
+    const so=new IntersectionObserver(es=>{es.forEach(e=>{ if(e.isIntersecting) links.forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+e.target.id)); });},{rootMargin:'-35% 0px -55% 0px'});
+    ['secSintesi','chatBox','paper','todayBox','bookEyebrow'].forEach(id=>{const el=document.getElementById(id); if(el) so.observe(el);});
+    const ro=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } }),{threshold:.06});
+    document.querySelectorAll('#wrap > *:not(header)').forEach(el=>{ el.classList.add('reveal'); ro.observe(el); });
+  })();
 })();
 
 </script>
