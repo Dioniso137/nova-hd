@@ -197,6 +197,7 @@ p.pageIntro{color:var(--dim);font-size:12.5px;line-height:1.6;margin:8px 0 18px}
   <div class="brand">NOVA<small>HD COACH · CLOUD</small></div>
   <button class="tabBtn active" data-tab="clienti">Clienti</button>
   <button class="tabBtn" data-tab="cal">Calendario</button>
+  <button class="tabBtn" data-tab="prev">Previsioni</button>
   <button class="tabBtn" data-tab="carta">Carta</button>
   <button class="tabBtn" data-tab="transiti">Transiti</button>
   <button class="tabBtn" data-tab="conn">Connessione</button>
@@ -277,6 +278,27 @@ p.pageIntro{color:var(--dim);font-size:12.5px;line-height:1.6;margin:8px 0 18px}
       <button class="ghost" id="agendaReload" style="margin:0">↻ Aggiorna</button>
     </div>
     <div id="agenda" style="margin-top:14px"></div>
+  </section>
+</div>
+</section>
+
+<!-- ════════ TAB PREVISIONI ════════ -->
+<section class="tab" id="tab-prev">
+<div class="grid2">
+  <main class="col bordered">
+    <h2 class="pageTitle">Previsioni</h2>
+    <p class="pageIntro">Le effemeridi proiettate in avanti: il ritorno solare esatto al minuto, i transiti che completeranno i canali sospesi della carta attiva nei prossimi 12 mesi e il ciclo lunare personale.</p>
+    <div class="eyebrow">Ritorno Solare · la carta dell'anno</div>
+    <div id="srBox"><div class="banner">—</div></div>
+    <div class="eyebrow">Ciclo Lunare personale · prossimi 29 giorni</div>
+    <div id="lunBox"><div class="banner">—</div></div>
+  </main>
+  <section class="col">
+    <div class="eyebrow">Calendario delle Porte · prossimi 12 mesi</div>
+    <p class="hint" style="margin-bottom:10px">L'ingresso esatto del Sole in ogni porta (ora del tuo dispositivo): il tema collettivo della settimana, perfetto per programmare contenuti, newsletter e post.</p>
+    <div id="gateCal"><div class="banner">—</div></div>
+    <div class="eyebrow">Transiti personali in arrivo</div>
+    <div id="brBox"><div class="banner">—</div></div>
   </section>
 </div>
 </section>
@@ -1778,6 +1800,7 @@ document.querySelectorAll('.tabBtn').forEach(btn=>{
     if (btn.dataset.tab==='transiti'){ if(!document.getElementById('trDate').value) setTrNow(); if(!lastTransit) computeTransit(); else renderTransit(); }
     if (btn.dataset.tab==='mandala') renderMandala();
     if (btn.dataset.tab==='cicli' && currentChart) renderCycles();
+    if (btn.dataset.tab==='prev') renderPrevisioni();
   });
 });
 document.getElementById('themeBtn').addEventListener('click',()=>{
@@ -1791,8 +1814,9 @@ document.getElementById('printBtn').addEventListener('click',()=>{
 window.addEventListener('beforeprint',()=>{ document.querySelectorAll('#tab-carta details').forEach(d=>d.open=true); });
 
 function afterChartComputed(){
+  PREV_DONE=false;
   lastInputs = readInputs();
-  renderVars(currentChart);
+  renderVars(currentChart); renderCross(currentChart);
   overridePlanetTable(currentChart);
   renderLibSelects();
   if (document.getElementById('tab-mandala').classList.contains('active')) renderMandala();
@@ -2034,6 +2058,136 @@ function renderPlanBadge(){
   }
   el.textContent=txt;
 }
+
+/* ════════════════════════ 18 · PREVISIONI (effemeridi proiettate) ════════════════════════ */
+let PREV_DONE=false;
+function bodyLonAt(key,jd){ return longitudesAt(jd)[key]; }
+function fmtDT(jd){ const d=jdToDateObj(jd); return d.toLocaleDateString('it-IT',{day:'2-digit',month:'short'})+' '+d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}); }
+function fmtD2(jd){ return jdToDateObj(jd).toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'numeric'}); }
+function gateCalendar(days){
+  const out=[]; const start=Date.now()/86400000+2440587.5;
+  let prev=lonToGate(bodyLonAt('Sun',start)).gate;
+  out.push({jd:start, gate:prev, now:true});
+  for(let t=start+0.5;t<=start+days;t+=0.5){
+    const cg=lonToGate(bodyLonAt('Sun',t)).gate;
+    if(cg!==prev){
+      let a=t-0.5,b=t;
+      for(let i=0;i<24;i++){const m=(a+b)/2; (lonToGate(bodyLonAt('Sun',m)).gate===prev)?a=m:b=m;}
+      out.push({jd:b, gate:cg}); prev=cg;
+    }
+  }
+  return out;
+}
+function solarReturn(c){
+  const target=c.pers.Sun.lon, now=Date.now()/86400000+2440587.5;
+  let prev=angDiff(bodyLonAt('Sun',now),target);
+  for(let t=now+1;t<=now+372;t+=1){
+    const cur=angDiff(bodyLonAt('Sun',t),target);
+    if(((prev<0&&cur>=0)||(prev>0&&cur<=0)) && Math.abs(prev)+Math.abs(cur)<180){
+      let a=t-1,b=t;
+      for(let i=0;i<42;i++){const m=(a+b)/2; const v=angDiff(bodyLonAt('Sun',m),target); ((v<0)===(prev<0))?a=m:b=m;}
+      return (a+b)/2;
+    }
+    prev=cur;
+  }
+  return null;
+}
+function chartAtJD(jd){ const d=jdToDateObj(jd);
+  return computeChart(d.getUTCFullYear(),d.getUTCMonth()+1,d.getUTCDate(),d.getUTCHours()+d.getUTCMinutes()/60+d.getUTCSeconds()/3600,0); }
+function bridgeRanges(c,days,keys){
+  const start=Math.floor(Date.now()/86400000+2440587.5)+0.5;
+  const open={},done=[];
+  for(let d=0;d<=days;d++){
+    const lons=longitudesAt(start+d);
+    const tg={};
+    for(const [k,gl] of BODIES){ if(keys.includes(k)){ const g=lonToGate(lons[k]).gate; (tg[g]=tg[g]||[]).push(gl);} }
+    const today=new Set();
+    for(const [a,b,name] of CHANNELS){
+      const na=c.allGates.has(a), nb=c.allGates.has(b);
+      if(na===nb) continue;
+      const miss=na?b:a, key=a+'-'+b;
+      if(tg[miss]){ today.add(key);
+        if(!open[key]) open[key]={a,b,name,from:start+d,by:new Set()};
+        tg[miss].forEach(x=>open[key].by.add(x)); open[key].to=start+d; }
+    }
+    for(const k in open) if(!today.has(k)){ done.push(open[k]); delete open[k]; }
+  }
+  for(const k in open) done.push(open[k]);
+  done.sort((x,y)=>x.from-y.from);
+  return done;
+}
+function lunarCycle(c){
+  const out=[]; const start=Date.now()/86400000+2440587.5; const open={};
+  for(let t=start;t<=start+29.8;t+=1/12){
+    const mg=lonToGate(longitudesAt(t).Moon).gate;
+    for(const [a,b] of CHANNELS){
+      const na=c.allGates.has(a), nb=c.allGates.has(b);
+      if(na===nb) continue;
+      const miss=na?b:a, key=a+'-'+b;
+      if(mg===miss){ if(!open[key]) open[key]={a,b,from:t}; open[key].to=t; }
+      else if(open[key]){ out.push(open[key]); delete open[key]; }
+    }
+  }
+  for(const k in open) out.push(open[k]);
+  out.sort((x,y)=>x.from-y.from);
+  return out;
+}
+function renderCross(c){
+  const RA=['1/3','1/4','2/4','2/5','3/5','3/6'];
+  const ang = c.profKey==='4/1' ? ['Giustapposizione','un destino fisso: vai dritto per la tua strada, e la tua stabilità orienta chi ti circonda.']
+    : RA.includes(c.profKey) ? ['Angolo Retto','un destino personale: la vita ruota attorno al tuo processo, e viverlo fino in fondo è già il tuo dono agli altri.']
+    : ['Angolo Sinistro','un destino transpersonale: il tuo scopo si compie negli incontri, attraverso le persone che il tuo campo attrae.'];
+  let el=document.getElementById('crossBox');
+  if(!el){ el=document.createElement('div'); el.id='crossBox'; el.className='varCell'; el.style.marginTop='10px';
+    const tc=document.querySelector('#results .typeCard'); tc.parentNode.insertBefore(el, tc.nextSibling); }
+  el.innerHTML=`<div class="vh">Croce d'Incarnazione</div>
+   <div class="vn">${ang[0]} · Porte ${c.pers.Sun.gate}/${c.pers.Earth.gate} | ${c.des.Sun.gate}/${c.des.Earth.gate}</div>
+   <p>I quattro pilastri del tuo scopo di vita — ${ang[1]} Il tema portante è la <b>Porta ${c.pers.Sun.gate} · ${GATE_NAMES[c.pers.Sun.gate]}</b>: ${GATE_DESC[c.pers.Sun.gate]}</p>`;
+}
+function renderPrevisioni(){
+  if(PREV_DONE) return;
+  document.getElementById('gateCal').innerHTML='<div class="banner">Calcolo le effemeridi dei prossimi 12 mesi…</div>';
+  setTimeout(doPrevisioni, 40);
+}
+function doPrevisioni(){
+  PREV_DONE=true;
+  const cal=gateCalendar(370);
+  const nowG=cal[0];
+  let h=`<div class="cycCard"><h4>${hexGlyph(nowG.gate)} Adesso: Porta ${nowG.gate} · ${GATE_NAMES[nowG.gate]}</h4><div class="when">il Sole resta qui fino al ${fmtDT(cal[1].jd)}</div><p>${GATE_DESC[nowG.gate]}</p></div>`;
+  for(let i=1;i<cal.length-1;i++){
+    h+=`<div class="gline"><span class="gnum b">${hexGlyph(cal[i].gate)} ${cal[i].gate}</span><span class="gtxt"><b>${GATE_NAMES[cal[i].gate]}</b> · ${fmtDT(cal[i].jd)} → ${fmtDT(cal[i+1].jd)}</span></div>`;
+  }
+  document.getElementById('gateCal').innerHTML=`<div style="max-height:420px;overflow-y:auto;padding-right:6px">${h}</div>`;
+  const c=currentChart;
+  if(!c){ const b='<div class="banner">Genera (o apri) una carta nella scheda Carta per sbloccare le previsioni personali.</div>';
+    document.getElementById('srBox').innerHTML=b; document.getElementById('lunBox').innerHTML=b; document.getElementById('brBox').innerHTML=b; return; }
+  // ── Ritorno solare
+  const sr=solarReturn(c);
+  const srC=chartAtJD(sr);
+  document.getElementById('srBox').innerHTML=`<div class="cycCard"><h4>Il nuovo anno solare</h4>
+    <div class="when">${fmtD2(sr)} · ore ${jdToDateObj(sr).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})} (istante esatto del ritorno del Sole alla longitudine natale)</div>
+    <p>La carta di quel momento colora i 12 mesi successivi: <b>${srC.type}</b> · profilo ${srC.profKey} · autorità ${srC.authority} · definizione ${srC.definition}.</p>
+    <p style="margin-top:6px">${srC.defChannels.length? 'Canali dell\'anno: '+srC.defChannels.map(x=>`<b>${x[0]}–${x[1]}</b> ${x[2]}`).join(' · ') : 'Nessun canale definito: un anno aperto e ricettivo.'}</p></div>
+    <div class="paper" style="padding:10px 6px 4px"><svg id="sr-svg" viewBox="14 14 572 850" xmlns="http://www.w3.org/2000/svg"></svg></div>`;
+  renderBodygraph('sr-svg',
+    g=>{ const s=gateStateOf(g,srC); return s?{fill:s==='both'?'url(#pBoth_sr-svg)':s==='pers'?'#1f1f1f':'#e4002b'}:null; },
+    n=> srC.defCenters.has(n)?CENTER_SHAPES[n].fill:null, null, null);
+  // ── Ciclo lunare
+  const lun=lunarCycle(c);
+  document.getElementById('lunBox').innerHTML =
+    (c.type==='Riflettore'?'<p class="hint" style="margin-bottom:8px">Da Riflettore, questo è il tuo orologio interiore: la sequenza con cui la Luna ti definisce ogni mese. Le decisioni maturano lungo questo ciclo.</p>':'')
+    + (lun.length? lun.map(e=>`<div class="gline"><span class="gnum b">☽ ${e.a}–${e.b}</span><span class="gtxt">${fmtDT(e.from)} → ${fmtDT(e.to)} · la Luna completa il tuo canale <b>${e.a}–${e.b}</b></span></div>`).join('')
+      : '<p class="hint">Nessun canale sospeso viene completato dalla Luna in questo ciclo.</p>');
+  // ── Ponti
+  const slow=bridgeRanges(c,365,['Jupiter','Saturn','Uranus','Neptune','Pluto','NNode','SNode']);
+  const fast=bridgeRanges(c,30,['Sun','Earth','Mercury','Venus','Mars']);
+  let bh='<p class="hint" style="margin-bottom:8px">Quando i pianeti completeranno i canali sospesi della carta: i periodi in cui un\'energia nuova diventa temporaneamente stabile. Date dalle effemeridi reali.</p>';
+  bh += slow.length? slow.map(r=>`<div class="cycCard"><h4>Canale ${r.a}–${r.b} · ${r.name}</h4><div class="when">${[...r.by].join(' ')} · ${fmtD2(r.from)} → ${fmtD2(r.to)} (≈${Math.max(1,Math.round(r.to-r.from))} giorni)</div><p>${CHANNEL_DESC[r.a+'-'+r.b]}</p></div>`).join('') : '<p class="hint">Nessun transito lento completa canali nei prossimi 12 mesi.</p>';
+  bh += '<div class="eyebrow">Ponti veloci · prossimi 30 giorni</div>';
+  bh += fast.length? fast.map(r=>`<div class="gline"><span class="gnum b">${[...r.by].join('')}</span><span class="gtxt"><b>${r.a}–${r.b}</b> · ${fmtD2(r.from)}${r.to>r.from+0.6?' → '+fmtD2(r.to):''}</span></div>`).join('') : '<p class="hint">Nessun ponte veloce in arrivo.</p>';
+  document.getElementById('brBox').innerHTML=bh;
+}
+
 </script>
 </body>
 </html>
