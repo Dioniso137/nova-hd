@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0c16">
+<link id="manifestLink" rel="manifest" href="">
+<link id="appleIcon" rel="apple-touch-icon" href="">
+<title>Il tuo Human Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0a0c16; --panel:rgba(16,20,34,.72); --line:rgba(160,175,220,.14);
+  --ink:#e8ebf7; --dim:#8a93b5; --gold:#e3b864;
+  --paper:#f6f1e6; --paper-ink:#2a2420; --paper-dim:#857c6c;
+  --des:#e4002b; --pers:#1f1f1f;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:radial-gradient(900px 600px at 80% 0%, #131830 0%, var(--void) 60%), var(--void);
+  color:var(--ink);font-family:'Outfit',system-ui,sans-serif;min-height:100vh;
+  padding-bottom:90px}
+#wrap{max-width:580px;margin:0 auto;padding:18px 16px}
+header.hero{text-align:center;padding:26px 10px 18px}
+header.hero .studio{font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+header.hero h1{font-family:'Marcellus',serif;font-size:27px;letter-spacing:.06em;margin-top:8px}
+header.hero .sub{color:var(--dim);font-size:12.5px;margin-top:6px;font-family:'Space Grotesk',monospace}
+.eyebrow{font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:26px 0 12px;display:flex;align-items:center;gap:10px}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+.typeCard{padding:18px;border-radius:16px;border:1px solid rgba(227,184,100,.4);
+  background:linear-gradient(150deg, rgba(227,184,100,.10), rgba(127,127,127,.03))}
+.typeCard .t{font-family:'Marcellus',serif;font-size:24px;color:var(--gold);line-height:1.15}
+.typeCard .p{font-family:'Space Grotesk',monospace;font-size:13px;color:#4aa3c9;margin-top:4px}
+.kv{display:grid;grid-template-columns:100px 1fr;gap:7px 10px;font-size:13px;margin-top:12px}
+.kv .k{color:var(--dim)} .kv .v{color:var(--ink)}
+#paper{background:var(--paper);border-radius:20px;padding:14px 8px 6px;
+  box-shadow:0 18px 50px rgba(0,0,0,.35)}
+#paper svg{width:100%;height:auto;display:block}
+.gateBadge{cursor:pointer}
+.gateBadge text{font-family:'Space Grotesk',monospace;font-size:11px;font-weight:500;pointer-events:none}
+.centerShape{cursor:pointer}
+.detailCard{margin-top:12px;border:1px solid var(--line);border-radius:14px;
+  background:var(--panel);padding:15px;min-height:70px}
+.detailCard h3{font-family:'Marcellus',serif;color:var(--gold);font-size:16px}
+.detailCard .meta{font-family:'Space Grotesk',monospace;font-size:11px;color:var(--dim);margin:3px 0 8px}
+.detailCard p{font-size:13px;line-height:1.55}
+.detailCard .act{font-size:12px;margin-top:8px;line-height:1.7}
+.tagP{color:#fff;background:#1f1f1f;border-radius:5px;padding:1px 6px;font-size:10.5px;border:1px solid #555}
+.tagD{color:#fff;background:var(--des);border-radius:5px;padding:1px 6px;font-size:10.5px}
+details{border:1px solid var(--line);border-radius:13px;margin-bottom:10px;background:rgba(127,127,127,.03);overflow:hidden}
+summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:11px;padding:13px 15px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary .num{font-family:'Space Grotesk',monospace;font-size:10px;color:var(--gold);letter-spacing:.15em;min-width:22px}
+summary .ttl{font-family:'Marcellus',serif;font-size:15px;letter-spacing:.04em;flex:1}
+summary .chip{font-family:'Space Grotesk',monospace;font-size:11px;color:#4aa3c9}
+summary::after{content:"+";color:var(--dim);font-size:17px;transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details .body{padding:2px 16px 15px;font-size:13px;line-height:1.6}
+details .body p{margin-bottom:10px}
+.cblock{border-left:2px solid var(--line);padding:7px 0 7px 13px;margin-bottom:10px}
+.cblock.def{border-left-color:var(--gold)}
+.cblock h4{font-size:13.5px;font-weight:500;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.badge{font-family:'Space Grotesk',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;border-radius:5px;padding:2px 7px}
+.badge.on{background:rgba(227,184,100,.18);color:var(--gold)}
+.badge.off{background:rgba(127,127,127,.14);color:var(--dim)}
+.cblock p{font-size:12.5px;margin-top:5px;line-height:1.5}
+.cblock .q{font-style:italic;color:var(--dim);font-size:12px;margin-top:4px}
+.gline{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:12.5px;align-items:baseline}
+.gline .gnum{font-family:'Space Grotesk',monospace;min-width:44px}
+.gline .gnum.p{color:var(--ink)}.gline .gnum.d{color:#e4506e}.gline .gnum.b{color:var(--gold)}
+.gline .gtxt{line-height:1.5}
+.varGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:460px){.varGrid{grid-template-columns:1fr}}
+.varCell{border:1px solid var(--line);border-radius:12px;padding:12px}
+.varCell .vh{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-family:'Space Grotesk',monospace}
+.varCell .vn{font-family:'Marcellus',serif;font-size:16px;margin:4px 0 2px}
+.varCell .va{font-size:11.5px;color:#4aa3c9;font-family:'Space Grotesk',monospace}
+.varCell p{font-size:11.5px;color:var(--dim);margin-top:5px;line-height:1.5}
+.cycCard{border:1px solid var(--line);border-radius:13px;padding:14px;margin-bottom:10px;background:var(--panel)}
+.cycCard h4{font-family:'Marcellus',serif;font-size:15px;color:var(--gold)}
+.cycCard .when{font-family:'Space Grotesk',monospace;font-size:11.5px;color:#4aa3c9;margin:3px 0 6px}
+.cycCard p{font-size:12.5px;line-height:1.55}
+.hint{font-size:11px;color:var(--dim);line-height:1.5;margin-top:8px}
+/* chat */
+#chatBox{border:1px solid var(--line);border-radius:16px;background:var(--panel);overflow:hidden}
+#chatLog{max-height:380px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:86%;padding:10px 13px;border-radius:14px;font-size:13.5px;line-height:1.55;white-space:pre-wrap}
+.msg.user{align-self:flex-end;background:rgba(227,184,100,.16);border:1px solid rgba(227,184,100,.3);border-bottom-right-radius:4px}
+.msg.ai{align-self:flex-start;background:rgba(127,127,127,.09);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.ai.thinking{color:var(--dim);font-style:italic}
+#chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 10px}
+.chip2{font-size:11.5px;border:1px solid var(--line);border-radius:20px;padding:6px 12px;color:var(--dim);cursor:pointer;background:none;font-family:'Outfit'}
+.chip2:hover{color:var(--gold);border-color:var(--gold)}
+#chatForm{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
+#chatInput{flex:1;background:rgba(127,127,127,.07);border:1px solid var(--line);color:var(--ink);
+  border-radius:12px;padding:11px 13px;font-family:'Outfit';font-size:14px;outline:none}
+#chatInput:focus{border-color:var(--gold)}
+#chatSend{border:none;border-radius:12px;padding:0 18px;cursor:pointer;
+  font-family:'Marcellus',serif;font-size:14px;color:#0b0d18;
+  background:linear-gradient(120deg,var(--gold),#f4dca0)}
+.bigBtn{display:block;text-align:center;text-decoration:none;margin-top:14px;padding:15px;border:none;border-radius:14px;cursor:pointer;
+  font-family:'Marcellus',serif;font-size:16px;letter-spacing:.08em;color:#0b0d18;width:100%;
+  background:linear-gradient(120deg,var(--gold),#f4dca0 50%,var(--gold))}
+.banner{border:1px dashed var(--line);border-radius:12px;padding:14px;color:var(--dim);font-size:12.5px;line-height:1.55}
+footer{margin-top:34px;text-align:center;color:var(--dim);font-size:11px;line-height:1.7;padding:0 10px}
+footer b{color:var(--gold);font-weight:500}
+#errView{display:none;text-align:center;padding:80px 24px}
+#errView h1{font-family:'Marcellus',serif;font-size:22px;margin-bottom:12px}
+#errView p{color:var(--dim);font-size:13.5px;line-height:1.6}
+
+.dayStrip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.dayBtn{min-width:64px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--dim);
+  padding:9px 4px;font-family:'Outfit';font-size:11px;cursor:pointer;text-align:center;line-height:1.5}
+.dayBtn b{font-size:17px;color:var(--ink)}
+.dayBtn span{font-size:10px}
+.dayBtn.sel{border-color:var(--gold);color:var(--gold)}
+.dayBtn.sel b{color:var(--gold)}
+#slotGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px;margin-top:12px}
+.slotBtn{border:1px solid var(--line);border-radius:10px;background:none;color:var(--ink);
+  padding:10px 4px;font-family:'Space Grotesk',monospace;font-size:13px;cursor:pointer}
+.slotBtn:hover{border-color:var(--gold)}
+.slotBtn.sel{background:var(--gold);color:#0b0d18;border-color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="errView"><h1>Link non valido</h1><p>Questo link non contiene una carta. Chiedi al tuo coach di generarne uno nuovo dalla sua dashboard NOVA.</p></div>
+<div id="wrap" style="display:none">
+  <header class="hero">
+    <div class="studio" id="hStudio">STUDIO</div>
+    <h1 id="hName">—</h1>
+    <div class="sub" id="hBirth">—</div>
+  </header>
+
+  <div class="typeCard">
+    <div class="t" id="rType">—</div>
+    <div class="p" id="rProfile">—</div>
+    <div class="kv">
+      <span class="k">Strategia</span><span class="v" id="rStrategy">—</span>
+      <span class="k">Autorità</span><span class="v" id="rAuthority">—</span>
+      <span class="k">Definizione</span><span class="v" id="rDefinition">—</span>
+      <span class="k">Firma</span><span class="v" id="rSignature">—</span>
+      <span class="k">Non-sé</span><span class="v" id="rNotSelf">—</span>
+    </div>
+  </div>
+
+  <div class="eyebrow">La tua guida AI</div>
+  <div id="chatBox">
+    <div id="chatLog"></div>
+    <div id="chips"></div>
+    <form id="chatForm">
+      <input id="chatInput" type="text" placeholder="Chiedi qualcosa sulla tua carta…" autocomplete="off">
+      <button id="chatSend" type="submit">Invia</button>
+    </form>
+  </div>
+  <p class="hint" id="aiHint"></p>
+
+  <div class="eyebrow">Il tuo Bodygraph</div>
+  <div id="paper">
+    <svg id="bg-svg" viewBox="14 14 572 850" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bodygraph"></svg>
+  </div>
+  <div class="detailCard" id="detailCard">
+    <h3>Esplora il grafico</h3>
+    <p style="color:var(--dim);font-size:12.5px;margin-top:6px">Tocca una porta o un centro per il dettaglio.</p>
+  </div>
+
+  <div class="eyebrow">Il cielo di oggi su di te</div>
+  <div id="todayBox"></div>
+
+  <div class="eyebrow">La tua Variabile</div>
+  <div class="varGrid" id="rVars"></div>
+
+  <div class="eyebrow">La tua lettura completa</div>
+  <p class="hint" id="readingIntro" style="display:none"></p>
+  <div id="accordions"></div>
+
+  <div class="eyebrow" id="bookEyebrow" style="display:none">Prenota la tua call</div>
+  <div id="bookWrap" style="display:none"></div>
+  <a class="bigBtn" id="bookBtn" style="display:none" target="_blank" rel="noopener">Prenota una call →</a>
+
+  <footer>
+    <p id="a2hs">📲 <b>Trasforma questa pagina in un'app:</b> apri il menu del browser e scegli <b>"Aggiungi alla schermata Home"</b>. Avrai la tua carta sempre con te.</p>
+    <p style="margin-top:10px">Calcoli astronomici di precisione · NOVA HD Engine</p>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+"use strict";
+/* ════════════════════════ 1 · MOTORE ASTRONOMICO ════════════════════════ */
+const RAD = Math.PI/180;
+const norm = a => ((a % 360) + 360) % 360;
+const angDiff = (a,b) => ((a - b + 540) % 360) - 180;
+
+// Elementi kepleriani JPL (validi 1800–2050): [a, e, I, L, varpi, Omega] + tassi/secolo
+const KEP = {
+  Mercury:[[0.38709927,0.20563593,7.00497902,252.25032350,77.45779628,48.33076593],
+           [0.00000037,0.00001906,-0.00594749,149472.67411175,0.16047689,-0.12534081]],
+  Venus:  [[0.72333566,0.00677672,3.39467605,181.97909950,131.60246718,76.67984255],
+           [0.00000390,-0.00004107,-0.00078890,58517.81538729,0.00268329,-0.27769418]],
+  Earth:  [[1.00000261,0.01671123,-0.00001531,100.46457166,102.93768193,0.0],
+           [0.00000562,-0.00004392,-0.01294668,35999.37244981,0.32327364,0.0]],
+  Mars:   [[1.52371034,0.09339410,1.84969142,-4.55343205,-23.94362959,49.55953891],
+           [0.00001847,0.00007882,-0.00813131,19140.30268499,0.44441088,-0.29257343]],
+  Jupiter:[[5.20288700,0.04838624,1.30439695,34.39644051,14.72847983,100.47390909],
+           [-0.00011607,-0.00013253,-0.00183714,3034.74612775,0.21252668,0.20469106]],
+  Saturn: [[9.53667594,0.05386179,2.48599187,49.95424423,92.59887831,113.66242448],
+           [-0.00125060,-0.00050991,0.00193609,1222.49362201,-0.41897216,-0.28867794]],
+  Uranus: [[19.18916464,0.04725744,0.77263783,313.23810451,170.95427630,74.01692503],
+           [-0.00196176,-0.00004397,-0.00242939,428.48202785,0.40805281,0.04240589]],
+  Neptune:[[30.06992276,0.00859048,1.77004347,-55.12002969,44.96476227,131.78422574],
+           [0.00026291,0.00005105,0.00035372,218.45945325,-0.32241464,-0.00508664]],
+  Pluto:  [[39.48211675,0.24882730,17.14001206,238.92903833,224.06891629,110.30393684],
+           [-0.00031596,0.00005170,0.00004818,145.20780515,-0.04062942,-0.01183482]]
+};
+
+function solveKepler(Mdeg, e){
+  const M = norm(Mdeg) * RAD;
+  let E = e < 0.8 ? M : Math.PI;
+  for (let i=0;i<25;i++){
+    const dE = (E - e*Math.sin(E) - M) / (1 - e*Math.cos(E));
+    E -= dE;
+    if (Math.abs(dE) < 1e-12) break;
+  }
+  return E;
+}
+
+// Vettore eliocentrico eclittico (UA)
+function helio(name, T){
+  const [el, rt] = KEP[name];
+  const a = el[0]+rt[0]*T, e = el[1]+rt[1]*T, I = (el[2]+rt[2]*T)*RAD;
+  const L = el[3]+rt[3]*T, vp = el[4]+rt[4]*T, Om = (el[5]+rt[5]*T)*RAD;
+  const w = (vp - (el[5]+rt[5]*T)) * RAD;
+  const E = solveKepler(L - vp, e);
+  const xv = a*(Math.cos(E)-e), yv = a*Math.sqrt(1-e*e)*Math.sin(E);
+  const cw=Math.cos(w), sw=Math.sin(w), cO=Math.cos(Om), sO=Math.sin(Om), ci=Math.cos(I), si=Math.sin(I);
+  return {
+    x: xv*(cw*cO - sw*sO*ci) - yv*(sw*cO + cw*sO*ci),
+    y: xv*(cw*sO + sw*cO*ci) - yv*(sw*sO - cw*cO*ci),
+    z: xv*(sw*si) + yv*(cw*si)
+  };
+}
+
+// Precessione generale in longitudine: equinozio J2000 → equinozio di data
+const precession = T => (5029.0966*T + 1.11113*T*T)/3600;
+
+function sunLon(T){
+  const e = helio('Earth', T);
+  return norm(Math.atan2(-e.y, -e.x)/RAD + precession(T));
+}
+function planetLon(name, T){
+  const e = helio('Earth', T), p = helio(name, T);
+  return norm(Math.atan2(p.y-e.y, p.x-e.x)/RAD + precession(T));
+}
+
+// Luna — teoria semplificata di Meeus (cap. 47), termini principali → ~0,01–0,05°
+function moonLon(T){
+  const Lp = 218.3164477 + 481267.88123421*T - 0.0015786*T*T + T*T*T/538841;
+  const D  = 297.8501921 + 445267.1114034*T  - 0.0018819*T*T + T*T*T/545868;
+  const M  = 357.5291092 + 35999.0502909*T   - 0.0001536*T*T;
+  const Mp = 134.9633964 + 477198.8675055*T  + 0.0087414*T*T + T*T*T/69699;
+  const F  = 93.2720950  + 483202.0175233*T  - 0.0036539*T*T - T*T*T/3526000;
+  const Ecc = 1 - 0.002516*T - 0.0000074*T*T;
+  // [coeff, cD, cM, cMp, cF]
+  const terms = [
+    [6.288774,0,0,1,0],[1.274027,2,0,-1,0],[0.658314,2,0,0,0],[0.213618,0,0,2,0],
+    [-0.185116,0,1,0,0],[-0.114332,0,0,0,2],[0.058793,2,0,-2,0],[0.057066,2,-1,-1,0],
+    [0.053322,2,0,1,0],[0.045758,2,-1,0,0],[-0.040923,0,1,-1,0],[-0.034720,1,0,0,0],
+    [-0.030383,0,1,1,0],[0.015327,2,0,0,-2],[-0.012528,0,0,1,2],[0.010980,0,0,1,-2],
+    [0.010675,4,0,-1,0],[0.010034,0,0,3,0],[0.008548,4,0,-2,0],[-0.007888,2,1,-1,0],
+    [-0.006766,2,1,0,0],[-0.005163,1,0,-1,0],[0.004987,1,1,0,0],[0.004036,2,-1,1,0],
+    [0.003994,2,0,2,0],[0.003861,4,0,0,0],[0.003665,2,0,-3,0],[-0.002689,0,1,-2,0],
+    [-0.002602,2,0,-1,2],[0.002390,2,-1,-2,0],[-0.002348,1,0,1,0],[0.002236,2,-2,0,0]
+  ];
+  let s = 0;
+  for (const [c,cd,cm,cmp,cf] of terms){
+    let coeff = c;
+    if (Math.abs(cm) === 1) coeff *= Ecc;
+    if (Math.abs(cm) === 2) coeff *= Ecc*Ecc;
+    s += coeff * Math.sin((cd*D + cm*M + cmp*Mp + cf*F)*RAD);
+  }
+  const A1 = 119.75 + 131.849*T, A2 = 53.09 + 479264.290*T;
+  s += 0.003958*Math.sin(A1*RAD) + 0.001962*Math.sin((Lp-F)*RAD) + 0.000318*Math.sin(A2*RAD);
+  return norm(Lp + s);
+}
+
+// Nodo lunare vero (medio + correzioni principali)
+function nodeLon(T){
+  const D  = 297.8501921 + 445267.1114034*T;
+  const M  = 357.5291092 + 35999.0502909*T;
+  const Mp = 134.9633964 + 477198.8675055*T;
+  const F  = 93.2720950  + 483202.0175233*T;
+  let Om = 125.0445479 - 1934.1362891*T + 0.0020754*T*T + T*T*T/467441;
+  Om += -1.4979*Math.sin(2*(D-F)*RAD) - 0.1500*Math.sin(M*RAD)
+        -0.1226*Math.sin(2*D*RAD) + 0.1176*Math.sin(2*F*RAD)
+        -0.0801*Math.sin(2*(Mp-F)*RAD);
+  return norm(Om);
+}
+
+function julianDay(y, m, d, utHours){
+  if (m <= 2){ y -= 1; m += 12; }
+  const A = Math.floor(y/100), B = 2 - A + Math.floor(A/4);
+  return Math.floor(365.25*(y+4716)) + Math.floor(30.6001*(m+1)) + d + B - 1524.5 + utHours/24;
+}
+const Tof = jd => (jd - 2451545.0)/36525;
+
+// Istante di Design: Sole a −88° d'arco rispetto alla nascita (Newton)
+function designJD(jdBirth){
+  const target = norm(sunLon(Tof(jdBirth)) - 88);
+  let t = jdBirth - 88/0.9856473;
+  for (let i=0;i<30;i++){
+    const diff = angDiff(target, sunLon(Tof(t)));
+    t += diff/0.9856473;
+    if (Math.abs(diff) < 1e-8) break;
+  }
+  return t;
+}
+
+/* ════════════════════════ 2 · DATI HUMAN DESIGN ════════════════════════ */
+// Ruota del mandala: il cancello 41.1 inizia a 302°00' (02° Acquario)
+const WHEEL = [41,19,13,49,30,55,37,63,22,36,25,17,21,51,42,3,27,24,2,23,8,20,16,35,45,12,15,52,39,53,62,56,31,33,7,4,29,59,40,64,47,6,46,18,48,57,32,50,28,44,1,43,14,34,9,5,26,11,10,58,38,54,61,60];
+const WHEEL_START = 302.0, GATE_ARC = 5.625, LINE_ARC = 0.9375;
+
+function lonToGate(lon){
+  const x = norm(lon - WHEEL_START);
+  const idx = Math.floor(x / GATE_ARC);
+  return { gate: WHEEL[idx], line: Math.min(6, Math.floor((x % GATE_ARC)/LINE_ARC) + 1) };
+}
+
+const GATE_CENTER = {64:'Head',61:'Head',63:'Head',47:'Ajna',24:'Ajna',4:'Ajna',17:'Ajna',43:'Ajna',11:'Ajna',
+62:'Throat',23:'Throat',56:'Throat',16:'Throat',20:'Throat',31:'Throat',8:'Throat',33:'Throat',35:'Throat',12:'Throat',45:'Throat',
+1:'G',13:'G',25:'G',46:'G',2:'G',15:'G',10:'G',7:'G',
+26:'Heart',51:'Heart',21:'Heart',40:'Heart',
+5:'Sacral',14:'Sacral',29:'Sacral',59:'Sacral',9:'Sacral',3:'Sacral',42:'Sacral',27:'Sacral',34:'Sacral',
+48:'Spleen',57:'Spleen',44:'Spleen',50:'Spleen',32:'Spleen',28:'Spleen',18:'Spleen',
+36:'Solar',22:'Solar',37:'Solar',6:'Solar',49:'Solar',55:'Solar',30:'Solar',
+53:'Root',60:'Root',52:'Root',19:'Root',39:'Root',41:'Root',58:'Root',38:'Root',54:'Root'};
+
+const CHANNELS = [
+ [1,8,'Ispirazione'],[2,14,'Battito'],[3,60,'Mutazione'],[4,63,'Logica'],[5,15,'Ritmo'],
+ [6,59,'Intimità'],[7,31,'Alfa'],[9,52,'Concentrazione'],[10,20,'Risveglio'],[10,34,'Esplorazione'],
+ [10,57,'Forma Perfetta'],[11,56,'Curiosità'],[12,22,'Apertura'],[13,33,'Il Prodigo'],[16,48,'Talento'],
+ [17,62,'Accettazione'],[18,58,'Giudizio'],[19,49,'Sintesi'],[20,34,'Carisma'],[20,57,'Onda Cerebrale'],
+ [21,45,'Materialismo'],[23,43,'Strutturazione'],[24,61,'Consapevolezza'],[25,51,'Iniziazione'],
+ [26,44,'Resa'],[27,50,'Conservazione'],[28,38,'Lotta'],[29,46,'Scoperta'],[30,41,'Riconoscimento'],
+ [32,54,'Trasformazione'],[34,57,'Potere'],[35,36,'Transitorietà'],[37,40,'Comunità'],
+ [39,55,'Emotività'],[42,53,'Maturazione'],[47,64,'Astrazione']
+];
+
+const CENTER_IT = {Head:'Testa',Ajna:'Ajna',Throat:'Gola',G:'G (Sé)',Heart:'Cuore',Sacral:'Sacrale',Spleen:'Milza',Solar:'Plesso Solare',Root:'Radice'};
+const MOTORS = ['Sacral','Solar','Heart','Root'];
+
+const GATE_NAMES = {1:'Creatività',2:'Ricettività',3:'Ordine',4:'Formulazione',5:'Attesa',6:'Attrito',7:'Il Ruolo del Sé',8:'Contributo',9:'Focalizzazione',10:'Comportamento',11:'Idee',12:'Cautela',13:'L\'Ascoltatore',14:'Potenza',15:'Estremi',16:'Abilità',17:'Opinioni',18:'Correzione',19:'Bisogni',20:'Il Presente',21:'Il Cacciatore',22:'Grazia',23:'Assimilazione',24:'Razionalizzazione',25:'Spirito del Sé',26:'L\'Egoista',27:'Cura',28:'Il Giocatore',29:'Perseveranza',30:'Sentimenti',31:'Influenza',32:'Continuità',33:'Privacy',34:'Potere',35:'Cambiamento',36:'Crisi',37:'Amicizia',38:'Il Combattente',39:'Provocazione',40:'Solitudine',41:'Contrazione',42:'Crescita',43:'Intuizione',44:'Vigilanza',45:'Il Radunatore',46:'Determinazione',47:'Realizzazione',48:'Profondità',49:'Principi',50:'Valori',51:'Shock',52:'Quiete',53:'Inizi',54:'Ambizione',55:'Spirito',56:'Stimolazione',57:'Intuito',58:'Vitalità',59:'Sessualità',60:'Accettazione',61:'Mistero',62:'Dettagli',63:'Dubbio',64:'Confusione'};
+
+const PROFILES = {'1/3':'Investigatore / Martire','1/4':'Investigatore / Opportunista','2/4':'Eremita / Opportunista','2/5':'Eremita / Eretico','3/5':'Martire / Eretico','3/6':'Martire / Modello di Ruolo','4/6':'Opportunista / Modello di Ruolo','4/1':'Opportunista / Investigatore','5/1':'Eretico / Investigatore','5/2':'Eretico / Eremita','6/2':'Modello di Ruolo / Eremita','6/3':'Modello di Ruolo / Martire'};
+const RIGHT_ANGLE = ['1/3','1/4','2/4','2/5','3/5','3/6','4/6'];
+const LEFT_ANGLE  = ['5/1','5/2','6/2','6/3'];
+
+const BODIES = [
+ ['Sun','☉','Sole'],['Earth','⊕','Terra'],['Moon','☽','Luna'],['NNode','☊','Nodo Nord'],['SNode','☋','Nodo Sud'],
+ ['Mercury','☿','Mercurio'],['Venus','♀','Venere'],['Mars','♂','Marte'],['Jupiter','♃','Giove'],
+ ['Saturn','♄','Saturno'],['Uranus','♅','Urano'],['Neptune','♆','Nettuno'],['Pluto','♇','Plutone']
+];
+const SIGNS = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+function fmtLon(lon){
+  const s = Math.floor(lon/30), d = lon - s*30;
+  const deg = Math.floor(d), min = Math.round((d-deg)*60);
+  return `${SIGNS[s]} ${String(deg).padStart(2,'0')}°${String(min).padStart(2,'0')}'`;
+}
+
+/* ════════════════════════ 3 · CALCOLO DELLA CARTA ════════════════════════ */
+function longitudesAt(jd){
+  const T = Tof(jd);
+  const sun = sunLon(T), nn = nodeLon(T);
+  return {
+    Sun:sun, Earth:norm(sun+180), Moon:moonLon(T), NNode:nn, SNode:norm(nn+180),
+    Mercury:planetLon('Mercury',T), Venus:planetLon('Venus',T), Mars:planetLon('Mars',T),
+    Jupiter:planetLon('Jupiter',T), Saturn:planetLon('Saturn',T), Uranus:planetLon('Uranus',T),
+    Neptune:planetLon('Neptune',T), Pluto:planetLon('Pluto',T)
+  };
+}
+
+function computeChart(y,m,d,hLocal,tzOffset){
+  const jdBirth = julianDay(y,m,d,hLocal - tzOffset);
+  const jdDesign = designJD(jdBirth);
+  const persLon = longitudesAt(jdBirth);
+  const desLon  = longitudesAt(jdDesign);
+
+  const pers = {}, des = {};
+  for (const [k] of BODIES){ pers[k] = {lon:persLon[k], ...lonToGate(persLon[k])}; des[k] = {lon:desLon[k], ...lonToGate(desLon[k])}; }
+
+  const persGates = new Set(Object.values(pers).map(o=>o.gate));
+  const desGates  = new Set(Object.values(des).map(o=>o.gate));
+  const allGates  = new Set([...persGates, ...desGates]);
+
+  const defChannels = CHANNELS.filter(([a,b]) => allGates.has(a) && allGates.has(b));
+  const defCenters = new Set();
+  defChannels.forEach(([a,b]) => { defCenters.add(GATE_CENTER[a]); defCenters.add(GATE_CENTER[b]); });
+
+  // grafo dei centri definiti
+  const adj = {}; defCenters.forEach(c => adj[c]=new Set());
+  defChannels.forEach(([a,b]) => {
+    const ca=GATE_CENTER[a], cb=GATE_CENTER[b];
+    if (ca!==cb){ adj[ca].add(cb); adj[cb].add(ca); }
+  });
+  // componenti connesse
+  const seen=new Set(); let comps=0;
+  defCenters.forEach(c=>{
+    if(seen.has(c)) return; comps++;
+    const st=[c]; while(st.length){ const x=st.pop(); if(seen.has(x))continue; seen.add(x); adj[x].forEach(n=>st.push(n)); }
+  });
+  // gola connessa a un motore?
+  let throatMotor=false;
+  if (defCenters.has('Throat')){
+    const st=['Throat'], vis=new Set();
+    while(st.length){ const x=st.pop(); if(vis.has(x))continue; vis.add(x);
+      if (MOTORS.includes(x)){ throatMotor=true; break; }
+      adj[x].forEach(n=>st.push(n));
+    }
+  }
+
+  let type, strategy, signature, notSelf;
+  if (defCenters.size===0){ type='Riflettore'; strategy='Attendere un ciclo lunare (~28 giorni)'; signature='Sorpresa'; notSelf='Delusione'; }
+  else if (defCenters.has('Sacral')){
+    type = throatMotor ? 'Generatore Manifestante' : 'Generatore';
+    strategy = throatMotor ? 'Rispondere, poi informare' : 'Attendere per rispondere';
+    signature='Soddisfazione'; notSelf='Frustrazione';
+  } else if (throatMotor){ type='Manifestatore'; strategy='Informare prima di agire'; signature='Pace'; notSelf='Rabbia'; }
+  else { type='Proiettore'; strategy='Attendere l\'invito'; signature='Successo'; notSelf='Amarezza'; }
+
+  let authority;
+  if (defCenters.has('Solar')) authority='Emozionale — Plesso Solare';
+  else if (defCenters.has('Sacral')) authority='Sacrale';
+  else if (defCenters.has('Spleen')) authority='Splenica';
+  else if (defCenters.has('Heart')) authority = throatMotor ? 'Ego Manifestata' : 'Ego Proiettata';
+  else if (defCenters.has('G')) authority='Auto-Proiettata (G)';
+  else if (defCenters.size>0) authority='Mentale / Ambientale';
+  else authority='Lunare';
+
+  const profKey = `${pers.Sun.line}/${des.Sun.line}`;
+  const profName = PROFILES[profKey] || '';
+  const angle = profKey==='4/1' ? 'Giustapposizione' : RIGHT_ANGLE.includes(profKey) ? 'Angolo Destro' : LEFT_ANGLE.includes(profKey) ? 'Angolo Sinistro' : '';
+
+  const defLabel = ['Nessuna','Singola','Divisa','Tripla Divisione','Quadrupla Divisione'][comps] || comps+' componenti';
+  const cross = `${angle} — ${GATE_NAMES[pers.Sun.gate]} (${pers.Sun.gate}/${pers.Earth.gate} | ${des.Sun.gate}/${des.Earth.gate})`;
+
+  return { jdBirth, jdDesign, pers, des, persGates, desGates, allGates, defChannels, defCenters, type, strategy, signature, notSelf, authority, profKey, profName, defLabel, cross };
+}
+
+function jdToUTCString(jd){
+  const ms = (jd - 2440587.5) * 86400000;
+  const dt = new Date(Math.round(ms/1000)*1000);
+  return dt.toISOString().replace('T',' ').slice(0,16) + ' UTC';
+}
+
+
+/* ════════════════════════ 4 · CONTENUTI INTERPRETATIVI ════════════════════════ */
+const TYPE_INFO = {
+ 'Generatore': {
+  who:"Sei un Generatore: circa il 37% dell'umanità. Hai il centro Sacrale definito, un motore di energia vitale sostenibile che si accende quando rispondi a ciò che la vita ti porta. Sei qui per padroneggiare ciò che ami fare e per costruire, giorno dopo giorno.",
+  how:"La tua energia non è fatta per inseguire o iniziare dal nulla: è fatta per rispondere. Quando qualcosa arriva — una proposta, un'opportunità, una domanda — il tuo Sacrale risponde con un sì («mmh-mmh») o un no («mm-mm») viscerale, prima che la mente parli. Seguire quella risposta porta soddisfazione; ignorarla porta frustrazione.",
+  tip:"Segnale di allineamento: ti addormenti stanco e soddisfatto. Segnale di non-sé: frustrazione cronica, ti senti bloccato in cose che non ti rispondono più."
+ },
+ 'Generatore Manifestante': {
+  who:"Sei un Generatore Manifestante: Sacrale definito più un motore collegato alla Gola. Hai l'energia sostenibile del Generatore e la rapidità del Manifestatore: multitasking naturale, capace di saltare passaggi che gli altri devono percorrere.",
+  how:"Anche tu funzioni rispondendo: la scintilla parte sempre dalla risposta sacrale. Ma una volta partito vai veloce, cambi rotta, abbandoni ciò che non funziona senza sensi di colpa: è il tuo modo di trovare la via più corta. Informare chi è coinvolto prima di cambiare direzione riduce enormemente le resistenze.",
+  tip:"Segnale di allineamento: soddisfazione e flusso. Segnale di non-sé: frustrazione e rabbia insieme, impazienza verso la lentezza altrui."
+ },
+ 'Manifestatore': {
+  who:"Sei un Manifestatore: circa l'8-9% della popolazione. Un motore (Plesso Solare, Cuore o Radice) è collegato alla Gola senza passare dal Sacrale: sei l'unico tipo progettato per iniziare dal nulla, senza attendere nulla e nessuno.",
+  how:"Il tuo impatto è potente e gli altri lo percepiscono: per questo la tua strategia è informare prima di agire. Non chiedere permesso — informare. Dire a chi sarà toccato dalle tue azioni cosa stai per fare scioglie il controllo e la resistenza che da sempre incontri.",
+  tip:"Segnale di allineamento: pace. Segnale di non-sé: rabbia, sensazione di essere controllato o ignorato. Ricorda: la tua energia non è sostenibile come quella di un Generatore, lavora a ondate e riposa."
+ },
+ 'Proiettore': {
+  who:"Sei un Proiettore: circa il 21% della popolazione. Nessun Sacrale definito e nessun motore alla Gola: la tua natura non è fare, è vedere. Sei progettato per comprendere gli altri e i sistemi in profondità, e per guidare l'energia altrui.",
+  how:"La tua strategia è attendere l'invito per le cose importanti (amore, casa, carriera, condivisione della tua visione). Quando sei riconosciuto e invitato, la tua guida è preziosa e il successo arriva. Quando ti offri senza essere chiesto, incontri resistenza e amarezza.",
+  tip:"Segnale di allineamento: successo e riconoscimento. Segnale di non-sé: amarezza. Fondamentale: non hai energia sacrale sostenibile — studia ciò che ami, dosa le forze, riposa prima di essere esausto."
+ },
+ 'Riflettore': {
+  who:"Sei un Riflettore: circa l'1% dell'umanità. Nessun centro definito: sei uno specchio limpido che campiona e riflette l'ambiente. La tua apertura totale è il tuo dono: senti lo stato di salute di una comunità meglio di chiunque.",
+  how:"La tua strategia è attendere un ciclo lunare completo (~28 giorni) prima delle decisioni importanti: la Luna attraversa tutte le tue porte e ti fa vivere la questione da ogni angolazione. Parlane con persone fidate durante il ciclo: la chiarezza emerge nel tempo.",
+  tip:"Segnale di allineamento: sorpresa e meraviglia per la vita. Segnale di non-sé: delusione. L'ambiente è tutto per te: luoghi e persone giuste ti fanno fiorire, quelli sbagliati ti svuotano."
+ }
+};
+
+const AUTH_INFO = {
+ emo:["Autorità Emozionale","Il tuo Plesso Solare definito genera un'onda emotiva che sale e scende. Nessuna verità è disponibile nell'istante: la chiarezza arriva attraversando l'onda. Per ogni decisione importante: dormici sopra, almeno una notte, idealmente finché la risposta resta stabile in alti e bassi diversi. La tua frase chiave: «Non c'è verità nel presente». Diffida dell'entusiasmo del picco e del pessimismo della valle."],
+ sac:["Autorità Sacrale","Il tuo Sacrale risponde nell'istante con suoni e sensazioni viscerali: un sì che apre ed energizza, un no che chiude. Funziona meglio con domande secche a cui rispondere sì/no, poste da altri o dalla vita. Fidati della prima risposta del corpo, prima che la mente la corregga."],
+ spl:["Autorità Splenica","La tua Milza parla una sola volta, sottovoce, nell'istante presente: un sussurro istintivo su ciò che è sano e sicuro per te. Non si ripete e non si spiega. Allenati a coglierlo: è la consapevolezza più antica e veloce del corpo. Se devi «pensarci su», probabilmente hai già perso il segnale."],
+ egoM:["Autorità Ego Manifestata","La tua volontà parla attraverso la voce: ciò che dici spontaneamente quando sei coinvolto rivela la verità del tuo Cuore. Ascolta cosa esce dalla tua bocca senza filtri: «io voglio», «io non voglio». La domanda chiave: ho davvero la volontà di impegnarmi in questo? Se sì, l'energia c'è; se no, il corpo non sosterrà la promessa."],
+ egoP:["Autorità Ego Proiettata","Decidi in base a ciò che il tuo Cuore vuole davvero: «cosa ci guadagno? questo serve a me?». Non è egoismo, è il tuo corretto criterio decisionale. Verbalizza con persone fidate: sentirti parlare rivela dove sta la tua volontà."],
+ self:["Autorità Auto-Proiettata","La tua verità emerge parlando: il centro G si esprime attraverso la Gola. Hai bisogno di sentire la tua voce per sapere chi sei e cosa è giusto. Trova ascoltatori fidati che non consiglino, ma ti lascino parlare: la decisione giusta è quella che suona come te e va nella direzione della tua identità."],
+ mental:["Autorità Mentale / Ambientale","Nessun centro sotto la Gola è definito: la tua chiarezza non viene da dentro, ma dal dialogo nell'ambiente giusto. Parla delle decisioni con più persone fidate, in luoghi che ti fanno stare bene, senza cercare consigli: ascolta come la questione risuona in te mentre la esprimi. Il tempo e l'ambiente sono i tuoi alleati."],
+ lunar:["Autorità Lunare","Come Riflettore, la tua autorità è il ciclo lunare: ~28 giorni in cui la Luna attiva in sequenza tutte le porte del tuo grafico, facendoti vivere la decisione da prospettive sempre diverse. Annota come ti senti nelle varie fasi, parlane con chi ti conosce: la chiarezza si deposita lentamente, e alla fine del ciclo la direzione è evidente."]
+};
+
+const PROFILE_INFO = {
+ '1/3':"Fondamenta e scoperta: hai bisogno di studiare a fondo prima di sentirti sicuro (linea 1) e impari soprattutto sbagliando e scartando ciò che non funziona (linea 3). I tuoi «errori» sono ricerca: ogni tentativo fallito è un dato prezioso. Autorevolezza che nasce dall'esperienza diretta.",
+ '1/4':"Ricercatore che condivide: costruisci basi solide studiando (linea 1) e poi diffondi ciò che sai attraverso la tua rete di relazioni (linea 4). Le opportunità ti arrivano dalle persone che conosci: coltiva le amicizie, sono il tuo terreno fertile.",
+ '2/4':"Talento naturale chiamato dagli altri: hai doti spontanee che non sai spiegare (linea 2) e che gli altri vedono meglio di te. Hai bisogno del tuo spazio ed eremo, ma la rete di relazioni (linea 4) viene a chiamarti per esprimere il tuo dono. Aspetta la chiamata giusta.",
+ '2/5':"Eremita con aura di salvatore: talento naturale (linea 2) più la proiezione altrui che ti vede come chi può risolvere (linea 5). Le persone proiettano su di te grandi aspettative: scegli con cura quando rispondere alla chiamata e proteggi il tuo spazio.",
+ '3/5':"Sperimentatore pragmatico: impari per tentativi ed errori (linea 3) e gli altri si aspettano da te soluzioni pratiche (linea 5). Quando le tue sperimentazioni incontrano le proiezioni altrui, diventi straordinariamente concreto: sai cosa NON funziona, e questo non ha prezzo.",
+ '3/6':"Dalla prova alla saggezza: vita in tre fasi. Fino a ~30 anni sperimenti e sbagli intensamente (linea 3); poi sali «sul tetto» a osservare e guarire; dopo i 50 ridiscendi come modello di ruolo che incarna ciò che ha imparato (linea 6).",
+ '4/6':"Relazioni e autorevolezza: le opportunità passano dalla tua rete (linea 4) e la tua vita matura in tre fasi verso il diventare un esempio vivente (linea 6). Le persone si fidano di te naturalmente: la tua influenza cresce con l'età.",
+ '4/1':"Profilo fisso (unico giustapposto): fondamenta solide (linea 1) espresse attraverso la rete (linea 4). Hai una direzione di vita molto precisa e poco negoziabile: la tua forza è restare fedele alle tue basi. L'ambiente umano giusto è vitale.",
+ '5/1':"L'eretico pratico: gli altri proiettano su di te l'aspettativa del salvatore (linea 5) e tu rispondi con soluzioni fondate su uno studio solido (linea 1). Carisma di chi può «sistemare le cose»: mantieni le promesse solo quando le fondamenta ci sono, o la proiezione si ribalta.",
+ '5/2':"Salvatore riluttante: proiezioni potenti su di te (linea 5) ma una natura timida e dotata che preferisce il proprio spazio (linea 2). Impari a uscire dall'eremo solo per le chiamate che valgono davvero: quando lo fai, l'impatto è universale.",
+ '6/2':"Modello di ruolo naturale: vita in tre fasi (sperimentazione → tetto → discesa) con un talento innato (linea 2). Dopo i 50 diventi, quasi senza volerlo, un esempio autentico per gli altri: la tua sola presenza insegna.",
+ '6/3':"Saggezza forgiata dall'esperienza: la transizione in tre fasi (linea 6) con un motore inconscio che continua a sperimentare e rompere per tutta la vita (linea 3). Resilienza straordinaria: diventi un modello di ruolo proprio perché hai attraversato tutto."
+};
+
+const LINE_NAMES = {1:"Investigatore — fondamenta, studio, sicurezza",2:"Eremita — talento naturale, bisogno di spazio",3:"Martire — tentativi ed errori, adattamento",4:"Opportunista — rete di relazioni, amicizia",5:"Eretico — proiezione, soluzioni pratiche",6:"Modello di Ruolo — tre fasi di vita, esempio"};
+
+const DEF_INFO = {
+ 'Nessuna':"Nessun centro definito: configurazione da Riflettore. Tutta la tua consistenza viene dal campo che ti circonda e dal transito lunare: sei progettato per campionare la vita, non per fissarla.",
+ 'Singola':"Definizione Singola: tutti i tuoi centri definiti comunicano tra loro senza interruzioni. Elabori in autonomia, sei autosufficiente nel processo interiore e tendenzialmente veloce nel sentirti «intero». Non hai bisogno degli altri per completarti energeticamente.",
+ 'Divisa':"Definizione Divisa: i tuoi centri definiti formano due isole separate. Cerchi naturalmente negli altri il «ponte» che le collega: in compagnia delle persone giuste ti senti completo, e questo rende le relazioni un tema centrale della tua vita. Attenzione a non scambiare chi ti fa da ponte per chi ti è indispensabile.",
+ 'Tripla Divisione':"Tripla Divisione: tre aree di definizione separate. Hai bisogno di contesti vari e di più persone diverse per sentirti integro: i gruppi e gli ambienti pubblici ti aiutano a connettere le parti. Datti tempo: la tua elaborazione passa attraverso il movimento tra ambienti.",
+ 'Quadrupla Divisione':"Quadrupla Divisione (rara): quattro aree separate. Processo interiore lento e complesso che richiede molte persone e molto tempo: non lasciarti mettere fretta, la tua profondità è proporzionale alla tua lentezza."
+};
+
+const CENTER_INFO = {
+ Head:{theme:"Pressione mentale & ispirazione",def:"Hai una fonte costante e personale di domande, dubbi e ispirazione: la tua mente mette in moto quella degli altri.",open:"Amplifichi le domande e le ispirazioni di chi ti circonda. Il dono: riconoscere quali domande valgono davvero. Il rischio: passare la vita a cercare risposte a domande che non ti appartengono.",q:"Sto cercando di rispondere a domande che non sono mie?"},
+ Ajna:{theme:"Concettualizzazione & certezze",def:"Hai un modo fisso e affidabile di elaborare concetti e opinioni: una mente strutturata su cui gli altri possono contare.",open:"Mente fluida che vede ogni questione da molti punti di vista: una dote enorme. Non sei progettato per essere «certo»: va benissimo cambiare idea.",q:"Sto fingendo certezze che non ho?"},
+ Throat:{theme:"Manifestazione & comunicazione",def:"Hai una voce costante, un modo caratteristico e riconoscibile di esprimerti e tradurre in parole o azioni ciò che sei.",open:"Parli con mille voci e sai adattare la comunicazione a chiunque. La chiave: attendere il momento e l'invito giusti per parlare, invece di forzare l'attenzione.",q:"Sto parlando solo per attirare attenzione?"},
+ G:{theme:"Identità, amore & direzione",def:"Senso di sé e direzione di vita stabili: sai chi sei anche quando tutto cambia intorno.",open:"Identità fluida che assorbe e riflette chi ti sta accanto: per questo luoghi e persone sono decisivi. Se l'ambiente è giusto, la vita è giusta. Non sei tu a dover sapere «chi sei»: lo scopri attraverso chi ami.",q:"Sto cercando disperatamente amore e direzione?"},
+ Heart:{theme:"Volontà, valore & ego",def:"Forza di volontà reale: puoi fare promesse e mantenerle. Il tuo valore non è in discussione — ma il Cuore ha bisogno di cicli di lavoro e riposo.",open:"Non hai nulla da dimostrare, a nessuno. Le promesse «di volontà» ti svuotano: impegnati solo seguendo la tua autorità. Il dono: saggezza su cosa ha davvero valore.",q:"Sto cercando di dimostrare il mio valore?"},
+ Sacral:{theme:"Forza vitale & lavoro",def:"Energia sostenibile che si rigenera quando rispondi a ciò che ami: il motore della vita. Va consumata ogni giorno per dormire bene.",open:"Non hai energia sostenibile: la prendi in prestito e la amplifichi. Non sai naturalmente «quando basta»: il riposo prima dell'esaurimento è la tua disciplina più importante.",q:"So riconoscere quando basta?"},
+ Spleen:{theme:"Istinto, salute & paure",def:"Sistema immunitario e intuito solidi: il tuo corpo sa, nell'istante, ciò che è sano e sicuro per te.",open:"Assorbi le paure e i malesseri altrui, e tendi a trattenere ciò che non ti fa bene (persone, lavori, abitudini) per paura di lasciare. Il dono: una sensibilità enorme al benessere degli ambienti.",q:"Mi sto aggrappando a qualcosa che non mi fa più bene?"},
+ Solar:{theme:"Emozioni & sensibilità",def:"Onda emotiva propria che sale e scende: nessuna verità nell'istante, chiarezza solo nel tempo. La tua profondità emotiva è creativa e magnetica.",open:"Empatia pura: senti e amplifichi le emozioni degli altri, spesso più intensamente di loro. Il rischio: evitare conflitti e verità scomode per quieto vivere. Le emozioni che senti, molto spesso, non sono tue.",q:"Sto evitando conflitti e verità per non disturbare?"},
+ Root:{theme:"Pressione, stress & adrenalina",def:"Pressione interna costante e gestibile: un motore di spinta che sa sostenere lo stress della vita.",open:"Amplifichi la pressione dell'ambiente: la fretta di «toglierti le cose di dosso» per liberartene non è mai davvero tua. Respira: la lista non finisce mai, e va bene così.",q:"Ho fretta solo per liberarmi della pressione?"}
+};
+
+const CHANNEL_DESC = {
+ '1-8':"Ispirazione — il modello creativo: ispiri gli altri con il tuo esempio unico, non su richiesta ma quando l'espressione è autentica.",
+ '2-14':"Il Battito — direzione e risorse: quando rispondi correttamente, la vita ti porta esattamente dove devi andare, con i mezzi per farlo.",
+ '3-60':"Mutazione — l'innovatore pulsante: il nuovo nasce in te a impulsi, accettando i limiti del momento. Periodi di stasi e melancolia precedono i salti.",
+ '4-63':"Logica — la mente che formula: dubbi che diventano domande, domande che diventano risposte. Perfetta per processi e sistemi, mai per le tue decisioni personali.",
+ '5-15':"Ritmo — il flusso della vita: rispettare i tuoi tempi e i tuoi riti ti mette in sintonia con il ritmo di tutto ciò che vive.",
+ '6-59':"Intimità — l'abbattitore di barriere: porti calore e vicinanza, crei legami profondi e fertili in ogni senso.",
+ '7-31':"L'Alfa — leadership democratica: guidi quando vieni riconosciuto ed eletto, indicando la direzione del futuro.",
+ '9-52':"Concentrazione — il focus determinato: capacità rara di restare su un dettaglio finché non è risolto.",
+ '10-20':"Il Risveglio — autenticità nell'istante: ami chi sei e lo esprimi spontaneamente, qui e ora.",
+ '10-34':"Esplorazione — convinzione in azione: vivi secondo le tue convinzioni con una potenza che non chiede permesso.",
+ '10-57':"Forma Perfetta — sopravvivenza intuitiva: l'istinto guida il tuo modo di vivere, momento per momento.",
+ '11-56':"Curiosità — il cercatore: raccogli idee e storie per stimolare e insegnare, non necessariamente per agire.",
+ '12-22':"Apertura — il canale sociale: carisma ed espressione emotiva; la tua voce tocca gli altri quando l'umore è giusto.",
+ '13-33':"Il Prodigo — il testimone: raccogli le esperienze e i segreti di tutti, ti ritiri, e torni con la storia che insegna.",
+ '16-48':"Il Talento — profondità + entusiasmo: la maestria nasce dalla ripetizione appassionata. Sperimenta, prova, ripeti.",
+ '17-62':"Accettazione — l'organizzatore: opinioni strutturate e dettagliate; la voce della logica che serve agli altri (se richiesta).",
+ '18-58':"Il Giudizio — l'insaziabile correttore: vedi sempre cosa si può migliorare, per amore della perfezione e del benessere comune.",
+ '19-49':"Sintesi — sensibilità e principi: senti i bisogni della comunità e custodisci i patti che la tengono insieme.",
+ '20-34':"Carisma — il fare incarnato: pensiero e azione coincidono; vivi facendo, occupato in ciò che risponde.",
+ '20-57':"Onda Cerebrale — consapevolezza penetrante: l'intuito si esprime nell'istante, con una lucidità che sorprende.",
+ '21-45':"Materialismo — il manager e il re: controllo delle risorse e leadership materiale; tu gestisci, a modo tuo, o niente.",
+ '23-43':"Strutturazione — il genio individuale: intuizioni uniche spiegate con semplicità. Il momento giusto fa la differenza tra genio e «strambo».",
+ '24-61':"Consapevolezza — il pensatore: la pressione del mistero che diventa pensiero razionale. La mente che torna, torna, torna sulle cose.",
+ '25-51':"Iniziazione — il guerriero dello spirito: competizione e shock che aprono te (e gli altri) a salti di coscienza.",
+ '26-44':"La Resa — il trasmettitore: memoria istintiva dei pattern + arte della persuasione. L'imprenditore nato.",
+ '27-50':"Conservazione — il custode: nutrire, proteggere, sentirsi responsabili del benessere dei più fragili.",
+ '28-38':"La Lotta — la testardaggine: combatti per ciò che dà senso alla vita; la sfida è scegliere battaglie che valgono.",
+ '29-46':"Scoperta — il sì che apre mondi: ti impegni e scopri dove porta; successo dove altri si arrendono.",
+ '30-41':"Riconoscimento — l'energia dei sogni: desideri che spingono a vivere esperienze fino in fondo, imparando dai sentimenti.",
+ '32-54':"Trasformazione — l'ambizione istintiva: la spinta a salire e trasformare, che fiorisce quando viene riconosciuta.",
+ '34-57':"Il Potere — forza guidata dall'istinto: potenza pura al servizio della sopravvivenza e dell'integrità.",
+ '35-36':"Transitorietà — il tuttofare dell'esperienza: fame di vissuto che diventa saggezza; «sono stato lì, l'ho fatto».",
+ '37-40':"Comunità — il patto: famiglia, lealtà e accordi; dai il tuo lavoro in cambio di riconoscimento e riposo.",
+ '39-55':"Emotività — lo spirito malinconico: l'umore come musa creativa; abbondanza che dipende dallo spirito, non dalle cose.",
+ '42-53':"Maturazione — i cicli: iniziare ciò che si può finire, finire ciò che si è iniziato. La crescita avviene a cicli compiuti.",
+ '47-64':"Astrazione — il montaggio mentale: immagini del passato che premono per avere un senso; l'epifania arriva da sola, non forzarla."
+};
+
+const GATE_DESC = {
+ 1:"Espressione individuale unica: il bisogno profondo di lasciare un segno attraverso ciò che crei.",
+ 2:"La direzione del Sé: sai «dove» andare, ma attendi l'energia giusta per muoverti.",
+ 3:"Dare ordine al nuovo: attraversi il caos degli inizi per far nascere la mutazione.",
+ 4:"Risposte mentali: la spinta a formulare teorie e soluzioni per ogni dubbio.",
+ 5:"Ritmi e abitudini: il potere di restare nel proprio flusso naturale, senza farselo rompere.",
+ 6:"Il regolatore dell'intimità: decide quando e con chi aprirsi emotivamente.",
+ 7:"Leadership logica: guidare indicando la direzione del futuro.",
+ 8:"Contributo: attirare attenzione su ciò che è autentico e promuoverlo.",
+ 9:"Focalizzazione: l'energia di restare concentrati sui dettagli che contano.",
+10:"Amore per se stessi: vivere secondo le proprie convinzioni, comunque vada.",
+11:"Idee e immagini: concetti che nascono per ispirare e insegnare, non per obbligarti ad agire.",
+12:"Cautela espressiva: parlare (e toccare gli altri) solo quando l'umore è quello giusto.",
+13:"L'ascoltatore: custode naturale delle storie e dei segreti di tutti.",
+14:"Potenza e risorse: il carburante che sostiene la propria direzione di vita.",
+15:"Amore per l'umanità: ritmi estremi e variabili che abbracciano ogni diversità.",
+16:"Entusiasmo e abilità: perfezionare un talento attraverso la ripetizione appassionata.",
+17:"Opinioni: strutture logiche che chiedono di essere espresse (meglio se richieste).",
+18:"Correzione: l'occhio che vede ciò che va migliorato, al servizio del benessere.",
+19:"Bisogni: sensibilità alle risorse e al bisogno di appartenenza della comunità.",
+20:"Il presente: la consapevolezza che esiste solo nell'adesso, e lo dice.",
+21:"Il cacciatore: controllare le proprie risorse — denaro, lavoro, territorio — a modo proprio.",
+22:"Grazia: fascino sociale e apertura emotiva, quando l'onda lo consente.",
+23:"Assimilazione: spiegare intuizioni complesse con parole semplici.",
+24:"Razionalizzazione: la mente che torna sui concetti finché l'ispirazione diventa pensiero.",
+25:"Spirito universale: amore innocente per tutto ciò che è, messo alla prova dalla vita.",
+26:"Il venditore: trasmettere valore e convincere, con memoria e astuzia.",
+27:"Cura: nutrire e proteggere; la responsabilità verso chi è più fragile.",
+28:"Il giocatore: il coraggio di rischiare per trovare ciò che dà senso alla vita.",
+29:"Il sì: perseverare e portare a termine ciò a cui ci si è impegnati.",
+30:"Sentimenti: desideri e attese che insegnano attraverso l'esperienza emotiva.",
+31:"Influenza: la voce della leadership eletta — «io guido», se riconosciuto.",
+32:"Continuità: l'istinto per ciò che merita di durare ed essere trasformato.",
+33:"Privacy: ritirarsi per elaborare; la memoria viva delle esperienze condivise.",
+34:"Potenza pura: energia sacrale disponibile quando risponde, indomabile quando forzata.",
+35:"Cambiamento: fame di esperienze nuove; il progresso passa dal vissuto.",
+36:"Crisi: affrontare l'inesperienza e trasformarla in profondità emotiva.",
+37:"Amicizia: calore familiare e patti chiari; il collante della comunità.",
+38:"Il combattente: l'opposizione che dà scopo; lottare per ciò che vale.",
+39:"Provocazione: stuzzicare lo spirito altrui per evocare emozione e abbondanza.",
+40:"Solitudine e volontà: lavorare per il gruppo in cambio di riconoscimento e riposo.",
+41:"Contrazione: il serbatoio dei desideri; la fantasia che dà il via a ogni nuova esperienza.",
+42:"Crescita: portare i cicli a compimento per poter ricominciare davvero.",
+43:"Intuizione: il sapere improvviso e interiore che attende il momento per essere capito.",
+44:"Vigilanza: la memoria istintiva dei pattern; fiutare al volo le capacità delle persone.",
+45:"Il radunatore: la voce del re/della regina che raduna la comunità attorno alle risorse.",
+46:"Amore per il corpo: la determinazione di essere nel posto giusto al momento giusto.",
+47:"Realizzazione: dare senso al passato; l'epifania che arriva quando smetti di forzarla.",
+48:"Profondità: la fonte della saggezza istintiva — e la paura di non essere mai abbastanza.",
+49:"Principi: la soglia della rivoluzione; accettare o rifiutare in base ai propri patti.",
+50:"Valori: il custode delle leggi della tribù; istinto di protezione e responsabilità.",
+51:"Shock: competizione e risveglio; il salto che inizia gli altri allo spirito.",
+52:"Quiete: l'immobilità concentrata; la pausa che rende possibile il focus.",
+53:"Inizi: la pressione di cominciare nuovi cicli (non per forza di finirli da soli).",
+54:"Ambizione: la spinta a salire, materialmente e spiritualmente.",
+55:"Spirito: l'abbondanza emotiva; l'umore è un'onda da rispettare, mai da giustificare.",
+56:"Il narratore: trasformare il vissuto in storie che stimolano e ispirano.",
+57:"Intuito: la chiarezza istintiva nel presente; l'orecchio che sente la verità.",
+58:"Vitalità: la gioia di vivere e l'energia di migliorare ciò che si ama.",
+59:"Sessualità: abbattere le barriere per creare legami, alleanze e vita.",
+60:"Accettazione: accettare i limiti è ciò che permette alla mutazione di avvenire.",
+61:"Mistero: la pressione di sapere; l'ispirazione che arriva nel silenzio.",
+62:"Dettagli: nominare, organizzare, precisare; rendere comprensibile il complesso.",
+63:"Dubbio: la domanda logica che avvia ogni verifica; sano sui sistemi, tossico su di sé.",
+64:"Confusione: la pressione di dare senso al vissuto; le immagini si chiariscono da sole."
+};
+
+
+/* ════════════════════════ 5 · RENDERER BODYGRAPH GENERICO ════════════════════════ */
+const SVGNS = "http://www.w3.org/2000/svg";
+const GPOS = {
+ 64:[270,100],61:[300,100],63:[330,100],
+ 47:[272,163],24:[300,163],4:[328,163],17:[270,184],43:[300,211],11:[330,184],
+ 62:[276,266],23:[300,266],56:[324,266],16:[266,279],20:[266,305],35:[335,275],12:[335,300],45:[337,322],31:[278,336],8:[300,336],33:[320,336],
+ 7:[281,435],1:[300,425],13:[319,435],10:[254,470],25:[346,470],15:[281,505],2:[300,515],46:[319,505],
+ 21:[420,514],51:[402,524],26:[410,545],40:[438,524],
+ 48:[68,580],57:[68,598],44:[68,616],50:[68,634],32:[68,652],28:[68,670],18:[68,688],
+ 36:[532,580],22:[532,598],37:[532,616],6:[532,634],49:[532,652],55:[532,670],30:[532,688],
+ 5:[276,617],14:[300,617],29:[324,617],34:[266,644],27:[266,670],59:[334,652],42:[276,683],3:[300,683],9:[324,683],
+ 53:[276,767],60:[300,767],52:[324,767],54:[266,788],38:[266,808],58:[266,828],19:[334,788],39:[334,808],41:[334,828]
+};
+const CENTER_SHAPES = {
+ Head:  {path:"M300,38 L349,114 L251,114 Z", fill:"#f3dd7c", label:[300,72]},
+ Ajna:  {path:"M251,150 L349,150 L300,226 Z", fill:"#7fb380", label:[300,184]},
+ Throat:{path:"M256,256 h88 a6,6 0 0 1 6,6 v80 a6,6 0 0 1 -6,6 h-88 a6,6 0 0 1 -6,-6 v-80 a6,6 0 0 1 6,-6 Z", fill:"#bf9f6e", label:[300,302]},
+ G:     {path:"M300,412 L358,470 L300,528 L242,470 Z", fill:"#f3dd7c", label:[300,472]},
+ Heart: {path:"M392,500 L458,514 L412,560 Z", fill:"#d95757", label:[424,533]},
+ Spleen:{path:"M50,550 L50,710 L172,630 Z", fill:"#bf9f6e", label:[97,634]},
+ Solar: {path:"M550,550 L550,710 L428,630 Z", fill:"#bf9f6e", label:[503,634]},
+ Sacral:{path:"M256,606 h88 a6,6 0 0 1 6,6 v80 a6,6 0 0 1 -6,6 h-88 a6,6 0 0 1 -6,-6 v-80 a6,6 0 0 1 6,-6 Z", fill:"#d95757", label:[300,652]},
+ Root:  {path:"M256,756 h88 a6,6 0 0 1 6,6 v80 a6,6 0 0 1 -6,6 h-88 a6,6 0 0 1 -6,-6 v-80 a6,6 0 0 1 6,-6 Z", fill:"#b5824f", label:[300,802]}
+};
+const PAPER_OFF = "#dcd4c2";
+let currentChart = null;
+
+function svgEl(tag, attrs, parent){
+  const el = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) el.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(el);
+  return el;
+}
+function gateStateOf(gate, chart){
+  if (!chart) return null;
+  const p = chart.persGates.has(gate), d = chart.desGates.has(gate);
+  return p && d ? 'both' : p ? 'pers' : d ? 'des' : null;
+}
+// Colore / Tono / Base dalla longitudine (sotto-divisioni della linea)
+function colorToneBase(lon){
+  const x = norm(lon - WHEEL_START);
+  const inLine = (x % GATE_ARC) % LINE_ARC;
+  const CW = LINE_ARC/6, TW = CW/6, BW = TW/5;
+  const color = Math.min(6, Math.floor(inLine/CW)+1);
+  const tone  = Math.min(6, Math.floor((inLine % CW)/TW)+1);
+  const base  = Math.min(5, Math.floor(((inLine % CW) % TW)/BW)+1);
+  return {color, tone, base};
+}
+const hexGlyph = g => String.fromCharCode(0x4DC0 + g - 1);
+
+// Renderer generico: gateInfo(g) -> {fill, ring?} | null ; centerFill(name) -> colore | null
+function renderBodygraph(svgId, gateInfo, centerFill, onGate, onCenter){
+  const svg = document.getElementById(svgId);
+  svg.innerHTML = '';
+  const defs = svgEl('defs', {}, svg);
+  const mk = (id,c1,c2)=>{
+    const p = svgEl('pattern',{id, width:7,height:7,patternUnits:'userSpaceOnUse',patternTransform:'rotate(45)'},defs);
+    svgEl('rect',{width:7,height:7,fill:c1},p); svgEl('rect',{width:3.5,height:7,fill:c2},p);
+  };
+  mk('pBoth_'+svgId, '#1f1f1f', '#e4002b');
+  mk('pAB_'+svgId, '#5b46c9', '#e0862e');
+  const chL = svgEl('g',{'stroke-linecap':'round'},svg);
+  const ctL = svgEl('g',{},svg);
+  const gtL = svgEl('g',{},svg);
+  for (const [a,b] of CHANNELS){
+    const A=GPOS[a],B=GPOS[b],M=[(A[0]+B[0])/2,(A[1]+B[1])/2];
+    const ia=gateInfo(a), ib=gateInfo(b);
+    svgEl('line',{x1:A[0],y1:A[1],x2:M[0],y2:M[1],stroke: ia?ia.fill:PAPER_OFF,'stroke-width': ia?8:6.5},chL);
+    svgEl('line',{x1:M[0],y1:M[1],x2:B[0],y2:B[1],stroke: ib?ib.fill:PAPER_OFF,'stroke-width': ib?8:6.5},chL);
+  }
+  for (const [name,cfg] of Object.entries(CENTER_SHAPES)){
+    const fill = centerFill(name);
+    const p = svgEl('path',{d:cfg.path, fill: fill||'#ffffff', stroke: fill?'#8a7445':'#bcb39e','stroke-width':1.6, class:'centerShape'},ctL);
+    if (onCenter) p.addEventListener('click', ()=>onCenter(name));
+    const t = svgEl('text',{x:cfg.label[0],y:cfg.label[1]+3,'text-anchor':'middle',fill: fill?'rgba(40,32,20,.55)':'rgba(130,120,100,.55)','font-size':'8.5','letter-spacing':'.08em','font-family':"'Space Grotesk',monospace",'pointer-events':'none'},ctL);
+    t.textContent = CENTER_IT[name].toUpperCase().replace(' (SÉ)','');
+  }
+  for (const g in GPOS){
+    const gate=+g,[x,y]=GPOS[g];
+    const info = gateInfo(gate);
+    const grp = svgEl('g',{class:'gateBadge'},gtL);
+    if (info && info.fill.startsWith('url')){
+      const id = info.fill.slice(5,-1);
+      svgEl('circle',{cx:x,cy:y,r:9,fill:`url(#${id})`,stroke:'#fff','stroke-width':1},grp);
+    } else {
+      svgEl('circle',{cx:x,cy:y,r:9, fill: info?info.fill:'#ffffff', stroke: info?'#fff':'#c2b9a4','stroke-width': info?1:1.2},grp);
+    }
+    if (info && info.ring) svgEl('circle',{cx:x,cy:y,r:12.5,fill:'none',stroke:info.ring,'stroke-width':2.4},grp);
+    const t = svgEl('text',{x:x,y:y+3.6,'text-anchor':'middle', fill: info?'#fff':'#9a907b'},grp);
+    t.textContent = g;
+    if (onGate) grp.addEventListener('click', ()=>onGate(gate));
+  }
+}
+
+// Bodygraph della scheda Carta (compatibile con il flusso esistente)
+function buildSVG(chart){
+  renderBodygraph('bg-svg',
+    g => { const s = gateStateOf(g, chart);
+      return s ? {fill: s==='both' ? 'url(#pBoth_bg-svg)' : s==='pers' ? '#1f1f1f' : '#e4002b'} : null; },
+    name => (chart && chart.defCenters.has(name)) ? CENTER_SHAPES[name].fill : null,
+    g => { window.__detailTarget='detailCard'; showGateDetail(g); },
+    n => { window.__detailTarget='detailCard'; showCenterDetail(n); }
+  );
+}
+
+/* ── dati Variabile ── */
+const DET_COLORS = {1:["Appetito","Cibo semplice, una cosa per volta, solo quando c'è fame vera."],2:["Gusto","Mangia (e scegli) solo ciò che il corpo riconosce come buono per te."],3:["Sete","Il liquido guida la digestione: piccole quantità, ritmo dei fluidi."],4:["Tatto","L'ambiente e il contatto col cibo contano: cucina toccando, mangia ciò che senti 'giusto'."],5:["Suono","Digerisci meglio in ambienti sonori coerenti: silenzio o suono, ma scelto."],6:["Luce","Mangia con la luce: pasti di giorno o ben illuminati, il corpo segue il ciclo luminoso."]};
+const COG_TONES = {1:["Olfatto","Il naso come radar: annusi letteralmente persone e situazioni."],2:["Gusto","Discriminazione raffinata: 'assaggi' la vita prima di fidarti."],3:["Visione esterna","Cogli i dettagli visivi del mondo: ciò che vedi è ciò che sai."],4:["Visione interna","Immagini mentali potenti: vedi dentro prima di vedere fuori."],5:["Sentire","Percezione vibrazionale dell'atmosfera: senti i campi delle persone."],6:["Tatto","La conoscenza passa dal contatto: capisci toccando ed essendo presente."]};
+const ENV_COLORS = {1:["Grotte","Spazi protetti con un solo ingresso: la tua tana sicura, controlli chi entra."],2:["Mercati","Luoghi di scambio e varietà: fiorisci dove le cose (e le idee) circolano."],3:["Cucine","Ambienti dove si trasforma: laboratori, cucine, officine, luoghi 'in lavorazione'."],4:["Montagne","Punti alti e asciutti, con prospettiva: ti serve vedere da sopra."],5:["Valli","Passaggi e flussi: strade, corridoi, luoghi dove la vita ti scorre incontro."],6:["Rive","Zone di confine tra due mondi (terra/acqua, città/natura): vivi sul bordo."]};
+const MOT_COLORS = {1:["Paura","Motivazione corretta: prudenza lucida che previene. Distorta: ansia di sopravvivenza."],2:["Speranza","Fiducia che apre possibilità. Distorta: attesa passiva che qualcosa salvi."],3:["Desiderio","Il volere che mette in moto. Distorto: inseguire ciò che non è tuo."],4:["Bisogno","Fare ciò che è necessario, essenziale. Distorto: crearsi bisogni finti."],5:["Colpa","Senso di responsabilità che ripara. Distorta: caricarsi colpe non proprie."],6:["Innocenza","Agire senza secondo fine, per il gusto di esserci: la motivazione più pulita."]};
+const VIEW_COLORS = {1:["Sopravvivenza","Vedi prima di tutto ciò che serve a stare in piedi: rischi e risorse."],2:["Possibilità","Vedi alternative ovunque: ogni cosa è una porta che può aprirsi."],3:["Potere","Vedi le dinamiche di forza: chi può cosa, dove sta l'energia."],4:["Volere","Vedi i desideri in gioco: cosa vuole davvero ognuno (incluso te)."],5:["Probabilità","Vedi cosa è realisticamente probabile: il filtro pragmatico."],6:["Personale","Vedi la tua prospettiva unica e soggettiva: il punto di vista che nessun altro ha."]};
+
+/* ── dati Connessione ── */
+const CONN_TYPES = {
+ Compagnia:"Lo avete entrambi per intero: terreno comune, comprensione senza sforzo, pace. È il collante 'tranquillo' della relazione — tanta compagnia dà stabilità ma poca scintilla.",
+ Dominio:"Uno lo ha per intero, l'altro non ha nessuna delle due porte: chi non lo ha riceve l'energia e impara a conoscerla attraverso il partner. Sano se accolto, condizionante se subito.",
+ Compromesso:"Uno ha il canale completo, l'altro solo una porta: chi ha la porta singola sente di 'inseguire' e non arrivare mai. È l'area che chiede più tolleranza e consapevolezza.",
+ Elettromagnetico:"Ognuno porta una metà: insieme accendete qualcosa che da soli non esiste. È l'attrazione magnetica classica — scintilla, chimica e, nei giorni storti, attrito sullo stesso identico tema."
+};
+
+/* ── dati Cicli ── */
+const CYCLE_INFO = {
+ satOpp:["Opposizione di Saturno","Saturno a 180° dalla posizione natale: la prima vera prova di struttura. Adolescenza energetica: ciò che è solo imitazione comincia a scricchiolare."],
+ satRet:["Ritorno di Saturno","Saturno completa il giro e torna dov'era alla nascita: fine della giovinezza, la vita chiede forma, responsabilità e verità. Ciò che non è tuo crolla; ciò che è tuo si consolida. Per le linee 6: si sale 'sul tetto'."],
+ urOpp:["Opposizione di Urano","Urano a metà del suo ciclo di 84 anni: il giro di boa. Da costruzione a raccolto: l'energia chiede autenticità radicale — la classica 'crisi di mezza età' è in realtà una correzione di rotta."],
+ chiron:["Ritorno di Chirone","Chirone torna alla posizione natale (~50 anni): la fioritura del profilo. Le ferite diventano medicina e saggezza da offrire. Per le linee 6: la discesa dal tetto, si torna in campo come modello di ruolo."],
+ satRet2:["Secondo Ritorno di Saturno","Il secondo giro completo di Saturno: ingresso nella saggezza. Si lascia ciò che è dovere e si tiene ciò che è essenza: gli anni del magistero personale."],
+ urRet:["Ritorno di Urano","Urano completa il suo intero ciclo di 84 anni: il sigillo di una vita. Rara lucidità sul disegno complessivo della propria esistenza."]
+};
+
+/* ════════════════════════ 6 · PANNELLO DETTAGLI ════════════════════════ */
+function showGateDetail(gate){
+  const card = document.getElementById(window.__detailTarget||'detailCard');
+  const center = GATE_CENTER[gate];
+  const partners = CHANNELS.filter(([a,b])=>a===gate||b===gate);
+  let actHtml = '';
+  if (currentChart){
+    const acts = [];
+    for (const [key,glyph,it] of BODIES){
+      if (currentChart.pers[key].gate===gate) acts.push(`${glyph} ${it} <span class="tagP">Personalità</span> linea ${currentChart.pers[key].line}`);
+      if (currentChart.des[key].gate===gate) acts.push(`${glyph} ${it} <span class="tagD">Design</span> linea ${currentChart.des[key].line}`);
+    }
+    actHtml = acts.length
+      ? `<div class="act"><b>Attivata da:</b><br>${acts.join('<br>')}</div>`
+      : `<div class="act" style="color:var(--dim)">Non attivata nella tua carta: è una porta che puoi sperimentare attraverso gli altri e i transiti.</div>`;
+    const partInfo = partners.map(([a,b,name])=>{
+      const other = a===gate?b:a;
+      const complete = currentChart.allGates.has(a)&&currentChart.allGates.has(b);
+      const otherOn = currentChart.allGates.has(other);
+      return complete ? `canale <b>${a}–${b} ${name}</b> completo`
+        : `porta sospesa verso la ${other}${otherOn?'':' (il "ponte" può arrivare da altre persone o dai transiti)'}`;
+    }).join('; ');
+    actHtml += `<div class="act" style="color:var(--dim)">${partInfo.charAt(0).toUpperCase()+partInfo.slice(1)}.</div>`;
+  }
+  card.innerHTML = `<h3>Porta ${gate} · ${GATE_NAMES[gate]}</h3>
+    <div class="meta">Centro: ${CENTER_IT[center]} · Canale: ${partners.map(p=>p[0]+'–'+p[1]).join(', ')}</div>
+    <p>${GATE_DESC[gate]}</p>${actHtml}`;
+  card.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function showCenterDetail(name){
+  const card = document.getElementById(window.__detailTarget||'detailCard');
+  const info = CENTER_INFO[name];
+  const defined = currentChart ? currentChart.defCenters.has(name) : null;
+  const stateTxt = defined===null ? '' :
+    defined ? `<p><b>Nel tuo grafico è DEFINITO:</b> ${info.def}</p>`
+            : `<p><b>Nel tuo grafico è APERTO:</b> ${info.open}</p><p class="meta" style="font-style:italic">Domanda del non-sé: «${info.q}»</p>`;
+  card.innerHTML = `<h3>Centro ${CENTER_IT[name]}</h3>
+    <div class="meta">${info.theme}</div>
+    ${stateTxt || `<p><b>Definito:</b> ${info.def}</p><p><b>Aperto:</b> ${info.open}</p>`}`;
+  card.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+
+/* ════════════════════════ 7 · LETTURA GUIDATA ════════════════════════ */
+function authKey(label){
+  if (label.startsWith('Emozionale')) return 'emo';
+  if (label==='Sacrale') return 'sac';
+  if (label==='Splenica') return 'spl';
+  if (label==='Ego Manifestata') return 'egoM';
+  if (label==='Ego Proiettata') return 'egoP';
+  if (label.startsWith('Auto')) return 'self';
+  if (label.startsWith('Mentale')) return 'mental';
+  return 'lunar';
+}
+
+function acc(num, title, chip, bodyHtml, open){
+  return `<details${open?' open':''}><summary><span class="num">${num}</span><span class="ttl">${title}</span><span class="chip">${chip||''}</span></summary><div class="body">${bodyHtml}</div></details>`;
+}
+
+function renderReading(c){
+  const t = TYPE_INFO[c.type];
+  const [aTitle, aBody] = AUTH_INFO[authKey(c.authority)];
+  const [l1,l2] = c.profKey.split('/');
+
+  let html = '';
+  html += acc('00','Come si legge questa carta','',
+    `<p>Il bodygraph si legge in ordine: prima il <b>Tipo</b> (come funziona la tua energia), poi la <b>Strategia</b> (come incontrare la vita senza resistenza), poi l'<b>Autorità</b> (come prendere decisioni), poi il <b>Profilo</b> (il costume con cui vivi il tuo ruolo). Solo dopo hanno senso centri, canali e porte.</p>
+     <p><b>Nero</b> = Personalità: la parte conscia, ciò con cui ti identifichi. <b>Rosso</b> = Design: la parte inconscia, calcolata 88° d'arco solare (~3 mesi) prima della nascita — il tuo corpo la vive, ma non la "vedi"; spesso la riconoscono meglio gli altri. <b>Metà nero e metà rosso</b> = attivata da entrambe.</p>
+     <p>I centri <b>colorati</b> sono definiti: energia tua, costante, affidabile. I centri <b>bianchi</b> sono aperti: lì assorbi e amplifichi gli altri — non è un difetto, è dove diventi saggio. Le porte sospese (colorate ma con canale incompleto) cercano il loro "ponte" nelle persone che incontri.</p>`, true);
+
+  html += acc('01','Il tuo Tipo', c.type,
+    `<p>${t.who}</p><p>${t.how}</p><p><b>${t.tip}</b></p>`, true);
+
+  html += acc('02','Strategia, Firma e Non-sé','',
+    `<p><b>Strategia — ${c.strategy}.</b> È il "come" pratico del tuo tipo: il modo di entrare nelle cose che riduce la resistenza al minimo. Sperimentala per settimane, non giorni: è un esperimento, non una fede.</p>
+     <p><b>Firma — ${c.signature}:</b> l'emozione che senti quando vivi allineato. È la tua bussola positiva.</p>
+     <p><b>Tema del non-sé — ${c.notSelf}:</b> il campanello d'allarme. Quando la provi spesso, non sei "sbagliato": stai solo forzando un funzionamento che non è il tuo. Torna alla strategia.</p>`);
+
+  html += acc('03','La tua Autorità', aTitle.replace('Autorità ',''),
+    `<p><b>${aTitle}.</b> ${aBody}</p>
+     <p>Regola d'oro: la mente è un magnifico consulente e un pessimo decisore. Usala per ricercare, valutare, raccontare — mai per decidere della tua vita.</p>`);
+
+  html += acc('04','Il tuo Profilo', c.profKey,
+    `<p><b>Profilo ${c.profKey} — ${c.profName}.</b> ${PROFILE_INFO[c.profKey]}</p>
+     <p><b>Linea ${l1}</b> (conscia, dal Sole di Personalità): ${LINE_NAMES[l1]}.<br>
+        <b>Linea ${l2}</b> (inconscia, dal Sole di Design): ${LINE_NAMES[l2]}.</p>`);
+
+  html += acc('05','La tua Definizione', c.defLabel,
+    `<p>${DEF_INFO[c.defLabel] || c.defLabel}</p>`);
+
+  let centersHtml = '';
+  for (const name of Object.keys(CENTER_SHAPES)){
+    const info = CENTER_INFO[name];
+    const on = c.defCenters.has(name);
+    centersHtml += `<div class="cblock${on?' def':''}">
+      <h4>${CENTER_IT[name]} <span class="badge ${on?'on':'off'}">${on?'definito':'aperto'}</span></h4>
+      <p>${on?info.def:info.open}</p>
+      ${on?'':`<p class="q">Chiediti: «${info.q}»</p>`}</div>`;
+  }
+  html += acc('06','I tuoi nove Centri', `${c.defCenters.size}/9 definiti`, centersHtml);
+
+  let chHtml = '';
+  if (c.defChannels.length===0){
+    chHtml = `<p>Nessun canale completo: è la firma del Riflettore. Vivi le definizioni degli altri come ospite temporaneo, e questo ti rende un valutatore impareggiabile delle persone e degli ambienti.</p>`;
+  } else {
+    for (const [a,b] of c.defChannels){
+      chHtml += `<div class="cblock def"><h4>Canale ${a}–${b}</h4><p>${CHANNEL_DESC[`${a}-${b}`]}</p></div>`;
+    }
+    chHtml += `<p style="color:var(--dim);font-size:12px">I canali completi sono i tuoi "doni di vita": tratti stabili e affidabili che ti definiscono indipendentemente da chi hai accanto.</p>`;
+  }
+  html += acc('07','I tuoi Canali', `${c.defChannels.length} definiti`, chHtml);
+
+  const gates = [...c.allGates].sort((a,b)=>a-b);
+  let gHtml = `<p style="margin-bottom:8px">Tutte le porte attivate nella tua carta (cerchietti colorati nel grafico). <b style="color:#f2f4ff">P</b> = Personalità, <b style="color:#ff5d7e">D</b> = Design, <b style="color:var(--gold)">P+D</b> = entrambe.</p>`;
+  for (const g of gates){
+    const st = gateStateOf(g, c);
+    const cls = st==='both'?'b':st==='pers'?'p':'d';
+    const lbl = st==='both'?'P+D':st==='pers'?'P':'D';
+    gHtml += `<div class="gline"><span class="gnum ${cls}">${g} · ${lbl}</span><span class="gtxt"><b>${GATE_NAMES[g]}.</b> ${GATE_DESC[g]}</span></div>`;
+  }
+  html += acc('08','Le tue Porte', `${gates.length} attive`, gHtml);
+
+  html += acc('09','Croce d\'Incarnazione','',
+    `<p><b>${c.cross}.</b></p>
+     <p>La Croce è il tema di fondo della tua vita, composta dai quattro punti più potenti della carta: Sole e Terra di Personalità (ciò che impari consciamente) e Sole e Terra di Design (ciò che il corpo porta con sé). Non è qualcosa da "fare": è la direzione che la vita prende da sola quando vivi secondo strategia e autorità.</p>`);
+
+  document.getElementById('accordions').innerHTML = html;
+  document.getElementById('readingIntro').textContent = 'La tua carta, spiegata sezione per sezione. Apri le voci nell\'ordine: è il percorso di lettura usato dagli analisti.';
+}
+
+
+/* ════════════════════════ BOOT APP CLIENTE · CLOUD ════════════════════════ */
+// ▼▼ CONFIGURA QUI (gli stessi valori della dashboard coach) ▼▼
+const SUPABASE_URL = 'https://aptwjcjziocpheuesqwb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFwdHdqY2p6aW9jcGhldWVzcXdiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExOTQ0MTEsImV4cCI6MjA5Njc3MDQxMX0.5z8H0QWq4PuJYwL9smp40MYZ_x5ze2SbePrzsfJS7DA';
+// ▲▲────────────────────────────────────────────────────────▲▲
+const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+let CHAT=[], DATA=null, CHART=null, TOKEN=null;
+
+function channelsFrom(gset){ return CHANNELS.filter(([a,b])=>gset.has(a)&&gset.has(b)); }
+function renderVars(c){
+  const dS=colorToneBase(c.des.Sun.lon), dN=colorToneBase(c.des.NNode.lon),
+        pS=colorToneBase(c.pers.Sun.lon), pN=colorToneBase(c.pers.NNode.lon);
+  const arrow=t=> t<=3 ? '◀ sinistra · attiva' : '▶ destra · ricettiva';
+  const cell=(h,nm,desc,ct,extra)=>`<div class="varCell"><div class="vh">${h}</div><div class="vn">${nm}</div><div class="va">colore ${ct.color} · tono ${ct.tone} · ${arrow(ct.tone)}</div><p>${desc}${extra||''}</p></div>`;
+  document.getElementById('rVars').innerHTML =
+    cell('Determinazione', DET_COLORS[dS.color][0], DET_COLORS[dS.color][1], dS,
+      `<br><b>Cognizione: ${COG_TONES[dS.tone][0]}</b> — ${COG_TONES[dS.tone][1]}`)
+   +cell('Ambiente', ENV_COLORS[dN.color][0], ENV_COLORS[dN.color][1], dN)
+   +cell('Motivazione', MOT_COLORS[pS.color][0], MOT_COLORS[pS.color][1], pS)
+   +cell('Prospettiva', VIEW_COLORS[pN.color][0], VIEW_COLORS[pN.color][1], pN);
+}
+function renderToday(c){
+  const nowJD = Date.now()/86400000 + 2440587.5;
+  const lons = longitudesAt(nowJD);
+  const S={lon:lons.Sun,...lonToGate(lons.Sun)};
+  const trGates=new Set(); for(const [k] of BODIES) trGates.add(lonToGate(lons[k]).gate);
+  let html=`<div class="cycCard"><h4>${hexGlyph(S.gate)} Tema del giorno — Porta ${S.gate}.${S.line} · ${GATE_NAMES[S.gate]}</h4>
+  <div class="when">Sole in transito · ${fmtLon(S.lon)}</div><p>${GATE_DESC[S.gate]}</p></div>`;
+  const bridges=[];
+  for (const [a,b] of CHANNELS){
+    const na=c.allGates.has(a), nb=c.allGates.has(b);
+    if (na!==nb){ const missing=na?b:a; if (trGates.has(missing)) bridges.push([a,b]); }
+  }
+  html += bridges.length
+    ? bridges.map(([a,b])=>`<div class="cblock def"><h4>Oggi il cielo completa il tuo Canale ${a}–${b}</h4><p>${CHANNEL_DESC[a+'-'+b]} Energia temporanea: notala, sperimentala.</p></div>`).join('')
+    : `<p class="hint">Oggi nessuna porta sospesa viene completata dai transiti: una giornata per stare nella tua energia di base.</p>`;
+  document.getElementById('todayBox').innerHTML = html;
+}
+function chartContext(c, name){
+  const gl = k => Object.fromEntries(BODIES.map(([b])=>[b, c[k][b].gate+'.'+c[k][b].line]));
+  const dS=colorToneBase(c.des.Sun.lon), pS=colorToneBase(c.pers.Sun.lon),
+        dN=colorToneBase(c.des.NNode.lon), pN=colorToneBase(c.pers.NNode.lon);
+  return JSON.stringify({nome:name, tipo:c.type, strategia:c.strategy, autorita:c.authority,
+    profilo:c.profKey+' '+(PROFILES[c.profKey]||''), definizione:c.definition,
+    firma:c.signature, non_se:c.notSelf,
+    centri_definiti:[...c.defCenters].map(x=>CENTER_IT[x]),
+    centri_aperti:Object.keys(CENTER_SHAPES).filter(x=>!c.defCenters.has(x)).map(x=>CENTER_IT[x]),
+    canali:c.defChannels.map(([a,b,n])=>a+'-'+b+' '+n),
+    personalita:gl('pers'), design:gl('des'),
+    variabile:{determinazione:DET_COLORS[dS.color][0], cognizione:COG_TONES[dS.tone][0],
+      ambiente:ENV_COLORS[dN.color][0], motivazione:MOT_COLORS[pS.color][0], prospettiva:VIEW_COLORS[pN.color][0]}});
+}
+function sysPrompt(){
+  return `Sei la guida Human Design personale di ${DATA.name}, integrata nell'app del suo coach (${DATA.coach.studio||'il suo coach'}). Hai la sua carta completa qui sotto in JSON. Rispondi SEMPRE in italiano, con calore e concretezza, in 2-5 frasi salvo richieste di approfondimento. Basa ogni risposta sui dati reali della carta. Non inventare attivazioni che non ci sono. Non dare consigli medici, legali o finanziari: per questi suggerisci un professionista. Per i temi profondi o le decisioni importanti, ricorda con gentilezza che può prenotare una call con il suo coach direttamente da questa app. CARTA: ${chartContext(CHART, DATA.name)}`;
+}
+function addMsg(role, text, cls){
+  const log=document.getElementById('chatLog');
+  const d=document.createElement('div'); d.className='msg '+(cls||role); d.textContent=text;
+  log.appendChild(d); log.scrollTop=log.scrollHeight; return d;
+}
+async function sendChat(text){
+  if(!text.trim()) return;
+  const ai = DATA.coach && DATA.coach.ai_endpoint;
+  addMsg('user', text); CHAT.push({role:'user', content:text});
+  document.getElementById('chatInput').value='';
+  if(!ai){ addMsg('ai','La guida AI non è ancora attiva. Esplora la lettura qui sotto o prenota una call!'); return; }
+  const th=addMsg('ai','La tua guida sta riflettendo…','ai thinking');
+  try{
+    const r=await fetch(ai,{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({system:sysPrompt(), messages:CHAT.slice(-12)})});
+    if(!r.ok) throw 0;
+    const j=await r.json();
+    const reply=j.text||'Risposta vuota.';
+    th.classList.remove('thinking'); th.textContent=reply;
+    CHAT.push({role:'assistant', content:reply});
+  }catch(e){ th.classList.remove('thinking'); th.textContent='La guida AI non è raggiungibile ora. Riprova tra poco.'; CHAT.pop(); }
+}
+
+/* ── Prenotazione integrata ── */
+let BOOK={day:null, slot:null};
+function slotsForDay(day, av, slotMin, busy){
+  const a=av[day.getDay()]; if(!a||!a.on) return [];
+  const [h1,m1]=(a.from||'09:00').split(':').map(Number), [h2,m2]=(a.to||'18:00').split(':').map(Number);
+  const start=new Date(day); start.setHours(h1,m1,0,0);
+  const end=new Date(day); end.setHours(h2,m2,0,0);
+  const out=[]; const now=Date.now()+60*60000;
+  for(let t=start.getTime(); t+slotMin*60000<=end.getTime(); t+=slotMin*60000){
+    const e=t+slotMin*60000;
+    if(t>now && !busy.some(b=>t<b.e&&e>b.s)) out.push(new Date(t));
+  }
+  return out;
+}
+async function renderBooking(){
+  const co=DATA.coach;
+  const wrap=document.getElementById('bookWrap');
+  if(!co.booking_enabled){
+    if(co.booking_url){
+      const b=document.getElementById('bookBtn'); b.href=co.booking_url; b.style.display='block';
+      document.getElementById('bookEyebrow').style.display='flex';
+    }
+    return;
+  }
+  document.getElementById('bookEyebrow').style.display='flex';
+  wrap.style.display='block';
+  const from=new Date(); const to=new Date(Date.now()+15*86400000);
+  let busy=[];
+  try{
+    const {data}=await sb.rpc('get_busy_slots',{p_token:TOKEN,p_from:from.toISOString(),p_to:to.toISOString()});
+    busy=(data||[]).map(b=>({s:new Date(b.s).getTime(), e:new Date(b.e).getTime()}));
+  }catch(e){}
+  const days=[];
+  for(let i=1;i<=14;i++){ const d=new Date(); d.setDate(d.getDate()+i); d.setHours(0,0,0,0);
+    const sl=slotsForDay(d, co.availability||{}, co.slot_minutes||60, busy);
+    if(sl.length) days.push({d,sl}); }
+  if(!days.length){ wrap.innerHTML='<div class="banner">Il coach non ha slot liberi nei prossimi 14 giorni. Riprova più avanti o scrivigli direttamente.</div>'; return; }
+  wrap.innerHTML = `<div class="dayStrip">${days.map((x,i)=>
+    `<button class="dayBtn" data-di="${i}">${x.d.toLocaleDateString('it-IT',{weekday:'short'})}<br><b>${x.d.getDate()}</b><br><span>${x.d.toLocaleDateString('it-IT',{month:'short'})}</span></button>`).join('')}</div>
+    <div id="slotGrid"></div><div id="bookConfirm"></div>`;
+  const showDay=i=>{
+    BOOK.day=days[i];
+    document.querySelectorAll('.dayBtn').forEach((b,j)=>b.classList.toggle('sel',j===i));
+    document.getElementById('slotGrid').innerHTML = days[i].sl.map(s=>
+      `<button class="slotBtn" data-ts="${s.getTime()}">${s.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}</button>`).join('');
+    document.getElementById('bookConfirm').innerHTML='';
+  };
+  wrap.querySelectorAll('.dayBtn').forEach((b,i)=>b.addEventListener('click',()=>showDay(i)));
+  wrap.addEventListener('click', async e=>{
+    const sBtn=e.target.closest('.slotBtn'); if(!sBtn) return;
+    document.querySelectorAll('.slotBtn').forEach(x=>x.classList.toggle('sel',x===sBtn));
+    const ts=+sBtn.dataset.ts; const d=new Date(ts);
+    document.getElementById('bookConfirm').innerHTML = `
+      <div class="cycCard" style="margin-top:12px"><h4>Confermi la call?</h4>
+      <div class="when">${d.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'long'})} · ore ${d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})} · ${co.slot_minutes||60} min</div>
+      <input type="text" id="bkNote" placeholder="Di cosa vuoi parlare? (opzionale)" style="width:100%;background:rgba(127,127,127,.07);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px;font-family:'Outfit';font-size:13px;margin:8px 0">
+      <button class="bigBtn" id="bkGo" style="margin-top:4px">Prenota questo slot</button>
+      <div id="bkMsg" class="hint"></div></div>`;
+    document.getElementById('bkGo').addEventListener('click', async ()=>{
+      const msg=document.getElementById('bkMsg'); msg.textContent='Prenotazione in corso…';
+      try{
+        const {data,error}=await sb.rpc('create_booking',{p_token:TOKEN, p_starts:new Date(ts).toISOString(), p_note:document.getElementById('bkNote').value});
+        if(error||!data||data.error){ msg.textContent='⚠ '+((data&&data.error)||error.message); return; }
+        const e2=new Date(data.ends_at);
+        document.getElementById('bookConfirm').innerHTML = `<div class="cycCard" style="margin-top:12px;border-color:rgba(120,200,140,.5)">
+          <h4>✓ Call prenotata!</h4>
+          <div class="when">${d.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'long'})} · ore ${d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}</div>
+          <p>Il tuo coach l'ha già ricevuta in agenda. Aggiungila al tuo calendario:</p>
+          <button class="bigBtn" id="bkIcs" style="margin-top:8px">Aggiungi al calendario (.ics)</button></div>`;
+        document.getElementById('bkIcs').addEventListener('click',()=>{
+          const f=x=>x.toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
+          const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//NOVA HD//IT','BEGIN:VEVENT',
+            'UID:'+Date.now()+'@novahd','DTSTAMP:'+f(new Date()),'DTSTART:'+f(d),'DTEND:'+f(e2),
+            'SUMMARY:Call Human Design · '+(DATA.coach.studio||'coach'),'END:VEVENT','END:VCALENDAR'].join('\r\n');
+          const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); a.download='call-hd.ics'; a.click();
+        });
+        renderBooking(); // ricarica slot occupati
+      }catch(err){ msg.textContent='⚠ Errore di rete, riprova.'; }
+    });
+  }, {once:false});
+}
+
+/* ── PWA ── */
+function setupPWA(accent, studio, name){
+  const icon='data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#0a0c16"/><circle cx="256" cy="256" r="150" fill="none" stroke="${accent}" stroke-width="22"/><circle cx="256" cy="256" r="60" fill="${accent}"/></svg>`);
+  document.getElementById('appleIcon').href=icon;
+  const man={name:`${studio} · ${name}`, short_name:name.split(' ')[0], start_url:location.href,
+    display:'standalone', background_color:'#0a0c16', theme_color:accent,
+    icons:[{src:icon,sizes:'512x512',type:'image/svg+xml',purpose:'any'}]};
+  try{ document.getElementById('manifestLink').href=URL.createObjectURL(new Blob([JSON.stringify(man)],{type:'application/json'})); }catch(e){}
+}
+
+/* ── Avvio ── */
+(async function boot(){
+  const m=location.hash.match(/t=([a-f0-9]+)/i);
+  if(!m || !sb || SUPABASE_URL.startsWith('INCOLLA')){
+    document.getElementById('errView').style.display='block';
+    if(SUPABASE_URL.startsWith('INCOLLA')) document.querySelector('#errView p').textContent='App non ancora configurata: il coach deve incollare URL e anon key di Supabase in questo file.';
+    return;
+  }
+  TOKEN=m[1];
+  const {data,error}=await sb.rpc('get_client_by_token',{p_token:TOKEN});
+  if(error||!data){ document.getElementById('errView').style.display='block'; return; }
+  DATA=data; DATA.coach=DATA.coach||{};
+  document.getElementById('wrap').style.display='block';
+  const accent=DATA.coach.color||'#e3b864';
+  document.documentElement.style.setProperty('--gold', accent);
+  const studio=DATA.coach.studio||'Human Design';
+  document.getElementById('hStudio').textContent=studio.toUpperCase();
+  document.getElementById('hName').textContent=DATA.name||'La tua carta';
+  document.title=`${DATA.name} · Human Design`;
+  setupPWA(accent, studio, DATA.name||'HD');
+
+  const [y,mo,d]=DATA.birth_date.split('-').map(Number); const [hh,mm]=DATA.birth_time.split(':').map(Number);
+  const c=computeChart(y,mo,d,hh+mm/60, parseFloat(DATA.tz)||0);
+  CHART=c; currentChart=c;
+  document.getElementById('hBirth').textContent=`${String(d).padStart(2,'0')}/${String(mo).padStart(2,'0')}/${y} · ${DATA.birth_time} (UTC${DATA.tz>=0?'+':''}${DATA.tz})`;
+  document.getElementById('rType').textContent=c.type;
+  document.getElementById('rProfile').textContent=`Profilo ${c.profKey} · ${PROFILES[c.profKey]||''}`;
+  document.getElementById('rStrategy').textContent=c.strategy;
+  document.getElementById('rAuthority').textContent=c.authority;
+  document.getElementById('rDefinition').textContent=c.definition;
+  document.getElementById('rSignature').textContent=c.signature;
+  document.getElementById('rNotSelf').textContent=c.notSelf;
+
+  buildSVG(c); renderVars(c); renderToday(c); renderReading(c); renderBooking();
+
+  const chips=['Spiegami il mio tipo in parole semplici','Come dovrei prendere le decisioni?','Qual è il mio tema di oggi?','Cosa significa il mio profilo?'];
+  document.getElementById('chips').innerHTML=chips.map(q=>`<button class="chip2" type="button">${q}</button>`).join('');
+  document.querySelectorAll('.chip2').forEach(b=>b.addEventListener('click',()=>sendChat(b.textContent)));
+  document.getElementById('chatForm').addEventListener('submit',e=>{e.preventDefault();sendChat(document.getElementById('chatInput').value);});
+  if (DATA.coach.ai_endpoint){
+    addMsg('ai',`Ciao ${(DATA.name||'').split(' ')[0]}! Sono la tua guida Human Design: conosco la tua carta nei dettagli. Chiedimi del tuo tipo, delle decisioni, del tema di oggi — o prenota una call col tuo coach qui sotto.`);
+    document.getElementById('aiHint').textContent='Risposte generate da Claude Fable 5 sulla base della tua carta. Per le decisioni importanti, parlane in call con il tuo coach.';
+  } else addMsg('ai','La chat AI verrà attivata dal tuo coach. Intanto esplora la tua lettura completa qui sotto!');
+})();
+
+</script>
+</body>
+</html>
