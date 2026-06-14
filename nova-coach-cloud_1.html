@@ -314,6 +314,10 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
 .acgLegend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--dim)}
 .acgLegend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
 #astroResults{margin:8px 0}
+.acgFilter{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.acgF{border:1px solid var(--line);background:none;color:var(--dim);border-radius:16px;padding:5px 11px;font-size:11.5px;cursor:pointer;font-family:'Outfit'}
+.acgF:hover{color:var(--ink)}
+.acgF.active{border-color:var(--pc,var(--gold));color:var(--pc,var(--gold));background:rgba(227,184,100,.08)}
 </style>
 </head>
 <body>
@@ -2673,6 +2677,8 @@ const WORLD=[
  [[113,-22],[121,-34],[130,-32],[137,-36],[147,-38],[150,-37],[153,-28],[146,-19],[142,-11],[135,-12],[130,-12],[122,-18],[113,-22]],
  [[-62,-21],[-58,-34],[-48,-25],[-40,-21],[-35,-7],[-50,0],[-60,-3],[-70,-4],[-78,-8],[-70,-18],[-62,-21]]
 ];
+
+function worldFill(X,Y){ return WORLD.map(poly=>'<polygon points="'+poly.map(p=>X(p[0])+','+Y(p[1])).join(' ')+'" fill="#1b2a3f" stroke="#2d4straight" stroke-width="0" opacity=".9"/>').join('').replace(/2d4straight/g,'344a6a'); }
 function worldPaths(X,Y){ return WORLD.map(poly=>'<polyline points="'+poly.map(p=>X(p[0])+','+Y(p[1])).join(' ')+'" fill="none" stroke="#24344f" stroke-width="1"/>').join(''); }
 
 /* ── Astrocartografia: linee MC/IC/ASC/DESC sulla mappa mondiale ── */
@@ -2699,30 +2705,52 @@ function acgLines(A){
   }
   return lines;
 }
-function renderACG(A, markLat, markLon){
-  const W=720,H=360; // equirettangolare: x=lon[-180,180], y=lat[90,-90]
+function renderACG(A, markLat, markLon, filter){
+  const W=720,H=380;
   const X=lon=>(lon+180)/360*W, Y=lat=>(90-lat)/180*H;
   let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
-  s+=`<rect width="${W}" height="${H}" fill="#0d1420"/>`;
-  s+=worldPaths(X,Y);
-  // griglia
-  for(let lon=-180;lon<=180;lon+=30){ s+=`<line x1="${X(lon)}" y1="0" x2="${X(lon)}" y2="${H}" stroke="#1c2740" stroke-width=".6"/>`; }
-  for(let lat=-60;lat<=60;lat+=30){ s+=`<line x1="0" y1="${Y(lat)}" x2="${W}" y2="${Y(lat)}" stroke="#1c2740" stroke-width=".6"/>`; }
-  s+=`<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" stroke="#2a3a5a" stroke-width="1"/>`;
+  // sfondo oceano + gradiente
+  s+=`<defs><linearGradient id="ocean" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1626"/><stop offset="1" stop-color="#0b1118"/></linearGradient></defs>`;
+  s+=`<rect width="${W}" height="${H}" fill="url(#ocean)"/>`;
+  // continenti riempiti
+  s+=worldFill(X,Y);
+  // griglia leggera sopra i continenti
+  for(let lon=-180;lon<=180;lon+=60){ s+=`<line x1="${X(lon)}" y1="0" x2="${X(lon)}" y2="${H}" stroke="#ffffff" stroke-width=".4" opacity=".07"/>`; }
+  for(let lat=-60;lat<=60;lat+=30){ s+=`<line x1="0" y1="${Y(lat)}" x2="${W}" y2="${Y(lat)}" stroke="#ffffff" stroke-width=".4" opacity=".07"/>`;
+    s+=`<text x="3" y="${Y(lat)-2}" font-size="7" fill="#5a6a82" font-family="monospace">${lat>0?'+':''}${lat}°</text>`; }
+  s+=`<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" stroke="#3a4a6a" stroke-width=".8" opacity=".5"/>`;
   const L=acgLines(A);
-  const poly=(pts)=>pts.filter(p=>p[0]>=-180&&p[0]<=180).map(p=>X(p[0])+','+Y(p[1])).join(' ');
+  const poly=(pts)=>{ // spezza la polilinea quando salta il bordo (>180 di gap)
+    let segs=[],cur=[];
+    for(let k=0;k<pts.length;k++){ const p=pts[k];
+      if(cur.length){ const prev=cur[cur.length-1]; if(Math.abs(p[0]-prev[0])>180){ segs.push(cur); cur=[]; } }
+      cur.push(p);
+    }
+    if(cur.length)segs.push(cur);
+    return segs.map(sg=>sg.map(p=>X(p[0])+','+Y(p[1])).join(' '));
+  };
   for(const it in L){
+    if(filter && filter!==it) continue;
     const ln=L[it], col=ln.col;
-    // MC e IC: meridiani verticali
-    s+=`<line x1="${X(ln.mcLon)}" y1="0" x2="${X(ln.mcLon)}" y2="${H}" stroke="${col}" stroke-width="1.3"/>`;
-    s+=`<text x="${X(ln.mcLon)+2}" y="12" font-size="9" fill="${col}" font-family="monospace">${ASTRO.GLYPH[it]}MC</text>`;
-    s+=`<line x1="${X(ln.icLon)}" y1="0" x2="${X(ln.icLon)}" y2="${H}" stroke="${col}" stroke-width=".8" stroke-dasharray="3 3" opacity=".7"/>`;
-    // ASC/DESC: polilinee (spezzo se attraversano il bordo)
-    if(ln.asc.length>1) s+=`<polyline points="${poly(ln.asc)}" fill="none" stroke="${col}" stroke-width=".9" opacity=".8"/>`;
-    if(ln.desc.length>1) s+=`<polyline points="${poly(ln.desc)}" fill="none" stroke="${col}" stroke-width=".9" opacity=".5" stroke-dasharray="2 2"/>`;
+    const dim = filter? 1 : .82;
+    // MC: meridiano pieno e spesso
+    s+=`<line x1="${X(ln.mcLon)}" y1="14" x2="${X(ln.mcLon)}" y2="${H}" stroke="${col}" stroke-width="${filter?2:1.4}" opacity="${dim}"/>`;
+    s+=`<text x="${X(ln.mcLon)}" y="11" font-size="10" fill="${col}" font-family="monospace" text-anchor="middle">${ASTRO.GLYPH[it]}</text>`;
+    // IC: meridiano tratteggiato sottile
+    s+=`<line x1="${X(ln.icLon)}" y1="0" x2="${X(ln.icLon)}" y2="${H}" stroke="${col}" stroke-width=".7" stroke-dasharray="2 4" opacity="${dim*.55}"/>`;
+    // ASC (continua sottile) e DESC (punteggiata)
+    poly(ln.asc).forEach(pts=>{ if(pts.split(' ').length>1) s+=`<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="${filter?1.6:1}" opacity="${dim*.9}"/>`; });
+    poly(ln.desc).forEach(pts=>{ if(pts.split(' ').length>1) s+=`<polyline points="${pts}" fill="none" stroke="${col}" stroke-width="${filter?1.4:.9}" opacity="${dim*.6}" stroke-dasharray="3 3"/>`; });
+  }
+  // città di riferimento
+  const CITIES=[['Roma',41.9,12.5],['Londra',51.5,-0.1],['New York',40.7,-74],['Los Angeles',34,-118.2],['Tokyo',35.7,139.7],['Sydney',-33.9,151.2],['Rio',-22.9,-43.2],['Città del Capo',-33.9,18.4],['Dubai',25.2,55.3],['Mosca',55.8,37.6]];
+  for(const [nm,la,lo] of CITIES){
+    s+=`<circle cx="${X(lo)}" cy="${Y(la)}" r="1.6" fill="#9fb0c8"/><text x="${X(lo)+4}" y="${Y(la)+3}" font-size="7.5" fill="#9fb0c8" font-family="'Outfit'">${nm}</text>`;
   }
   // marker luogo di nascita
-  if(markLon!=null){ s+=`<circle cx="${X(markLon)}" cy="${Y(markLat)}" r="4" fill="#fff" stroke="#000"/><text x="${X(markLon)+6}" y="${Y(markLat)+3}" font-size="9" fill="#fff">nascita</text>`; }
+  if(markLon!=null){
+    s+=`<circle cx="${X(markLon)}" cy="${Y(markLat)}" r="5" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="${X(markLon)}" cy="${Y(markLat)}" r="2" fill="#fff"/><text x="${X(markLon)+8}" y="${Y(markLat)-4}" font-size="9" fill="#fff" font-weight="bold">nascita</text>`;
+  }
   s+=`</svg>`;
   return s;
 }
@@ -2760,7 +2788,11 @@ function renderAstromappa(){
       <p class="hint">Ascendente <b>${aSign(A.asc)} ${aDeg(A.asc)}</b> · Medio Cielo <b>${aSign(A.mc)} ${aDeg(A.mc)}</b> · case Porfirio · luogo ${ASTRO_PLACE.name}.</p>
     </div>
     <div class="av" id="av-acg" style="display:none">
-      <div class="paper" style="padding:8px;background:#0d1420">${renderACG(A,ASTRO_PLACE.lat,ASTRO_PLACE.lon)}</div>
+      <div class="acgFilter" id="acgFilter">
+        <button class="acgF active" data-p="">Tutti</button>
+        ${Object.keys(ASTRO.GLYPH).map(it=>`<button class="acgF" data-p="${it}" style="--pc:${ASTRO.COLORS[it]}">${ASTRO.GLYPH[it]} ${it}</button>`).join('')}
+      </div>
+      <div class="paper" id="acgMap" style="padding:8px;background:#0d1420">${renderACG(A,ASTRO_PLACE.lat,ASTRO_PLACE.lon)}</div>
       <p class="hint">Le linee mostrano dove ogni pianeta era angolare alla nascita. <b>Linea continua = MC</b> (il pianeta culmina: ne accentua il tema, ambito pubblico/carriera), tratteggiata verticale = IC (radici, casa). Le <b>curve</b> sono ASC (sorgere, identità) e DESC (tramonto, relazioni). Vivere vicino a una linea ne amplifica l'energia. <b>Nota:</b> l'astrocartografia è una tradizione interpretativa — il calcolo geometrico è preciso, il significato è simbolico.</p>
       <div class="acgLegend">${Object.keys(ASTRO.GLYPH).map(it=>`<span><i style="background:${ASTRO.COLORS[it]}"></i>${ASTRO.GLYPH[it]} ${it}</span>`).join('')}</div>
     </div>
@@ -2772,6 +2804,11 @@ function renderAstromappa(){
     box.querySelectorAll('.atb').forEach(x=>x.classList.remove('active')); b.classList.add('active');
     box.querySelectorAll('.av').forEach(v=>v.style.display='none');
     document.getElementById('av-'+b.dataset.av).style.display='';
+  }));
+  const fb=box.querySelector('#acgFilter');
+  if(fb) fb.querySelectorAll('.acgF').forEach(b=>b.addEventListener('click',()=>{
+    fb.querySelectorAll('.acgF').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+    document.getElementById('acgMap').innerHTML=renderACG(A,ASTRO_PLACE.lat,ASTRO_PLACE.lon,b.dataset.p||null);
   }));
 }
 async function astroSearch(){
@@ -2785,7 +2822,6 @@ async function astroSearch(){
     ASTRO_PLACE=list[+b.dataset.i]; res.innerHTML='<p class="hint">Luogo: <b>'+ASTRO_PLACE.name+'</b></p>'; renderAstromappa();
   }));
 }
-
 
 document.getElementById('astroGo').addEventListener('click', astroSearch);
 document.getElementById('astroPlace').addEventListener('keydown',e=>{ if(e.key==='Enter') astroSearch(); });
