@@ -1167,7 +1167,7 @@ function chartContext(c, name){
   const dS=colorToneBase(c.des.Sun.lon), pS=colorToneBase(c.pers.Sun.lon),
         dN=colorToneBase(c.des.NNode.lon), pN=colorToneBase(c.pers.NNode.lon);
   return JSON.stringify({nome:name, tipo:c.type, strategia:c.strategy, autorita:c.authority,
-    profilo:c.profKey+' '+(PROFILES[c.profKey]||''), definizione:c.definition,
+    profilo:c.profKey+' '+(PROFILES[c.profKey]||''), definizione:c.defLabel,
     firma:c.signature, non_se:c.notSelf,
     centri_definiti:[...c.defCenters].map(x=>CENTER_IT[x]),
     centri_aperti:Object.keys(CENTER_SHAPES).filter(x=>!c.defCenters.has(x)).map(x=>CENTER_IT[x]),
@@ -1325,7 +1325,7 @@ function setupPWA(accent, studio, name){
   document.getElementById('rProfile').textContent=`Profilo ${c.profKey} · ${PROFILES[c.profKey]||''}`;
   document.getElementById('rStrategy').textContent=c.strategy;
   document.getElementById('rAuthority').textContent=c.authority;
-  document.getElementById('rDefinition').textContent=c.definition;
+  document.getElementById('rDefinition').textContent=c.defLabel;
   document.getElementById('rSignature').textContent=c.signature;
   document.getElementById('rNotSelf').textContent=c.notSelf;
   (function(){ const RA=['1/3','1/4','2/4','2/5','3/5','3/6'];
