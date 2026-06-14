@@ -303,7 +303,18 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
   body{display:block}
   #sbScrim.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:55}
   .col{padding-top:64px}
-}</style>
+}
+.astroTabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.atb{border:1px solid var(--line);background:none;color:var(--dim);border-radius:20px;padding:7px 15px;font-size:12.5px;cursor:pointer;font-family:'Outfit'}
+.atb.active{border-color:var(--gold);color:var(--gold);background:rgba(227,184,100,.1)}
+.astroTable{width:100%;border-collapse:collapse;font-size:12.5px}
+.astroTable th{text-align:left;color:var(--dim);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:5px 4px;border-bottom:1px solid var(--line)}
+.astroTable td{padding:6px 4px;border-bottom:1px solid var(--line)}
+.astroTable .glyph{font-size:15px}.astroTable .z{font-family:'Space Grotesk',monospace;color:var(--dim)}
+.acgLegend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:11px;color:var(--dim)}
+.acgLegend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+#astroResults{margin:8px 0}
+</style>
 </head>
 <body>
 <div id="authGate">
@@ -342,6 +353,7 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
     <button class="navItem" data-tab="conn" data-label="Connessione"><span class="ni">∞</span><span class="nlabel">Connessione</span></button>
     <button class="navItem" data-tab="cicli" data-label="Cicli di vita"><span class="ni">↻</span><span class="nlabel">Cicli di vita</span></button>
     <button class="navItem" data-tab="mandala" data-label="Mandala"><span class="ni">❂</span><span class="nlabel">Mandala</span></button>
+    <button class="navItem" data-tab="astro" data-label="Astromappa"><span class="ni">🜨</span><span class="nlabel">Astromappa</span></button>
     <div class="sbGroup">Risorse</div>
     <button class="navItem" data-tab="impara" data-label="Impara"><span class="ni">❖</span><span class="nlabel">Impara</span></button>
   </nav>
@@ -467,6 +479,26 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
   </aside>
   <section class="col">
     <div id="jCoachList"><div class="banner">Seleziona un cliente o lascia "Tutti" e premi Aggiorna.</div></div>
+  </section>
+</div>
+</section>
+
+<!-- ════════ TAB ASTROMAPPA ════════ -->
+<section class="tab" id="tab-astro">
+<div class="grid2">
+  <aside class="col bordered">
+    <h2 class="pageTitle">Astromappa</h2>
+    <p class="pageIntro">La carta astrologica occidentale del cliente attivo: ruota natale con segni, case e aspetti, più l'astrocartografia (dove nel mondo ogni energia planetaria è accentuata). Calcoli su effemeridi di precisione del motore NOVA.</p>
+    <label>Luogo di nascita</label>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="astroPlace" placeholder="Es. Roma, Italia" style="font-family:'Outfit'">
+      <button class="ghost" id="astroGo" style="margin-top:0;white-space:nowrap">Cerca</button>
+    </div>
+    <div id="astroResults"></div>
+    <p class="hint">Il luogo serve per ascendente, case e linee di astrocartografia. La data e l'ora vengono dalla carta del cliente attivo.</p>
+  </aside>
+  <section class="col">
+    <div id="astroBody"><div class="banner">Apri una carta cliente e indica il luogo di nascita per generare l'astromappa.</div></div>
   </section>
 </div>
 </section>
@@ -1973,6 +2005,7 @@ document.querySelectorAll('.navItem').forEach(btn=>{
     if (btn.dataset.tab==='cicli' && currentChart) renderCycles();
     if (btn.dataset.tab==='prev') renderPrevisioni();
     if (btn.dataset.tab==='diario') loadJournalCoach();
+    if (btn.dataset.tab==='astro') renderAstromappa();
   });
 });
 document.getElementById('themeBtn').addEventListener('click',()=>{
@@ -2529,6 +2562,233 @@ document.getElementById('jClient').addEventListener('change',loadJournalCoach);
   inp.addEventListener('input',()=>{ const q=inp.value.toLowerCase(); filtered=ITEMS.filter(it=>it.label.toLowerCase().includes(q)); sel=0; draw(); });
   pal.addEventListener('click',e=>{ if(e.target.id==='cmdk') close(); });
 })();
+/* ════════════════════════ 22 · ASTROMAPPA (astrologia di precisione) ════════════════════════ */
+const ASTRO={
+  D2R:Math.PI/180, R2D:180/Math.PI,
+  SIGNS:['Ariete','Toro','Gemelli','Cancro','Leone','Vergine','Bilancia','Scorpione','Sagittario','Capricorno','Acquario','Pesci'],
+  GLYPH:{Sole:'☉',Luna:'☽',Mercurio:'☿',Venere:'♀',Marte:'♂',Giove:'♃',Saturno:'♄',Urano:'♅',Nettuno:'♆',Plutone:'♇'},
+  SIGN_GLYPH:['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'],
+  COLORS:{Sole:'#e3b864',Luna:'#cfd2e0',Mercurio:'#8fb98f',Venere:'#e08fb0',Marte:'#d95757',Giove:'#e0a860',Saturno:'#9a8fb9',Urano:'#5fc9d8',Nettuno:'#5f8fd8',Plutone:'#b06f9a'}
+};
+const n360=x=>((x%360)+360)%360;
+function aObliquity(jd){ const T=(jd-2451545)/36525; return 23.439291111-0.0130041667*T-1.6389e-7*T*T+5.036e-7*T*T*T; }
+function aGmst(jd){ const T=(jd-2451545)/36525; return n360(280.46061837+360.98564736629*(jd-2451545)+0.000387933*T*T-T*T*T/38710000); }
+function aAscMC(lstDeg,latDeg,eps){
+  const lst=lstDeg*ASTRO.D2R, lat=latDeg*ASTRO.D2R, e=eps*ASTRO.D2R;
+  let mc=Math.atan2(Math.tan(lst),Math.cos(e))*ASTRO.R2D; mc=n360(mc); if(Math.cos(lst)<0)mc=n360(mc+180);
+  let asc=Math.atan2(Math.cos(lst),-(Math.sin(e)*Math.tan(lat)+Math.cos(e)*Math.sin(lst)))*ASTRO.R2D; asc=n360(asc);
+  return {asc,mc};
+}
+function aPorphyry(asc,mc){
+  const h=new Array(13).fill(0); h[1]=asc;h[10]=mc;h[7]=n360(asc+180);h[4]=n360(mc+180);
+  const q1=n360(h[4]-h[1]),q2=n360(h[7]-h[4]),q3=n360(h[10]-h[7]),q4=n360(h[1]-h[10]);
+  h[2]=n360(h[1]+q1/3);h[3]=n360(h[1]+2*q1/3);h[5]=n360(h[4]+q2/3);h[6]=n360(h[4]+2*q2/3);
+  h[8]=n360(h[7]+q3/3);h[9]=n360(h[7]+2*q3/3);h[11]=n360(h[10]+q4/3);h[12]=n360(h[10]+2*q4/3);
+  return h;
+}
+function aSign(lon){ return ASTRO.SIGNS[Math.floor(n360(lon)/30)]; }
+function aDeg(lon){ const x=n360(lon)%30,d=Math.floor(x),m=Math.round((x-d)*60); return d+'°'+String(m).padStart(2,'0')+"'"; }
+function aHouseOf(lon,c){ lon=n360(lon); for(let i=1;i<=12;i++){ const a=c[i],b=c[i===12?1:i+1]; if(a<b){if(lon>=a&&lon<b)return i;}else{if(lon>=a||lon<b)return i;} } return 1; }
+const A_ASPECTS=[[0,'Congiunzione',8,'#e3b864'],[60,'Sestile',5,'#5fc9d8'],[90,'Quadratura',7,'#d95757'],[120,'Trigono',8,'#8fb98f'],[180,'Opposizione',8,'#e08fb0']];
+function aAspects(pl){ const k=Object.keys(pl),out=[];
+  for(let i=0;i<k.length;i++)for(let j=i+1;j<k.length;j++){ let d=Math.abs(n360(pl[k[i]])-n360(pl[k[j]])); if(d>180)d=360-d;
+    for(const [ang,name,orb,col] of A_ASPECTS){ if(Math.abs(d-ang)<=orb){ out.push({a:k[i],b:k[j],type:name,angle:ang,col,orb:Math.abs(d-ang).toFixed(1)}); break; } } }
+  return out; }
+function aPlanetRA(lonEcl,eps){ const l=lonEcl*ASTRO.D2R,e=eps*ASTRO.D2R; return n360(Math.atan2(Math.sin(l)*Math.cos(e),Math.cos(l))*ASTRO.R2D); }
+function aPlanetDec(lonEcl,eps){ const l=lonEcl*ASTRO.D2R,e=eps*ASTRO.D2R; return Math.asin(Math.sin(e)*Math.sin(l))*ASTRO.R2D; }
+
+// Costruisce i dati astro dal currentChart + luogo
+function buildAstro(c, latGeo, lonGeo){
+  // jd di nascita in UTC: il motore ha jdBirth (già in TT/UTC ~). Uso c.jdBirth.
+  const jd=c.jdBirth;
+  const eps=aObliquity(jd);
+  const lst=n360(aGmst(jd)+lonGeo);
+  const {asc,mc}=aAscMC(lst,latGeo,eps);
+  const cusps=aPorphyry(asc,mc);
+  const map={Sole:'Sun',Luna:'Moon',Mercurio:'Mercury',Venere:'Venus',Marte:'Mars',Giove:'Jupiter',Saturno:'Saturn',Urano:'Uranus',Nettuno:'Neptune',Plutone:'Pluto'};
+  const planets={}, full={};
+  for(const it in map){ const lon=c.pers[map[it]].lon; planets[it]=lon;
+    full[it]={lon, sign:aSign(lon), deg:aDeg(lon), house:aHouseOf(lon,cusps), ra:aPlanetRA(lon,eps), dec:aPlanetDec(lon,eps)}; }
+  return {jd,eps,lst,asc,mc,cusps,planets,full,aspects:aAspects(planets),latGeo,lonGeo};
+}
+
+/* ── Rendering ruota natale SVG ── */
+function renderNatalWheel(A){
+  const R=290, cx=300, cy=300;
+  const P=(lon,r)=>{ const a=(180-(n360(lon-A.asc+180)))*ASTRO.D2R; return [cx+r*Math.cos(a), cy-r*Math.sin(a)]; };
+  // ruoto così che l'Ascendente sia a sinistra (ore 9), convenzione astrologica
+  const ang=lon=>{ return (180+(n360(lon-A.asc)))*ASTRO.D2R; };
+  const PT=(lon,r)=>{ const a=ang(lon); return [cx-r*Math.cos(a), cy-r*Math.sin(a)]; };
+  let s=`<svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#cfc5ad" stroke-width="1.2"/>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${R-38}" fill="none" stroke="#cfc5ad" stroke-width=".8"/>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="150" fill="none" stroke="#cfc5ad" stroke-width=".6"/>`;
+  // settori segni
+  for(let i=0;i<12;i++){
+    const l1=i*30;
+    const [x1,y1]=PT(l1,R), [x2,y2]=PT(l1,R-38);
+    s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#cfc5ad" stroke-width=".8"/>`;
+    const [tx,ty]=PT(l1+15,R-19);
+    s+=`<text x="${tx}" y="${ty+5}" text-anchor="middle" font-size="16" fill="#9a8757">${ASTRO.SIGN_GLYPH[i]}</text>`;
+  }
+  // cuspidi case
+  for(let i=1;i<=12;i++){
+    const [x1,y1]=PT(A.cusps[i],150),[x2,y2]=PT(A.cusps[i],R-38);
+    const major=(i===1||i===4||i===7||i===10);
+    s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${major?'#e3b864':'#cfc5ad'}" stroke-width="${major?1.4:.6}" ${major?'':'stroke-dasharray="2 3"'}/>`;
+    const [nx,ny]=PT(A.cusps[i]+2,156);
+    s+=`<text x="${nx}" y="${ny+3}" font-size="9" fill="#857c6c" font-family="monospace">${i}</text>`;
+  }
+  // ASC / MC etichette
+  const [ax,ay]=PT(A.asc,R+12); s+=`<text x="${ax}" y="${ay}" text-anchor="middle" font-size="11" fill="#e3b864" font-family="monospace">ASC</text>`;
+  const [mx,my]=PT(A.mc,R+12); s+=`<text x="${mx}" y="${my}" text-anchor="middle" font-size="11" fill="#e3b864" font-family="monospace">MC</text>`;
+  // aspetti (linee centrali)
+  for(const asp of A.aspects){
+    const [x1,y1]=PT(A.planets[asp.a],148),[x2,y2]=PT(A.planets[asp.b],148);
+    s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${asp.col}" stroke-width="1" opacity=".5"/>`;
+  }
+  // pianeti
+  const placed=[];
+  for(const it in A.full){
+    let r=R-58; const lon=A.planets[it];
+    // evito sovrapposizioni: se troppo vicino a un altro, sposto leggermente il raggio
+    let coll=placed.filter(p=>Math.abs(n360(p-lon))<6||Math.abs(n360(p-lon))>354).length;
+    r-=coll*20;
+    const [x,y]=PT(lon,r);
+    s+=`<text x="${x}" y="${y+5}" text-anchor="middle" font-size="16" fill="${ASTRO.COLORS[it]}">${ASTRO.GLYPH[it]}</text>`;
+    const [tx,ty]=PT(lon,r-16);
+    s+=`<text x="${tx}" y="${ty+3}" text-anchor="middle" font-size="7.5" fill="#857c6c" font-family="monospace">${Math.floor(n360(lon)%30)}°</text>`;
+    placed.push(lon);
+  }
+  s+=`</svg>`;
+  return s;
+}
+
+
+// contorno continenti semplificato (lon,lat) per orientamento
+const WORLD=[
+ [[-168,65],[-160,71],[-141,70],[-125,70],[-100,69],[-81,73],[-61,82],[-20,82],[-12,81],[-10,70],[-25,71],[-22,64],[-38,66],[-55,60],[-64,60],[-78,62],[-95,58],[-81,49],[-66,49],[-60,47],[-70,42],[-76,35],[-81,25],[-80,9],[-77,8],[-82,-2],[-81,-12],[-70,-18],[-71,-30],[-73,-42],[-75,-52],[-69,-55],[-65,-47],[-62,-39],[-58,-34],[-48,-25],[-40,-21],[-35,-7],[-50,0],[-52,5],[-61,10],[-70,12],[-72,12]],
+ [[-10,35],[0,38],[3,43],[8,44],[12,45],[18,40],[16,38],[19,40],[24,40],[26,40],[28,41],[36,36],[36,30],[34,28],[33,22],[35,16],[43,12],[51,12],[44,2],[40,-3],[39,-7],[34,-10],[35,-17],[35,-23],[32,-26],[27,-34],[20,-35],[18,-33],[12,-17],[9,-1],[9,4],[5,5],[-5,5],[-12,8],[-17,15],[-17,21],[-12,28],[-10,35]],
+ [[36,68],[40,66],[50,68],[60,70],[70,72],[80,73],[100,76],[110,74],[140,72],[160,70],[180,66],[170,60],[160,58],[155,52],[142,46],[140,52],[131,43],[127,38],[122,30],[110,21],[105,10],[98,8],[100,1],[103,1],[95,5],[90,22],[88,22],[80,8],[77,8],[73,16],[68,24],[60,25],[57,25],[48,30],[35,37],[27,41],[40,46],[48,46],[40,50],[30,52],[28,60],[24,60],[30,65],[36,68]],
+ [[113,-22],[121,-34],[130,-32],[137,-36],[147,-38],[150,-37],[153,-28],[146,-19],[142,-11],[135,-12],[130,-12],[122,-18],[113,-22]],
+ [[-62,-21],[-58,-34],[-48,-25],[-40,-21],[-35,-7],[-50,0],[-60,-3],[-70,-4],[-78,-8],[-70,-18],[-62,-21]]
+];
+function worldPaths(X,Y){ return WORLD.map(poly=>'<polyline points="'+poly.map(p=>X(p[0])+','+Y(p[1])).join(' ')+'" fill="none" stroke="#24344f" stroke-width="1"/>').join(''); }
+
+/* ── Astrocartografia: linee MC/IC/ASC/DESC sulla mappa mondiale ── */
+function acgLines(A){
+  // Per ogni pianeta: linea MC (meridiano), IC, e curve ASC/DESC.
+  const lines={};
+  for(const it in A.full){
+    const ra=A.full[it].ra, dec=A.full[it].dec;
+    // MC: lon geo dove il pianeta culmina: lon = RA - GMST(jd)
+    let mcLon=n360(ra-aGmst(A.jd)); if(mcLon>180)mcLon-=360;
+    let icLon=n360(mcLon+180); if(icLon>180)icLon-=360;
+    // ASC/DESC: curva dove il pianeta è all'orizzonte. Per ogni latitudine, l'angolo orario H: cos H = -tan(dec)tan(lat)
+    const asc=[], desc=[];
+    for(let lat=-85;lat<=85;lat+=2){
+      const cosH=-Math.tan(dec*ASTRO.D2R)*Math.tan(lat*ASTRO.D2R);
+      if(cosH<-1||cosH>1) continue;
+      const H=Math.acos(cosH)*ASTRO.R2D; // gradi
+      // LST al sorgere = RA - H ; al tramonto = RA + H. lon geo = LST - GMST
+      let lonRise=n360((ra-H)-aGmst(A.jd)); if(lonRise>180)lonRise-=360;
+      let lonSet=n360((ra+H)-aGmst(A.jd)); if(lonSet>180)lonSet-=360;
+      asc.push([lonRise,lat]); desc.push([lonSet,lat]);
+    }
+    lines[it]={mcLon,icLon,asc,desc,col:ASTRO.COLORS[it]};
+  }
+  return lines;
+}
+function renderACG(A, markLat, markLon){
+  const W=720,H=360; // equirettangolare: x=lon[-180,180], y=lat[90,-90]
+  const X=lon=>(lon+180)/360*W, Y=lat=>(90-lat)/180*H;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  s+=`<rect width="${W}" height="${H}" fill="#0d1420"/>`;
+  s+=worldPaths(X,Y);
+  // griglia
+  for(let lon=-180;lon<=180;lon+=30){ s+=`<line x1="${X(lon)}" y1="0" x2="${X(lon)}" y2="${H}" stroke="#1c2740" stroke-width=".6"/>`; }
+  for(let lat=-60;lat<=60;lat+=30){ s+=`<line x1="0" y1="${Y(lat)}" x2="${W}" y2="${Y(lat)}" stroke="#1c2740" stroke-width=".6"/>`; }
+  s+=`<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" stroke="#2a3a5a" stroke-width="1"/>`;
+  const L=acgLines(A);
+  const poly=(pts)=>pts.filter(p=>p[0]>=-180&&p[0]<=180).map(p=>X(p[0])+','+Y(p[1])).join(' ');
+  for(const it in L){
+    const ln=L[it], col=ln.col;
+    // MC e IC: meridiani verticali
+    s+=`<line x1="${X(ln.mcLon)}" y1="0" x2="${X(ln.mcLon)}" y2="${H}" stroke="${col}" stroke-width="1.3"/>`;
+    s+=`<text x="${X(ln.mcLon)+2}" y="12" font-size="9" fill="${col}" font-family="monospace">${ASTRO.GLYPH[it]}MC</text>`;
+    s+=`<line x1="${X(ln.icLon)}" y1="0" x2="${X(ln.icLon)}" y2="${H}" stroke="${col}" stroke-width=".8" stroke-dasharray="3 3" opacity=".7"/>`;
+    // ASC/DESC: polilinee (spezzo se attraversano il bordo)
+    if(ln.asc.length>1) s+=`<polyline points="${poly(ln.asc)}" fill="none" stroke="${col}" stroke-width=".9" opacity=".8"/>`;
+    if(ln.desc.length>1) s+=`<polyline points="${poly(ln.desc)}" fill="none" stroke="${col}" stroke-width=".9" opacity=".5" stroke-dasharray="2 2"/>`;
+  }
+  // marker luogo di nascita
+  if(markLon!=null){ s+=`<circle cx="${X(markLon)}" cy="${Y(markLat)}" r="4" fill="#fff" stroke="#000"/><text x="${X(markLon)+6}" y="${Y(markLat)+3}" font-size="9" fill="#fff">nascita</text>`; }
+  s+=`</svg>`;
+  return s;
+}
+
+/* ── Geocoding gratuito (Open-Meteo, nessuna chiave) ── */
+async function geocode(q){
+  try{
+    const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=5&language=it');
+    const j=await r.json();
+    return (j.results||[]).map(x=>({name:x.name+(x.admin1?', '+x.admin1:'')+(x.country?' ('+x.country_code+')':''), lat:x.latitude, lon:x.longitude}));
+  }catch(e){ return []; }
+}
+
+/* ── Pannello Astromappa (coach) ── */
+let ASTRO_PLACE=null;
+function renderAstromappa(){
+  const box=document.getElementById('astroBody');
+  if(!currentChart){ box.innerHTML='<div class="banner">Apri prima una carta dalla scheda Clienti (o genera una carta nella scheda Carta).</div>'; return; }
+  if(!ASTRO_PLACE){
+    box.innerHTML=`<div class="banner">Per la mappa astrologica serve il <b>luogo di nascita</b> (per ascendente, case e astrocartografia). Cercalo qui sopra.</div>`;
+    return;
+  }
+  const A=buildAstro(currentChart, ASTRO_PLACE.lat, ASTRO_PLACE.lon);
+  const f=A.full;
+  const tbl=Object.keys(f).map(it=>`<tr><td class="glyph" style="color:${ASTRO.COLORS[it]}">${ASTRO.GLYPH[it]}</td><td>${it}</td><td>${ASTRO.SIGN_GLYPH[ASTRO.SIGNS.indexOf(f[it].sign)]} ${f[it].sign}</td><td class="z">${f[it].deg}</td><td>casa ${f[it].house}</td></tr>`).join('');
+  const asps=A.aspects.map(a=>`<div class="cblock" style="border-left-color:${a.col}"><h4>${ASTRO.GLYPH[a.a]} ${a.a} <span style="color:${a.col}">${a.type}</span> ${ASTRO.GLYPH[a.b]} ${a.b}</h4><p style="font-size:11.5px;color:var(--dim)">orb ${a.orb}° · angolo esatto ${a.angle}°</p></div>`).join('');
+  box.innerHTML=`
+    <div class="astroTabs">
+      <button class="atb active" data-av="wheel">Ruota natale</button>
+      <button class="atb" data-av="acg">Astrocartografia</button>
+      <button class="atb" data-av="data">Dati & aspetti</button>
+    </div>
+    <div class="av" id="av-wheel">
+      <div class="paper" style="padding:10px">${renderNatalWheel(A)}</div>
+      <p class="hint">Ascendente <b>${aSign(A.asc)} ${aDeg(A.asc)}</b> · Medio Cielo <b>${aSign(A.mc)} ${aDeg(A.mc)}</b> · case Porfirio · luogo ${ASTRO_PLACE.name}.</p>
+    </div>
+    <div class="av" id="av-acg" style="display:none">
+      <div class="paper" style="padding:8px;background:#0d1420">${renderACG(A,ASTRO_PLACE.lat,ASTRO_PLACE.lon)}</div>
+      <p class="hint">Le linee mostrano dove ogni pianeta era angolare alla nascita. <b>Linea continua = MC</b> (il pianeta culmina: ne accentua il tema, ambito pubblico/carriera), tratteggiata verticale = IC (radici, casa). Le <b>curve</b> sono ASC (sorgere, identità) e DESC (tramonto, relazioni). Vivere vicino a una linea ne amplifica l'energia. <b>Nota:</b> l'astrocartografia è una tradizione interpretativa — il calcolo geometrico è preciso, il significato è simbolico.</p>
+      <div class="acgLegend">${Object.keys(ASTRO.GLYPH).map(it=>`<span><i style="background:${ASTRO.COLORS[it]}"></i>${ASTRO.GLYPH[it]} ${it}</span>`).join('')}</div>
+    </div>
+    <div class="av" id="av-data" style="display:none">
+      <table class="astroTable"><thead><tr><th></th><th>Pianeta</th><th>Segno</th><th>Grado</th><th>Casa</th></tr></thead><tbody>${tbl}</tbody></table>
+      <div class="eyebrow">Aspetti maggiori</div>${asps||'<p class="hint">Nessun aspetto maggiore entro gli orbi.</p>'}
+    </div>`;
+  box.querySelectorAll('.atb').forEach(b=>b.addEventListener('click',()=>{
+    box.querySelectorAll('.atb').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+    box.querySelectorAll('.av').forEach(v=>v.style.display='none');
+    document.getElementById('av-'+b.dataset.av).style.display='';
+  }));
+}
+async function astroSearch(){
+  const q=document.getElementById('astroPlace').value.trim(); if(!q) return;
+  const res=document.getElementById('astroResults');
+  res.innerHTML='<p class="hint">Ricerca…</p>';
+  const list=await geocode(q);
+  if(!list.length){ res.innerHTML='<p class="hint">Nessun luogo trovato. Prova con "Città, Paese".</p>'; return; }
+  res.innerHTML=list.map((x,i)=>`<button class="ghost" data-i="${i}" style="display:block;width:100%;text-align:left;margin:4px 0">${x.name} · ${x.lat.toFixed(2)}, ${x.lon.toFixed(2)}</button>`).join('');
+  res.querySelectorAll('[data-i]').forEach(b=>b.addEventListener('click',()=>{
+    ASTRO_PLACE=list[+b.dataset.i]; res.innerHTML='<p class="hint">Luogo: <b>'+ASTRO_PLACE.name+'</b></p>'; renderAstromappa();
+  }));
+}
+
+
+document.getElementById('astroGo').addEventListener('click', astroSearch);
+document.getElementById('astroPlace').addEventListener('keydown',e=>{ if(e.key==='Enter') astroSearch(); });
 </script>
 </body>
 </html>
