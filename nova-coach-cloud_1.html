@@ -367,6 +367,12 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
 .relocCell{border:1px solid var(--line);border-radius:12px;padding:13px 15px;background:var(--panel)}
 .relocCell span{font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px}
 .relocCell b{font-family:'Marcellus',serif;font-size:17px;color:var(--gold)}
+.houseList,.houseShift{display:flex;flex-direction:column;gap:7px;margin-bottom:8px}
+.hRow,.hsRow{display:flex;align-items:flex-start;gap:11px;border:1px solid var(--line);border-radius:11px;padding:10px 13px;background:var(--panel)}
+.hGlyph{font-size:18px;width:24px;text-align:center;flex-shrink:0}
+.hMid b{font-size:13px;display:block;margin-bottom:2px}
+.hMid small{color:var(--dim);font-size:11.5px;line-height:1.4}
+.hsRow{border-color:rgba(227,184,100,.25)}
 </style>
 </head>
 <body>
@@ -2669,7 +2675,13 @@ function renderNatalWheel(A){
   // ruoto così che l'Ascendente sia a sinistra (ore 9), convenzione astrologica
   const ang=lon=>{ return (180+(n360(lon-A.asc)))*ASTRO.D2R; };
   const PT=(lon,r)=>{ const a=ang(lon); return [cx-r*Math.cos(a), cy-r*Math.sin(a)]; };
+  const ELEM=['#d9694f','#7a9a5a','#d9b24f','#5a8fae','#d9694f','#7a9a5a','#d9b24f','#5a8fae','#d9694f','#7a9a5a','#d9b24f','#5a8fae']; // fuoco/terra/aria/acqua
   let s=`<svg viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg">`;
+  // settori elemento colorati tenui nell'anello segni
+  for(let i=0;i<12;i++){ const a0=ang(i*30), a1=ang((i+1)*30);
+    const [x0,y0]=PT(i*30,R),[x1,y1]=PT((i+1)*30,R),[x2,y2]=PT((i+1)*30,R-38),[x3,y3]=PT(i*30,R-38);
+    s+=`<path d="M${x0},${y0} A${R},${R} 0 0,0 ${x1},${y1} L${x2},${y2} A${R-38},${R-38} 0 0,1 ${x3},${y3} Z" fill="${ELEM[i]}" opacity=".13"/>`;
+  }
   s+=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#cfc5ad" stroke-width="1.2"/>`;
   s+=`<circle cx="${cx}" cy="${cy}" r="${R-38}" fill="none" stroke="#cfc5ad" stroke-width=".8"/>`;
   s+=`<circle cx="${cx}" cy="${cy}" r="150" fill="none" stroke="#cfc5ad" stroke-width=".6"/>`;
@@ -2686,8 +2698,9 @@ function renderNatalWheel(A){
     const [x1,y1]=PT(A.cusps[i],150),[x2,y2]=PT(A.cusps[i],R-38);
     const major=(i===1||i===4||i===7||i===10);
     s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${major?'#e3b864':'#cfc5ad'}" stroke-width="${major?1.4:.6}" ${major?'':'stroke-dasharray="2 3"'}/>`;
-    const [nx,ny]=PT(A.cusps[i]+2,156);
-    s+=`<text x="${nx}" y="${ny+3}" font-size="9" fill="#857c6c" font-family="monospace">${i}</text>`;
+    const mid=A.cusps[i]+ (((A.cusps[i%12+1]-A.cusps[i])+360)%360)/2;
+    const [nx,ny]=PT(mid,165);
+    s+=`<circle cx="${nx}" cy="${ny}" r="9" fill="#0d0d10" stroke="#857c6c" stroke-width=".5"/><text x="${nx}" y="${ny+3}" font-size="9" fill="#a89878" font-family="monospace" text-anchor="middle">${i}</text>`;
   }
   // ASC / MC etichette
   const [ax,ay]=PT(A.asc,R+12); s+=`<text x="${ax}" y="${ay}" text-anchor="middle" font-size="11" fill="#e3b864" font-family="monospace">ASC</text>`;
@@ -2828,6 +2841,30 @@ const ACG_GOALS=[
   ['📚 Studio e idee','Mercurio','Giove'],
   ['✨ Spiritualità e arte','Nettuno','Venere']
 ];
+// Significato delle 12 case (dove un pianeta "agisce" nella vita)
+const HOUSE_MEANING={
+  1:{nome:'Casa I · Sé',tema:'identità, corpo, come ti presenti al mondo, primo impatto'},
+  2:{nome:'Casa II · Risorse',tema:'denaro, beni, talenti, autostima, ciò che possiedi e dai valore'},
+  3:{nome:'Casa III · Mente',tema:'comunicazione, studio, fratelli, brevi viaggi, vicinato'},
+  4:{nome:'Casa IV · Radici',tema:'casa, famiglia, origini, vita privata, sicurezza interiore'},
+  5:{nome:'Casa V · Creatività',tema:'amore, figli, gioco, arte, espressione di sé, piacere'},
+  6:{nome:'Casa VI · Lavoro',tema:'routine, salute, servizio, abitudini quotidiane, dovere'},
+  7:{nome:'Casa VII · Relazioni',tema:'partner, matrimonio, soci, contratti, il partner'},
+  8:{nome:'Casa VIII · Trasformazione',tema:'intimità profonda, risorse condivise, crisi e rinascite, mistero'},
+  9:{nome:'Casa IX · Espansione',tema:'viaggi lontani, studi superiori, filosofia, spiritualità, senso'},
+  10:{nome:'Casa X · Vocazione',tema:'carriera, ruolo pubblico, ambizioni, reputazione'},
+  11:{nome:'Casa XI · Comunità',tema:'amicizie, gruppi, progetti futuri, ideali, rete sociale'},
+  12:{nome:'Casa XII · Interiorità',tema:'inconscio, spiritualità, ritiro, ciò che è nascosto, guarigione'}
+};
+// Come un pianeta si esprime in una casa (frase breve combinabile)
+const PLANET_IN_HOUSE_VERB={
+  Sole:'porta luce e centralità a', Luna:'porta emozioni e bisogno di cura a',
+  Mercurio:'porta pensiero e parola a', Venere:'porta amore e armonia a',
+  Marte:'porta energia e spinta a', Giove:'porta espansione e fortuna a',
+  Saturno:'porta impegno e struttura a', Urano:'porta cambiamento e libertà a',
+  Nettuno:'porta ispirazione e sensibilità a', Plutone:'porta intensità e trasformazione a'
+};
+
 
 /* ── Pannello Astromappa (coach) ── */
 let ASTRO_PLACE=null;
@@ -2889,6 +2926,8 @@ function renderAstromappa(){
     </div>
     <div class="av" id="av-data" style="display:none">
       <table class="astroTable"><thead><tr><th></th><th>Pianeta</th><th>Segno</th><th>Grado</th><th>Casa</th></tr></thead><tbody>${tbl}</tbody></table>
+      <div class="eyebrow">Pianeti nelle case · cosa attivano nella vita</div>
+      <div class="houseList">${Object.keys(f).map(it=>{const hh=f[it].house;const HM=HOUSE_MEANING[hh];return `<div class="hRow"><span class="hGlyph" style="color:${ASTRO.COLORS[it]}">${ASTRO.GLYPH[it]}</span><div class="hMid"><b>${it} in ${HM.nome}</b><small>${PLANET_IN_HOUSE_VERB[it]} ${HM.tema}.</small></div></div>`;}).join('')}</div>
       <div class="eyebrow">Aspetti maggiori</div>${asps||'<p class="hint">Nessun aspetto maggiore entro gli orbi.</p>'}
     </div>`;
   // tab switch
@@ -3061,6 +3100,15 @@ function renderCityFinder(A, place){
       <div class="relocCell"><span>Medio Cielo</span><b>${ASTRO.SIGN_GLYPH[ASTRO.SIGNS.indexOf(aSign(reloc.mc))]} ${aSign(reloc.mc)} ${aDeg(reloc.mc)}</b></div>
     </div>
     ${angList.length?`<p class="hint" style="margin-top:10px"><b>Pianeti angolari qui:</b> ${angList.join(' · ')} — energie particolarmente attive vivendo in questa città.</p>`:'<p class="hint" style="margin-top:10px">Nessun pianeta esattamente sugli angoli: città energeticamente più neutra per questa carta.</p>'}
+    <div class="eyebrow" style="margin-top:14px">Come cambiano le tue case vivendo qui</div>
+    <div class="houseShift">${(function(){
+      const natal=buildAstro(currentChart, ASTRO_PLACE.lat, ASTRO_PLACE.lon);
+      const out=[];
+      for(const it in reloc.full){ const hn=natal.full[it].house, hr=reloc.full[it].house;
+        if(hn!==hr){ out.push(`<div class="hsRow"><span class="hGlyph" style="color:${ASTRO.COLORS[it]}">${ASTRO.GLYPH[it]}</span><div class="hMid"><b>${it}: Casa ${hn} → Casa ${hr}</b><small>da "${HOUSE_MEANING[hn].tema.split(',')[0]}" verso "${HOUSE_MEANING[hr].tema.split(',')[0]}"</small></div></div>`); }
+      }
+      return out.length? out.join('') : '<p class="hint">Le tue case restano molto simili a quelle di nascita: trasferimento energeticamente delicato, poco stravolgente.</p>';
+    })()}</div>
     <p class="paper" style="padding:10px;font-size:11.5px;color:var(--dim);margin-top:12px">La carta rilocata mostra come cambierebbero ascendente, Medio Cielo e case vivendo qui — gli stessi pianeti, ma "appoggiati" diversamente sulla tua vita quotidiana. È il metodo più preciso per valutare un trasferimento.</p>`;
 }
 
