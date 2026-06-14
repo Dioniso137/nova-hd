@@ -346,6 +346,27 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
 .acgZoomBtns button{width:34px;height:34px;border-radius:9px;background:rgba(10,17,24,.85);border:1px solid var(--line);color:var(--ink);font-size:17px;cursor:pointer;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center}
 .acgZoomBtns button:hover{border-color:var(--gold);color:var(--gold)}
 .acgHintZoom{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:10.5px;color:var(--dim);background:rgba(10,17,24,.7);padding:4px 12px;border-radius:12px;backdrop-filter:blur(6px);pointer-events:none}
+.cityBar{display:flex;gap:8px;margin:14px 0}
+.cityBar input{flex:1}
+.cityQuick{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.cityChip{border:1px solid var(--line);background:none;color:var(--dim);border-radius:16px;padding:6px 13px;font-size:12.5px;cursor:pointer;font-family:'Outfit'}
+.cityChip:hover{border-color:var(--gold);color:var(--gold)}
+.cityHead h3{font-family:'Marcellus',serif;font-size:22px;margin-bottom:4px}
+.kmScale{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0;font-size:11px;color:var(--dim)}
+.kmScale i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.kmList{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.kmRow{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:11px 14px;background:var(--panel)}
+.kmGlyph{font-size:20px;width:26px;text-align:center;flex-shrink:0}
+.kmMid{flex:1;min-width:0}
+.kmMid b{font-size:14px;display:block}
+.kmMid small{color:var(--dim);font-size:11.5px}
+.kmRight{text-align:right;flex-shrink:0}
+.kmKm{font-family:'Space Grotesk',monospace;font-size:15px;display:block;color:var(--ink)}
+.kmInt{font-size:11px}
+.relocGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.relocCell{border:1px solid var(--line);border-radius:12px;padding:13px 15px;background:var(--panel)}
+.relocCell span{font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:5px}
+.relocCell b{font-family:'Marcellus',serif;font-size:17px;color:var(--gold)}
 </style>
 </head>
 <body>
@@ -2823,11 +2844,12 @@ function renderAstromappa(){
   const asps=A.aspects.map(a=>`<div class="cblock" style="border-left-color:${a.col}"><h4>${ASTRO.GLYPH[a.a]} ${a.a} <span style="color:${a.col}">${a.type}</span> ${ASTRO.GLYPH[a.b]} ${a.b}</h4><p style="font-size:11.5px;color:var(--dim)">orb ${a.orb}° · angolo esatto ${a.angle}°</p></div>`).join('');
   box.innerHTML=`
     <div class="astroTabs">
-      <button class="atb" data-av="acg">🗺 Dove vivere</button>
-      <button class="atb active" data-av="wheel">⊙ Ruota natale</button>
+      <button class="atb active" data-av="acg">🗺 Dove vivere</button>
+      <button class="atb" data-av="city">📍 La tua città</button>
+      <button class="atb" data-av="wheel">⊙ Ruota natale</button>
       <button class="atb" data-av="data">▦ Dati & aspetti</button>
     </div>
-    <div class="av" id="av-wheel">
+    <div class="av" id="av-wheel" style="display:none">
       <div class="paper" style="padding:10px;max-width:560px;margin:0 auto">${renderNatalWheel(A)}</div>
       <p class="hint">Ascendente <b>${aSign(A.asc)} ${aDeg(A.asc)}</b> · Medio Cielo <b>${aSign(A.mc)} ${aDeg(A.mc)}</b> · case Porfirio · luogo ${ASTRO_PLACE.name}.</p>
     </div>
@@ -2855,6 +2877,15 @@ function renderAstromappa(){
         </div>`;}).join('')}
       </div>
       <p class="hint" style="margin-top:14px"><b>Come leggere la mappa:</b> la linea verticale piena (col glifo in alto) è il <b>MC</b> — l'energia del pianeta nella tua carriera e immagine pubblica. La verticale tratteggiata è l'<b>IC</b> (casa, radici). Le due curve sono <b>ASC</b> (chi sei, il tuo corpo) e <b>DESC</b> (relazioni). Più sei vicino a una linea, più forte l'effetto. <b>Nota onesta:</b> il calcolo geometrico è preciso, ma il significato è una tradizione interpretativa, non scienza.</p>
+    </div>
+    <div class="av" id="av-city" style="display:none">
+      <p class="acgLead">La valutazione più precisa per scegliere dove vivere: distanza reale in km dalle tue linee planetarie + la carta rilocata della città. Niente distorsioni da mappa piatta.</p>
+      <div class="cityBar">
+        <input type="text" id="cityInput" placeholder="Scrivi una città: Lisbona, San Diego, Bali…" style="font-family:'Outfit'">
+        <button class="ghost" id="cityGo" style="margin-top:0">Analizza</button>
+      </div>
+      <div class="cityQuick" id="cityQuick"></div>
+      <div id="cityResults"></div>
     </div>
     <div class="av" id="av-data" style="display:none">
       <table class="astroTable"><thead><tr><th></th><th>Pianeta</th><th>Segno</th><th>Grado</th><th>Casa</th></tr></thead><tbody>${tbl}</tbody></table>
@@ -2889,6 +2920,18 @@ function renderAstromappa(){
   box.querySelectorAll('.acgCard').forEach(c=>c.addEventListener('click',()=>applyFilter(c.dataset.card,[c.dataset.card])));
   // zoom & pan sulla mappa
   setupAcgZoom();
+  // city finder
+  const QUICK=[['Roma',41.9,12.5],['Milano',45.5,9.2],['Londra',51.5,-0.1],['Parigi',48.9,2.35],['Barcellona',41.4,2.17],['Lisbona',38.7,-9.1],['New York',40.7,-74],['Los Angeles',34,-118.2],['Miami',25.8,-80.2],['Bali',-8.4,115.2],['Tokyo',35.7,139.7],['Dubai',25.2,55.3]];
+  const cq=document.getElementById('cityQuick');
+  if(cq) cq.innerHTML=QUICK.map((c,i)=>`<button class="cityChip" data-i="${i}">${c[0]}</button>`).join('');
+  function analyzeCity(place){ document.getElementById('cityResults').innerHTML=renderCityFinder(A, place); }
+  if(cq) cq.querySelectorAll('.cityChip').forEach(b=>b.addEventListener('click',()=>{ const c=QUICK[+b.dataset.i]; analyzeCity({name:c[0],lat:c[1],lon:c[2]}); }));
+  const cgo=document.getElementById('cityGo'), cin=document.getElementById('cityInput');
+  async function cityDo(){ const q=cin.value.trim(); if(!q)return; document.getElementById('cityResults').innerHTML='<p class="hint">Ricerca…</p>';
+    const list=await geocode(q); if(!list.length){ document.getElementById('cityResults').innerHTML='<p class="hint">Città non trovata. Prova "Città, Paese".</p>'; return; }
+    analyzeCity(list[0]); }
+  if(cgo) cgo.addEventListener('click',cityDo);
+  if(cin) cin.addEventListener('keydown',e=>{ if(e.key==='Enter') cityDo(); });
 }
 function setupAcgZoom(){
   const map=document.getElementById('acgMap'); if(!map) return;
@@ -2938,6 +2981,87 @@ async function astroSearch(){
   res.querySelectorAll('[data-i]').forEach(b=>b.addEventListener('click',()=>{
     ASTRO_PLACE=list[+b.dataset.i]; res.innerHTML='<p class="hint">Luogo: <b>'+ASTRO_PLACE.name+'</b></p>'; renderAstromappa();
   }));
+}
+
+/* ── Carta rilocata + distanze in km (analisi "Dove vivere" di precisione) ── */
+function haversineKm(lat1,lon1,lat2,lon2){
+  const R=6371, D=Math.PI/180;
+  const dLat=(lat2-lat1)*D, dLon=(lon2-lon1)*D;
+  const a=Math.sin(dLat/2)**2+Math.cos(lat1*D)*Math.cos(lat2*D)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+function distMeridianKm(cityLat,cityLon,meridLon){
+  // differenza longitudine corretta per il wrap ±180
+  let dl=Math.abs(cityLon-meridLon); if(dl>180)dl=360-dl;
+  return haversineKm(cityLat,cityLon,cityLat, cityLon + (meridLon>=cityLon?dl:-dl));
+}
+function distCurveKm(cityLat,cityLon,curve){
+  let min=1e9;
+  for(const [lon,lat] of curve){ const d=haversineKm(cityLat,cityLon,lat,lon); if(d<min)min=d; }
+  return min;
+}
+function intensityOf(km){
+  if(km<100) return ['molto forte','#d95757','●●●'];
+  if(km<300) return ['percepibile','#e3b864','●●'];
+  if(km<700) return ['debole','#8fb98f','●'];
+  return ['secondaria','#5a6a82','·'];
+}
+function cityLineDistances(A, cityLat, cityLon){
+  const L=acgLines(A), rows=[];
+  for(const it in L){
+    const ln=L[it];
+    const cand=[
+      ['MC', distMeridianKm(cityLat,cityLon,ln.mcLon)],
+      ['IC', distMeridianKm(cityLat,cityLon,ln.icLon)],
+      ['ASC', distCurveKm(cityLat,cityLon,ln.asc)],
+      ['DESC', distCurveKm(cityLat,cityLon,ln.desc)]
+    ];
+    for(const [type,km] of cand) rows.push({planet:it,type,km:Math.round(km),col:ASTRO.COLORS[it]});
+  }
+  rows.sort((a,b)=>a.km-b.km);
+  return rows;
+}
+// Carta rilocata: ricalcolo ASC/MC/case per nuove coordinate, stesse posizioni planetarie
+function relocatedChart(c, latGeo, lonGeo){ return buildAstro(c, latGeo, lonGeo); }
+
+const ANGLE_MEANING={MC:'carriera, vocazione, immagine pubblica',IC:'casa, radici, famiglia, vita privata',ASC:'identità, corpo, come ti presenti',DESC:'relazioni, partner, incontri'};
+
+function renderCityFinder(A, place){
+  const dist=cityLineDistances(A, place.lat, place.lon);
+  const reloc=relocatedChart(currentChart, place.lat, place.lon);
+  const top=dist.slice(0,6);
+  const rows=top.map(r=>{ const [lab,col,dots]=intensityOf(r.km);
+    const m=ACG_MEANING[r.planet];
+    return `<div class="kmRow"><span class="kmGlyph" style="color:${r.col}">${ASTRO.GLYPH[r.planet]}</span>
+      <div class="kmMid"><b>${r.planet} ${r.type}</b><small>${m?m.tema:''} · ${ANGLE_MEANING[r.type]}</small></div>
+      <div class="kmRight"><span class="kmKm">${r.km} km</span><span class="kmInt" style="color:${col}">${dots} ${lab}</span></div></div>`;
+  }).join('');
+  const ang={}; // pianeti angolari nella carta rilocata (entro 3° da un angolo)
+  const angles={ASC:reloc.asc,IC:n360(reloc.mc+180),DESC:n360(reloc.asc+180),MC:reloc.mc};
+  const angList=[];
+  for(const it in reloc.full){ const lon=reloc.full[it].lon;
+    for(const an in angles){ let d=Math.abs(n360(lon)-angles[an]); if(d>180)d=360-d; if(d<3) angList.push(`${ASTRO.GLYPH[it]} ${it} su ${an}`); }
+  }
+  return `
+    <div class="cityHead">
+      <h3>${place.name}</h3>
+      <p class="hint">Distanze reali calcolate sulla sfera terrestre (ortodromia) — immuni dalla distorsione della mappa piatta.</p>
+    </div>
+    <div class="kmScale">
+      <span><i style="background:#d95757"></i>0–100 km molto forte</span>
+      <span><i style="background:#e3b864"></i>100–300 percepibile</span>
+      <span><i style="background:#8fb98f"></i>300–700 debole</span>
+      <span><i style="background:#5a6a82"></i>oltre secondaria</span>
+    </div>
+    <div class="eyebrow">Linee planetarie più vicine</div>
+    <div class="kmList">${rows}</div>
+    <div class="eyebrow">Carta rilocata a ${place.name}</div>
+    <div class="relocGrid">
+      <div class="relocCell"><span>Ascendente</span><b>${ASTRO.SIGN_GLYPH[ASTRO.SIGNS.indexOf(aSign(reloc.asc))]} ${aSign(reloc.asc)} ${aDeg(reloc.asc)}</b></div>
+      <div class="relocCell"><span>Medio Cielo</span><b>${ASTRO.SIGN_GLYPH[ASTRO.SIGNS.indexOf(aSign(reloc.mc))]} ${aSign(reloc.mc)} ${aDeg(reloc.mc)}</b></div>
+    </div>
+    ${angList.length?`<p class="hint" style="margin-top:10px"><b>Pianeti angolari qui:</b> ${angList.join(' · ')} — energie particolarmente attive vivendo in questa città.</p>`:'<p class="hint" style="margin-top:10px">Nessun pianeta esattamente sugli angoli: città energeticamente più neutra per questa carta.</p>'}
+    <p class="paper" style="padding:10px;font-size:11.5px;color:var(--dim);margin-top:12px">La carta rilocata mostra come cambierebbero ascendente, Medio Cielo e case vivendo qui — gli stessi pianeti, ma "appoggiati" diversamente sulla tua vita quotidiana. È il metodo più preciso per valutare un trasferimento.</p>`;
 }
 
 document.getElementById('astroGo').addEventListener('click', astroSearch);
