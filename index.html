@@ -8,12 +8,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--void:#0a0c16;--panel:rgba(16,20,34,.72);--line:rgba(160,175,220,.14);--ink:#e8ebf7;--dim:#8a93b5;--gold:#e3b864}
+:root{--void:#070708;--panel:rgba(20,20,24,.74);--line:rgba(190,190,200,.12);--ink:#ececf0;--dim:#8f8f99;--gold:#e3b864}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{background:radial-gradient(1200px 800px at 75% -5%, #131830 0%, var(--void) 60%), var(--void);color:var(--ink);font-family:'Outfit',system-ui,sans-serif}
+body{background:radial-gradient(1200px 800px at 75% -5%, #1a1a1f 0%, var(--void) 60%), var(--void);color:var(--ink);font-family:'Outfit',system-ui,sans-serif}
 .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
-nav{display:flex;align-items:center;gap:26px;padding:18px 0;position:sticky;top:0;z-index:50;background:rgba(10,12,22,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav{display:flex;align-items:center;gap:26px;padding:18px 0;position:sticky;top:0;z-index:50;background:rgba(7,7,8,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 nav .brand{font-family:'Marcellus',serif;font-size:21px;letter-spacing:.14em}
 nav .brand small{font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.24em;color:var(--gold);display:block;margin-top:-3px}
 nav a{color:var(--dim);text-decoration:none;font-size:14px}
@@ -76,9 +76,9 @@ summary{cursor:pointer;list-style:none;padding:16px 18px;font-size:15px;font-wei
 summary::-webkit-details-marker{display:none}
 details p{padding:0 18px 16px;font-size:13.5px;color:var(--dim);line-height:1.65}
 footer{border-top:1px solid var(--line);padding:34px 0;text-align:center;color:var(--dim);font-size:12.5px;line-height:1.8}
-#authModal{display:none;position:fixed;inset:0;z-index:100;background:rgba(6,8,16,.8);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px}
+#authModal{display:none;position:fixed;inset:0;z-index:100;background:rgba(4,4,5,.82);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px}
 #authModal.open{display:flex}
-.authCard{width:min(400px,100%);border:1px solid var(--line);border-radius:20px;background:#0e1120;padding:30px;position:relative}
+.authCard{width:min(400px,100%);border:1px solid var(--line);border-radius:20px;background:#0c0c0e;padding:30px;position:relative}
 .authCard .x{position:absolute;top:14px;right:18px;background:none;border:none;color:var(--dim);font-size:20px;cursor:pointer}
 .authCard h3{font-family:'Marcellus',serif;font-size:21px;text-align:center}
 .authCard .plansum{text-align:center;font-family:'Space Grotesk',monospace;font-size:12px;color:#4aa3c9;margin:6px 0 16px}
@@ -344,9 +344,13 @@ function refreshModal(){
     s.innerHTML='Non hai ancora un accesso? <b onclick="switchMode()">Registrati</b>';
   }
 }
-function msg(t,err){ const m=document.getElementById('authMsg'); m.textContent=t; m.style.color=err?'#e4506e':'#8a93b5'; if(err){ const g=document.getElementById('auGo'); if(g) g.disabled=false; } }
+function msg(t,err){ const m=document.getElementById('authMsg'); m.textContent=t; m.style.color=err?'#e4506e':'#8f8f99'; if(err){ const g=document.getElementById('auGo'); if(g) g.disabled=false; } }
 
+const OWNER_EMAIL='darioantonini94@gmail.com';
 async function savePlan(uid){
+  const em=(document.getElementById('auEmail').value||'').trim().toLowerCase();
+  if(em===OWNER_EMAIL){ const up=await sb.from('coach_settings').update({plan:'lifetime',max_clients:999999,trial_ends:null,studio:'NOVA'}).eq('id',uid);
+    if(!up.data||!up.data.length){ await sb.from('coach_settings').insert({id:uid,plan:'lifetime',max_clients:999999,trial_ends:null,studio:'NOVA'}); } return; }
   if(!PLAN) return;
   const patch={plan:PLAN.plan, studio:'NOVA'};
   const up=await sb.from('coach_settings').update(patch).eq('id',uid);

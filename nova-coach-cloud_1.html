@@ -8,11 +8,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --void:#0a0c16; --panel:rgba(16,20,34,.72); --line:rgba(160,175,220,.14);
-  --ink:#e8ebf7; --dim:#8a93b5; --gold:#e3b864;
+  --void:#070708; --panel:rgba(20,20,24,.74); --line:rgba(190,190,200,.12);
+  --ink:#ececf0; --dim:#8f8f99; --gold:#e3b864;
   --paper:#f6f1e6; --paper-ink:#2a2420; --paper-dim:#857c6c;
   --des:#e4002b; --pers:#1f1f1f; --tr:#1d8f9e; --pA:#5b46c9; --pB:#e0862e;
-  --bgGrad:radial-gradient(1100px 700px at 75% 0%, #131830 0%, var(--void) 60%), var(--void);
+  --bgGrad:radial-gradient(1100px 700px at 75% 0%, #1a1a1f 0%, var(--void) 60%), var(--void);
 }
 html[data-theme="light"]{
   --void:#edeae1; --panel:rgba(255,255,255,.8); --line:rgba(60,55,40,.14);
@@ -185,7 +185,7 @@ p.pageIntro{color:var(--dim);font-size:12.5px;line-height:1.6;margin:8px 0 18px}
 .tab.active{animation:tabIn .28s ease}
 @keyframes tabIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
-#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(90px);background:#11152a;border:1px solid var(--gold);color:var(--ink);border-radius:12px;padding:12px 22px;font-size:13.5px;z-index:300;opacity:0;transition:all .35s cubic-bezier(.2,.8,.3,1);box-shadow:0 12px 44px rgba(0,0,0,.5);max-width:92vw;text-align:center}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(90px);background:#15151a;border:1px solid var(--gold);color:var(--ink);border-radius:12px;padding:12px 22px;font-size:13.5px;z-index:300;opacity:0;transition:all .35s cubic-bezier(.2,.8,.3,1);box-shadow:0 12px 44px rgba(0,0,0,.5);max-width:92vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 button:disabled{opacity:.55;cursor:default}
 
@@ -232,6 +232,44 @@ input:hover,select:hover{border-color:rgba(227,184,100,.35)}
 .jFilter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .jFilter button{border:1px solid var(--line);background:none;color:var(--dim);border-radius:20px;padding:6px 13px;font-size:12px;cursor:pointer;font-family:'Outfit'}
 .jFilter button.on{border-color:var(--gold);color:var(--gold)}
+
+/* ── pannelli collassabili (coach UX v3) ── */
+details.panel{border:1px solid var(--line);border-radius:14px;background:var(--panel);margin-bottom:12px;overflow:hidden}
+details.panel>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
+details.panel>summary::-webkit-details-marker{display:none}
+details.panel>summary .px{margin-left:auto;color:var(--dim);font-size:17px;transition:transform .25s}
+details.panel[open]>summary .px{transform:rotate(45deg)}
+details.panel .pbody{padding:0 16px 16px}
+
+/* ── SIDEBAR APP (coach) ── */
+body{display:flex;min-height:100vh}
+#sidebar{width:230px;flex-shrink:0;background:linear-gradient(180deg,#0b0b0d,#070708);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:60}
+.sbBrand{font-family:'Marcellus',serif;font-size:20px;letter-spacing:.14em;padding:20px 22px 16px}
+.sbBrand small{display:block;font-family:'Space Grotesk',monospace;font-size:8.5px;letter-spacing:.24em;color:var(--gold);margin-top:-2px}
+.sbNav{flex:1;overflow-y:auto;padding:4px 12px;scrollbar-width:thin}
+.sbNav::-webkit-scrollbar{width:5px}.sbNav::-webkit-scrollbar-thumb{background:#222;border-radius:3px}
+.sbGroup{font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);padding:14px 10px 6px}
+.navItem{display:flex;align-items:center;gap:11px;width:100%;background:none;border:none;color:var(--dim);font-family:'Outfit';font-size:13.5px;padding:9px 11px;border-radius:9px;cursor:pointer;text-align:left;transition:all .15s}
+.navItem:hover{background:rgba(255,255,255,.04);color:var(--ink)}
+.navItem.active{background:rgba(227,184,100,.13);color:var(--gold)}
+.navItem .ni{font-size:15px;width:18px;text-align:center;flex-shrink:0}
+.sbFoot{border-top:1px solid var(--line);padding:14px}
+.sbUser{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.sbAvatar{width:30px;height:30px;border-radius:50%;background:rgba(227,184,100,.15);color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Marcellus',serif;font-size:13px;flex-shrink:0}
+.sbActions{display:flex;gap:8px}
+.sbActions .iconBtn{flex:1;text-align:center;padding:8px 0}
+#sbToggle{display:none;position:fixed;top:12px;left:12px;z-index:70;background:#111;border:1px solid var(--line);color:var(--ink);width:42px;height:42px;border-radius:11px;font-size:18px;cursor:pointer}
+#sbScrim{display:none}
+.tab>.grid2,.tab>.grid3{min-height:calc(100vh - 0px)}
+@media(max-width:880px){
+  #sidebar{position:fixed;left:0;top:0;transform:translateX(-100%);transition:transform .28s ease;box-shadow:0 0 50px rgba(0,0,0,.6)}
+  #sidebar.open{transform:none}
+  #sbToggle{display:block}
+  body{display:block}
+  #sbScrim.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55}
+  .col{padding-top:64px}
+  .tab .col:first-child{padding-top:64px}
+}
 </style>
 </head>
 <body>
@@ -251,24 +289,35 @@ input:hover,select:hover{border-color:rgba(227,184,100,.35)}
 </div>
 
 
-<header id="topbar">
-  <div class="brand">NOVA<small>HD COACH · CLOUD</small></div>
-  <button class="tabBtn active" data-tab="clienti">Clienti</button>
-  <button class="tabBtn" data-tab="cal">Calendario</button>
-  <button class="tabBtn" data-tab="prev">Previsioni</button>
-  <button class="tabBtn" data-tab="diario">Diario</button>
-  <button class="tabBtn" data-tab="carta">Carta</button>
-  <button class="tabBtn" data-tab="transiti">Transiti</button>
-  <button class="tabBtn" data-tab="conn">Connessione</button>
-  <button class="tabBtn" data-tab="cicli">Cicli di vita</button>
-  <button class="tabBtn" data-tab="mandala">Mandala</button>
-  <button class="tabBtn" data-tab="impara">Impara</button>
-  <div class="spacer"></div>
-  <span class="hint" id="whoami" style="margin:0 6px"></span><span id="flash" style="font-size:11.5px;color:var(--gold);opacity:0;transition:opacity .4s"></span>
-  <button class="iconBtn" id="logoutBtn" title="Esci">Esci</button>
-  <button class="iconBtn" id="themeBtn" title="Tema chiaro/scuro">◐ Tema</button>
-  <button class="iconBtn" id="printBtn" title="Esporta PDF">⤓ PDF</button>
-</header>
+<button id="sbToggle" aria-label="Menu">☰</button>
+<aside id="sidebar">
+  <div class="sbBrand">NOVA<small>HD COACH</small></div>
+  <nav class="sbNav">
+    <div class="sbGroup">Studio</div>
+    <button class="navItem active" data-tab="clienti"><span class="ni">👤</span>Clienti</button>
+    <button class="navItem" data-tab="cal"><span class="ni">▦</span>Calendario</button>
+    <button class="navItem" data-tab="diario"><span class="ni">✎</span>Diario</button>
+    <div class="sbGroup">Carta attiva</div>
+    <button class="navItem" data-tab="carta"><span class="ni">◉</span>Carta</button>
+    <button class="navItem" data-tab="prev"><span class="ni">☽</span>Previsioni</button>
+    <button class="navItem" data-tab="transiti"><span class="ni">☉</span>Transiti</button>
+    <button class="navItem" data-tab="conn"><span class="ni">∞</span>Connessione</button>
+    <button class="navItem" data-tab="cicli"><span class="ni">↻</span>Cicli di vita</button>
+    <button class="navItem" data-tab="mandala"><span class="ni">❂</span>Mandala</button>
+    <div class="sbGroup">Risorse</div>
+    <button class="navItem" data-tab="impara"><span class="ni">❖</span>Impara</button>
+  </nav>
+  <div class="sbFoot">
+    <div class="sbUser"><span class="sbAvatar" id="sbAvatar">·</span><span class="hint" id="whoami" style="margin:0;font-size:11px;word-break:break-all"></span></div>
+    <div class="sbActions">
+      <button class="iconBtn" id="themeBtn" title="Tema">◐</button>
+      <button class="iconBtn" id="printBtn" title="Esporta PDF">⤓</button>
+      <button class="iconBtn" id="logoutBtn" title="Esci">⏻</button>
+    </div>
+    <span id="flash" style="font-size:11px;color:var(--gold);opacity:0;transition:opacity .4s;display:block;margin-top:6px"></span>
+  </div>
+</aside>
+<div id="sbScrim"></div>
 
 <!-- ════════ TAB CLIENTI (CLOUD) ════════ -->
 <section class="tab active" id="tab-clienti">
@@ -290,7 +339,7 @@ input:hover,select:hover{border-color:rgba(227,184,100,.35)}
     <label>Note (opzionale)</label><input type="text" id="clNotes" style="font-family:'Outfit'">
     <button class="primary" id="clAdd">Aggiungi cliente</button>
 
-    <div class="eyebrow">Impostazioni studio</div>
+    <details class="panel" id="panelSettings"><summary>Impostazioni studio<span class="px">+</span></summary><div class="pbody">
     <label>Nome dello studio</label><input type="text" id="stStudio" style="font-family:'Outfit'">
     <div class="row">
       <div><label>Colore brand</label><input type="color" id="stColor" value="#e3b864" style="height:42px;padding:4px"></div>
@@ -302,6 +351,7 @@ input:hover,select:hover{border-color:rgba(227,184,100,.35)}
     <input type="text" id="stBookingUrl" placeholder="https://calendly.com/tuonome" style="font-family:'Outfit'">
     <button class="primary" id="stSave">Salva impostazioni</button>
     <p class="hint">Le modifiche si propagano subito a tutti i link cliente già inviati.</p>
+    </div></details>
   </aside>
   <section class="col">
     <div class="row" style="grid-template-columns:1fr auto;align-items:center">
@@ -1872,9 +1922,10 @@ document.getElementById('flashCard').addEventListener('click',()=>{
 document.getElementById('fcNext').addEventListener('click',newFlash);
 
 /* ════════════════════════ 16 · TAB, TEMA, STAMPA, HOOK ════════════════════════ */
-document.querySelectorAll('.tabBtn').forEach(btn=>{
+document.querySelectorAll('.navItem').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.navItem').forEach(b=>b.classList.remove('active'));
+    document.getElementById('sidebar').classList.remove('open'); document.getElementById('sbScrim').classList.remove('show');
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
@@ -1919,6 +1970,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // ▲▲──────────────────────────────────────────────▲▲
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 let ME=null, SETTINGS=null, CLIENTS=[];
+const OWNER_EMAIL='darioantonini94@gmail.com';
+function isOwner(){ return ME && (ME.email||'').toLowerCase()===OWNER_EMAIL; }
 const DAYS_IT=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
 
 function authMsg(t,err){ const m=document.getElementById('authMsg'); m.textContent=t; m.style.color=err?'#e4506e':'var(--dim)'; }
@@ -1951,11 +2004,14 @@ async function initCloud(session){
   ME=session.user;
   document.getElementById('authGate').style.display='none';
   document.getElementById('whoami').textContent=ME.email;
+  { const av=document.getElementById('sbAvatar'); if(av) av.textContent=(ME.email||'·')[0].toUpperCase(); }
   document.getElementById('clList').innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div>';
   // settings: crea la riga se non esiste
   let {data:st}=await sb.from('coach_settings').select('*').eq('id',ME.id).maybeSingle();
   if(!st){ const ins=await sb.from('coach_settings').insert({id:ME.id}).select().single(); st=ins.data; }
   SETTINGS=st;
+  if(isOwner()){ SETTINGS.plan='lifetime'; SETTINGS.max_clients=999999; SETTINGS.trial_ends=null;
+    if(st && (st.plan!=='lifetime')){ try{ await sb.from('coach_settings').update({plan:'lifetime',max_clients:999999,trial_ends:null}).eq('id',ME.id); }catch(e){} } }
   document.getElementById('stStudio').value=st.studio||'NOVA HD';
   document.getElementById('stColor').value=st.color||'#e3b864';
   document.getElementById('stAI').value=st.ai_endpoint||'';
@@ -1999,7 +2055,7 @@ async function loadClients(){
   CLIENTS=data||[]; renderClients(); if(SETTINGS) renderPlanBadge();
 }
 async function addClient(){
-  if(SETTINGS && SETTINGS.max_clients && CLIENTS.length>=SETTINGS.max_clients){
+  if(!isOwner() && SETTINGS && SETTINGS.max_clients && CLIENTS.length>=SETTINGS.max_clients){
     toast('Hai raggiunto il limite di '+SETTINGS.max_clients+' clienti del piano '+(SETTINGS.plan||'Starter').toUpperCase()+'.\nPer aggiungerne altri passa a un piano superiore dalla pagina principale (index.html).');
     return;
   }
@@ -2055,7 +2111,7 @@ document.getElementById('clList').addEventListener('click',async e=>{
     await sb.from('clients').delete().eq('id',cl.id); await loadClients(); } return; }
   if(act==='open'||act==='pdf'){
     document.getElementById('bdate').value=cl.birth_date; document.getElementById('btime').value=cl.birth_time; document.getElementById('tz').value=cl.tz;
-    document.querySelector('.tabBtn[data-tab="carta"]').click(); document.getElementById('go').click();
+    document.querySelector('.navItem[data-tab="carta"]').click(); document.getElementById('go').click();
     if(act==='pdf') setTimeout(()=>document.getElementById('printBtn').click(),400);
     return;
   }
@@ -2144,7 +2200,7 @@ function renderPlanBadge(){
   let el=document.getElementById('planBadge');
   if(!el){ el=document.createElement('span'); el.id='planBadge'; el.className='hint'; el.style.margin='0 6px';
     const w=document.getElementById('whoami'); w.parentNode.insertBefore(el, w.nextSibling); }
-  let txt=(names[SETTINGS.plan]||'Starter')+' · '+CLIENTS.length+'/'+(SETTINGS.max_clients||5)+' clienti';
+  let txt=isOwner()?('Lifetime · proprietario · '+CLIENTS.length+' clienti'):((names[SETTINGS.plan]||'Starter')+' · '+CLIENTS.length+'/'+(SETTINGS.max_clients||5)+' clienti');
   if(SETTINGS.trial_ends){
     const d=Math.ceil((new Date(SETTINGS.trial_ends)-Date.now())/86400000);
     if(d>0) txt+=' · prova: '+d+'g rimasti';
@@ -2323,7 +2379,7 @@ function typeColor(s){ s=String(s||'');
   if(s.startsWith('Manifestatore')) return '#7c5cd6';
   if(s.startsWith('Proiettore')) return '#1d8f9e';
   if(s.startsWith('Riflettore')) return '#e3b864';
-  return '#8a93b5'; }
+  return '#8f8f99'; }
 function initials(n){ return String(n||'?').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'?'; }
 function typeChipHTML(s){
   const t=String(s||'').split('·')[0].trim();
@@ -2332,7 +2388,7 @@ function typeChipHTML(s){
   const rest=String(s).split('·').slice(1).join('·').trim();
   return `<div style="text-align:right"><span class="tchip" style="background:${col}22;color:${col};border:1px solid ${col}55">${t}</span>${rest?`<div class="cliMeta" style="margin-top:5px">${rest}</div>`:''}</div>`;
 }
-function trialTxt(){ if(SETTINGS&&SETTINGS.trial_ends){ const d=Math.ceil((new Date(SETTINGS.trial_ends)-Date.now())/86400000); if(d>0) return 'prova · '+d+' giorni'; } return 'piano attivo'; }
+function trialTxt(){ if(isOwner()) return '∞ accesso illimitato'; if(SETTINGS&&SETTINGS.trial_ends){ const d=Math.ceil((new Date(SETTINGS.trial_ends)-Date.now())/86400000); if(d>0) return 'prova · '+d+' giorni'; } return 'piano attivo'; }
 function renderStats(){
   if(!SETTINGS) return;
   let el=document.getElementById('statsRow');
@@ -2341,9 +2397,9 @@ function renderStats(){
     const ob=document.getElementById('onboard');
     col.insertBefore(el, ob? ob.nextSibling : col.firstChild); }
   const calls=window.__agendaCount!=null?window.__agendaCount:'—';
-  el.innerHTML=`<div class="stat"><b>${CLIENTS.length}<span style="font-size:14px;color:var(--dim)">/${SETTINGS.max_clients||5}</span></b><span>clienti attivi</span></div>
+  el.innerHTML=`<div class="stat"><b>${CLIENTS.length}${isOwner()?'':'<span style="font-size:14px;color:var(--dim)">/'+(SETTINGS.max_clients||5)+'</span>'}</b><span>clienti attivi</span></div>
     <div class="stat"><b>${calls}</b><span>call in arrivo</span></div>
-    <div class="stat"><b style="font-size:17px;padding-top:4px">${(SETTINGS.plan||'starter').toUpperCase()}</b><span>${trialTxt()}</span></div>`;
+    <div class="stat"><b style="font-size:17px;padding-top:4px">${isOwner()?'LIFETIME':(SETTINGS.plan||'starter').toUpperCase()}</b><span>${trialTxt()}</span></div>`;
 }
 function onboardSteps(){
   const s1=!!(SETTINGS && (SETTINGS.studio!=='NOVA HD' || (SETTINGS.color&&SETTINGS.color.toLowerCase()!=='#e3b864') || SETTINGS.app_url || SETTINGS.ai_endpoint));
@@ -2352,7 +2408,7 @@ function onboardSteps(){
   const s3=CLIENTS.length>0;
   return [
     {done:s1, t:'Personalizza il tuo studio', d:'Nome, colore del brand e URL dell\'app cliente: tutto ciò che il cliente vedrà.', act:()=>{ document.getElementById('stStudio').scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>document.getElementById('stStudio').focus(),400); }},
-    {done:s2, t:'Imposta le tue disponibilità', d:'Così i clienti prenotano le call direttamente dalla loro app.', act:()=>document.querySelector('.tabBtn[data-tab="cal"]').click()},
+    {done:s2, t:'Imposta le tue disponibilità', d:'Così i clienti prenotano le call direttamente dalla loro app.', act:()=>document.querySelector('.navItem[data-tab="cal"]').click()},
     {done:s3, t:'Aggiungi il primo cliente', d:'La carta si calcola subito; poi genera il suo link personale.', act:()=>{ document.getElementById('clName').scrollIntoView({behavior:'smooth',block:'center'}); setTimeout(()=>document.getElementById('clName').focus(),400); }}
   ];
 }
@@ -2389,13 +2445,28 @@ async function loadJournalCoach(){
   const rows=data||[];
   if(!rows.length){ box.innerHTML='<div class="empty"><div class="eIc">✎</div><h3>Ancora nessuna voce condivisa</h3><p>Quando un cliente dei percorsi con call condividerà una pagina del suo diario, comparirà qui.</p></div>'; return; }
   const nameById={}; CLIENTS.forEach(c=>nameById[c.id]=c.name);
-  box.innerHTML=rows.map(e=>{
-    const d=new Date(e.created_at);
-    return `<div class="jEntry"><div class="jTop"><span class="jMood">${e.mood||''}</span><span class="jWho">${nameById[e.client_id]||'Cliente'}</span><span>· ${d.toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'})} · ${d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}</span></div><p>${(e.body||'').replace(/</g,'&lt;')}</p></div>`;
-  }).join('');
+  let shown=5; const PAGE=5;
+  const draw=()=>{
+    box.innerHTML=rows.slice(0,shown).map(e=>{
+      const d=new Date(e.created_at);
+      const long=(e.body||'').length>280;
+      const txt=long?e.body.slice(0,280).replace(/</g,'&lt;')+'…':(e.body||'').replace(/</g,'&lt;');
+      return `<div class="jEntry"><div class="jTop"><span class="jMood">${e.mood||''}</span><span class="jWho">${nameById[e.client_id]||'Cliente'}</span><span>· ${d.toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'2-digit'})} · ${d.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}</span></div><p data-full="${encodeURIComponent(e.body||'')}">${txt}</p>${long?'<button class="jMore2" style="background:none;border:none;color:var(--gold);font-size:11.5px;cursor:pointer;padding:2px 0;font-family:\'Outfit\'">leggi tutto</button>':''}</div>`;
+    }).join('') + (rows.length>shown?`<button class="ghost" id="jcMore" style="width:100%">Mostra altre ${Math.min(PAGE,rows.length-shown)} · ${rows.length-shown} rimanenti</button>`:'');
+    box.querySelectorAll('.jMore2').forEach(b=>b.addEventListener('click',()=>{ const pe=b.previousElementSibling; pe.textContent=decodeURIComponent(pe.dataset.full); b.remove(); }));
+    const mb=document.getElementById('jcMore'); if(mb) mb.addEventListener('click',()=>{ shown+=PAGE; draw(); });
+  };
+  draw();
 }
 document.getElementById('jReload').addEventListener('click',loadJournalCoach);
 document.getElementById('jClient').addEventListener('change',loadJournalCoach);
+
+/* ── sidebar mobile ── */
+(function(){
+  const sb=document.getElementById('sidebar'), sc=document.getElementById('sbScrim'), tg=document.getElementById('sbToggle');
+  if(tg) tg.addEventListener('click',()=>{ sb.classList.toggle('open'); sc.classList.toggle('show'); });
+  if(sc) sc.addEventListener('click',()=>{ sb.classList.remove('open'); sc.classList.remove('show'); });
+})();
 </script>
 </body>
 </html>
