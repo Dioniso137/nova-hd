@@ -318,6 +318,27 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
 .acgF{border:1px solid var(--line);background:none;color:var(--dim);border-radius:16px;padding:5px 11px;font-size:11.5px;cursor:pointer;font-family:'Outfit'}
 .acgF:hover{color:var(--ink)}
 .acgF.active{border-color:var(--pc,var(--gold));color:var(--pc,var(--gold));background:rgba(227,184,100,.08)}
+.astroPlaceBar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:8px 0}
+.acgBig{padding:6px;background:#0a1118;border-radius:14px}
+.acgBig svg{width:100%;height:auto;display:block;border-radius:10px}
+.acgTitle{font-family:'Marcellus',serif;font-size:22px;margin:4px 0 6px}
+.acgLead{color:var(--dim);font-size:13.5px;line-height:1.6;margin-bottom:14px;max-width:680px}
+.goalRow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.goalBtn{border:1px solid var(--line);background:rgba(227,184,100,.04);color:var(--ink);border-radius:22px;padding:9px 16px;font-size:13px;cursor:pointer;font-family:'Outfit';transition:all .18s}
+.goalBtn:hover{border-color:var(--gold)}
+.goalBtn.active{background:var(--gold);color:#0b0b0d;border-color:var(--gold)}
+.acgGuideHead{font-family:'Space Grotesk',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:18px 0 12px}
+.acgGuide{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.acgCard{border:1px solid var(--line);border-radius:14px;padding:15px;background:var(--panel);cursor:pointer;transition:all .18s}
+.acgCard:hover{border-color:var(--pc);transform:translateY(-2px)}
+.acgCard.hot{border-color:var(--pc);box-shadow:0 0 0 1px var(--pc), 0 10px 30px rgba(0,0,0,.3);background:linear-gradient(160deg,color-mix(in srgb,var(--pc) 12%,transparent),transparent)}
+.acgCardTop{display:flex;align-items:center;gap:11px;margin-bottom:9px}
+.acgGlyph{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.acgCardTop b{font-family:'Marcellus',serif;font-size:16px;display:block}
+.acgCardTop small{color:var(--dim);font-size:11.5px}
+.acgWhat{font-size:12.5px;line-height:1.55;color:var(--ink);margin-bottom:8px}
+.acgWhen{font-size:12px;line-height:1.5;color:var(--dim)}
+.acgWhen b{color:var(--pc)}
 </style>
 </head>
 <body>
@@ -489,21 +510,18 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
 
 <!-- ════════ TAB ASTROMAPPA ════════ -->
 <section class="tab" id="tab-astro">
-<div class="grid2">
-  <aside class="col bordered">
-    <h2 class="pageTitle">Astromappa</h2>
-    <p class="pageIntro">La carta astrologica occidentale del cliente attivo: ruota natale con segni, case e aspetti, più l'astrocartografia (dove nel mondo ogni energia planetaria è accentuata). Calcoli su effemeridi di precisione del motore NOVA.</p>
-    <label>Luogo di nascita</label>
-    <div style="display:flex;gap:8px">
-      <input type="text" id="astroPlace" placeholder="Es. Roma, Italia" style="font-family:'Outfit'">
+<div class="col bordered" style="max-width:1040px;margin:0 auto">
+  <h2 class="pageTitle">Astromappa</h2>
+  <p class="pageIntro">La carta astrologica occidentale del cliente attivo: la ruota natale e — soprattutto — l'astrocartografia, che mostra dove nel mondo ogni energia planetaria è più forte. Calcoli su effemeridi di precisione del motore NOVA.</p>
+  <div class="astroPlaceBar">
+    <label style="margin:0">Luogo di nascita</label>
+    <div style="display:flex;gap:8px;flex:1;min-width:220px">
+      <input type="text" id="astroPlace" placeholder="Es. Roma, Italia" style="font-family:'Outfit';flex:1">
       <button class="ghost" id="astroGo" style="margin-top:0;white-space:nowrap">Cerca</button>
     </div>
-    <div id="astroResults"></div>
-    <p class="hint">Il luogo serve per ascendente, case e linee di astrocartografia. La data e l'ora vengono dalla carta del cliente attivo.</p>
-  </aside>
-  <section class="col">
-    <div id="astroBody"><div class="banner">Apri una carta cliente e indica il luogo di nascita per generare l'astromappa.</div></div>
-  </section>
+  </div>
+  <div id="astroResults"></div>
+  <div id="astroBody"><div class="banner">Indica il luogo di nascita per generare l'astromappa del cliente attivo.</div></div>
 </div>
 </section>
 
@@ -2706,7 +2724,7 @@ function acgLines(A){
   return lines;
 }
 function renderACG(A, markLat, markLon, filter){
-  const W=720,H=380;
+  const W=1000,H=520;
   const X=lon=>(lon+180)/360*W, Y=lat=>(90-lat)/180*H;
   let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
   // sfondo oceano + gradiente
@@ -2717,7 +2735,7 @@ function renderACG(A, markLat, markLon, filter){
   // griglia leggera sopra i continenti
   for(let lon=-180;lon<=180;lon+=60){ s+=`<line x1="${X(lon)}" y1="0" x2="${X(lon)}" y2="${H}" stroke="#ffffff" stroke-width=".4" opacity=".07"/>`; }
   for(let lat=-60;lat<=60;lat+=30){ s+=`<line x1="0" y1="${Y(lat)}" x2="${W}" y2="${Y(lat)}" stroke="#ffffff" stroke-width=".4" opacity=".07"/>`;
-    s+=`<text x="3" y="${Y(lat)-2}" font-size="7" fill="#5a6a82" font-family="monospace">${lat>0?'+':''}${lat}°</text>`; }
+    s+=`<text x="4" y="${Y(lat)-2}" font-size="9" fill="#5a6a82" font-family="monospace">${lat>0?'+':''}${lat}°</text>`; }
   s+=`<line x1="0" y1="${Y(0)}" x2="${W}" y2="${Y(0)}" stroke="#3a4a6a" stroke-width=".8" opacity=".5"/>`;
   const L=acgLines(A);
   const poly=(pts)=>{ // spezza la polilinea quando salta il bordo (>180 di gap)
@@ -2735,7 +2753,7 @@ function renderACG(A, markLat, markLon, filter){
     const dim = filter? 1 : .82;
     // MC: meridiano pieno e spesso
     s+=`<line x1="${X(ln.mcLon)}" y1="14" x2="${X(ln.mcLon)}" y2="${H}" stroke="${col}" stroke-width="${filter?2:1.4}" opacity="${dim}"/>`;
-    s+=`<text x="${X(ln.mcLon)}" y="11" font-size="10" fill="${col}" font-family="monospace" text-anchor="middle">${ASTRO.GLYPH[it]}</text>`;
+    s+=`<text x="${X(ln.mcLon)}" y="11" font-size="13" fill="${col}" font-family="monospace" text-anchor="middle">${ASTRO.GLYPH[it]}</text>`;
     // IC: meridiano tratteggiato sottile
     s+=`<line x1="${X(ln.icLon)}" y1="0" x2="${X(ln.icLon)}" y2="${H}" stroke="${col}" stroke-width=".7" stroke-dasharray="2 4" opacity="${dim*.55}"/>`;
     // ASC (continua sottile) e DESC (punteggiata)
@@ -2745,11 +2763,11 @@ function renderACG(A, markLat, markLon, filter){
   // città di riferimento
   const CITIES=[['Roma',41.9,12.5],['Londra',51.5,-0.1],['New York',40.7,-74],['Los Angeles',34,-118.2],['Tokyo',35.7,139.7],['Sydney',-33.9,151.2],['Rio',-22.9,-43.2],['Città del Capo',-33.9,18.4],['Dubai',25.2,55.3],['Mosca',55.8,37.6]];
   for(const [nm,la,lo] of CITIES){
-    s+=`<circle cx="${X(lo)}" cy="${Y(la)}" r="1.6" fill="#9fb0c8"/><text x="${X(lo)+4}" y="${Y(la)+3}" font-size="7.5" fill="#9fb0c8" font-family="'Outfit'">${nm}</text>`;
+    s+=`<circle cx="${X(lo)}" cy="${Y(la)}" r="2.4" fill="#9fb0c8"/><text x="${X(lo)+4}" y="${Y(la)+3}" font-size="10" fill="#aebfd6" font-family="'Outfit'">${nm}</text>`;
   }
   // marker luogo di nascita
   if(markLon!=null){
-    s+=`<circle cx="${X(markLon)}" cy="${Y(markLat)}" r="5" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="${X(markLon)}" cy="${Y(markLat)}" r="2" fill="#fff"/><text x="${X(markLon)+8}" y="${Y(markLat)-4}" font-size="9" fill="#fff" font-weight="bold">nascita</text>`;
+    s+=`<circle cx="${X(markLon)}" cy="${Y(markLat)}" r="7" fill="none" stroke="#fff" stroke-width="1.5"/><circle cx="${X(markLon)}" cy="${Y(markLat)}" r="3" fill="#fff"/><text x="${X(markLon)+8}" y="${Y(markLat)-4}" font-size="12" fill="#fff" font-weight="bold">nascita</text>`;
   }
   s+=`</svg>`;
   return s;
@@ -2764,13 +2782,35 @@ async function geocode(q){
   }catch(e){ return []; }
 }
 
+
+const ACG_MEANING={
+  Sole:{tema:'Identità & vitalità',cosa:'Ti senti più te stesso, visibile, pieno di energia. Buono per affermarti, guidare, essere riconosciuto.',quando:'Vuoi rinascere, aumentare fiducia e leadership.',col:'#e3b864'},
+  Luna:{tema:'Casa & emozioni',cosa:'Senso di appartenenza, radici, nutrimento emotivo. Ti senti "a casa" e accudito.',quando:'Cerchi pace interiore, famiglia, un porto sicuro.',col:'#cfd2e0'},
+  Mercurio:{tema:'Mente & comunicazione',cosa:'Pensiero rapido, studio, scrittura, scambi, commercio. La testa lavora bene.',quando:'Studi, scrivi, lavori con le idee o vuoi connetterti con tante persone.',col:'#8fb98f'},
+  Venere:{tema:'Amore & bellezza',cosa:'Relazioni, romanticismo, arte, piacere, armonia. Più facile amare ed essere amati.',quando:'Cerchi amore, vita sociale, creatività, dolcezza.',col:'#e08fb0'},
+  Marte:{tema:'Azione & energia',cosa:'Spinta, coraggio, competizione, lavoro fisico. Tanta energia ma anche più conflitto.',quando:'Vuoi metterti alla prova, fondare qualcosa, ritrovare grinta.',col:'#d95757'},
+  Giove:{tema:'Crescita & fortuna',cosa:'Espansione, opportunità, abbondanza, ottimismo, viaggi. La linea più amata per prosperare.',quando:'Cerchi successo, occasioni, crescita personale ed economica.',col:'#e0a860'},
+  Saturno:{tema:'Disciplina & struttura',cosa:'Responsabilità, lavoro duro, maturità, ma anche peso e restrizioni. Si costruisce solido ma con fatica.',quando:'Vuoi disciplina e radici durature — non per leggerezza o svago.',col:'#9a8fb9'},
+  Urano:{tema:'Libertà & cambiamento',cosa:'Rottura, innovazione, imprevisto, indipendenza. Tutto si muove, niente è stabile.',quando:'Vuoi reinventarti, libertà, vita non convenzionale.',col:'#5fc9d8'},
+  Nettuno:{tema:'Spiritualità & sogno',cosa:'Ispirazione, arte, spiritualità, ma anche confusione e illusione. Confini sfumati.',quando:'Cerchi crescita spirituale o creativa — non chiarezza pratica.',col:'#5f8fd8'},
+  Plutone:{tema:'Trasformazione & potere',cosa:'Cambiamenti profondi, intensità, rinascita, potere. Forte ma impegnativo.',quando:'Sei pronto a una trasformazione radicale, non a una vita tranquilla.',col:'#b06f9a'}
+};
+const ACG_GOALS=[
+  ['💛 Amore e relazioni','Venere','Luna'],
+  ['📈 Carriera e successo','Giove','Sole'],
+  ['🧘 Pace e famiglia','Luna','Venere'],
+  ['🚀 Energia e nuovi inizi','Marte','Sole'],
+  ['📚 Studio e idee','Mercurio','Giove'],
+  ['✨ Spiritualità e arte','Nettuno','Venere']
+];
+
 /* ── Pannello Astromappa (coach) ── */
 let ASTRO_PLACE=null;
 function renderAstromappa(){
   const box=document.getElementById('astroBody');
   if(!currentChart){ box.innerHTML='<div class="banner">Apri prima una carta dalla scheda Clienti (o genera una carta nella scheda Carta).</div>'; return; }
   if(!ASTRO_PLACE){
-    box.innerHTML=`<div class="banner">Per la mappa astrologica serve il <b>luogo di nascita</b> (per ascendente, case e astrocartografia). Cercalo qui sopra.</div>`;
+    box.innerHTML='<div class="banner">Per la mappa astrologica serve il <b>luogo di nascita</b> (per ascendente, case e astrocartografia). Cercalo qui sopra.</div>';
     return;
   }
   const A=buildAstro(currentChart, ASTRO_PLACE.lat, ASTRO_PLACE.lon);
@@ -2779,38 +2819,67 @@ function renderAstromappa(){
   const asps=A.aspects.map(a=>`<div class="cblock" style="border-left-color:${a.col}"><h4>${ASTRO.GLYPH[a.a]} ${a.a} <span style="color:${a.col}">${a.type}</span> ${ASTRO.GLYPH[a.b]} ${a.b}</h4><p style="font-size:11.5px;color:var(--dim)">orb ${a.orb}° · angolo esatto ${a.angle}°</p></div>`).join('');
   box.innerHTML=`
     <div class="astroTabs">
-      <button class="atb active" data-av="wheel">Ruota natale</button>
-      <button class="atb" data-av="acg">Astrocartografia</button>
-      <button class="atb" data-av="data">Dati & aspetti</button>
+      <button class="atb" data-av="acg">🗺 Dove vivere</button>
+      <button class="atb active" data-av="wheel">⊙ Ruota natale</button>
+      <button class="atb" data-av="data">▦ Dati & aspetti</button>
     </div>
     <div class="av" id="av-wheel">
-      <div class="paper" style="padding:10px">${renderNatalWheel(A)}</div>
+      <div class="paper" style="padding:10px;max-width:560px;margin:0 auto">${renderNatalWheel(A)}</div>
       <p class="hint">Ascendente <b>${aSign(A.asc)} ${aDeg(A.asc)}</b> · Medio Cielo <b>${aSign(A.mc)} ${aDeg(A.mc)}</b> · case Porfirio · luogo ${ASTRO_PLACE.name}.</p>
     </div>
     <div class="av" id="av-acg" style="display:none">
+      <h3 class="acgTitle">Dove nel mondo vivi meglio?</h3>
+      <p class="acgLead">Ogni pianeta "disegna" delle linee sulla Terra. Vivere vicino a una linea amplifica quell'energia nella tua vita. <b>Scegli cosa cerchi</b> e ti evidenzio i pianeti giusti da guardare sulla mappa.</p>
+      <div class="goalRow" id="goalRow">
+        ${ACG_GOALS.map((g,i)=>`<button class="goalBtn" data-goal="${i}">${g[0]}</button>`).join('')}
+      </div>
       <div class="acgFilter" id="acgFilter">
-        <button class="acgF active" data-p="">Tutti</button>
+        <button class="acgF active" data-p="">Tutti i pianeti</button>
         ${Object.keys(ASTRO.GLYPH).map(it=>`<button class="acgF" data-p="${it}" style="--pc:${ASTRO.COLORS[it]}">${ASTRO.GLYPH[it]} ${it}</button>`).join('')}
       </div>
-      <div class="paper" id="acgMap" style="padding:8px;background:#0d1420">${renderACG(A,ASTRO_PLACE.lat,ASTRO_PLACE.lon)}</div>
-      <p class="hint">Le linee mostrano dove ogni pianeta era angolare alla nascita. <b>Linea continua = MC</b> (il pianeta culmina: ne accentua il tema, ambito pubblico/carriera), tratteggiata verticale = IC (radici, casa). Le <b>curve</b> sono ASC (sorgere, identità) e DESC (tramonto, relazioni). Vivere vicino a una linea ne amplifica l'energia. <b>Nota:</b> l'astrocartografia è una tradizione interpretativa — il calcolo geometrico è preciso, il significato è simbolico.</p>
-      <div class="acgLegend">${Object.keys(ASTRO.GLYPH).map(it=>`<span><i style="background:${ASTRO.COLORS[it]}"></i>${ASTRO.GLYPH[it]} ${it}</span>`).join('')}</div>
+      <div class="paper acgBig" id="acgMap">${renderACG(A,ASTRO_PLACE.lat,ASTRO_PLACE.lon)}</div>
+      <div class="acgGuideHead" id="acgGuideHead">Cosa significa ogni linea — guida alla scelta</div>
+      <div class="acgGuide" id="acgGuide">
+        ${Object.keys(ACG_MEANING).map(it=>{const m=ACG_MEANING[it];return `<div class="acgCard" data-card="${it}" style="--pc:${m.col}">
+          <div class="acgCardTop"><span class="acgGlyph" style="background:${m.col}22;color:${m.col}">${ASTRO.GLYPH[it]}</span><div><b>${it}</b><small>${m.tema}</small></div></div>
+          <p class="acgWhat">${m.cosa}</p>
+          <p class="acgWhen"><b>Scegli ${it} se:</b> ${m.quando}</p>
+        </div>`;}).join('')}
+      </div>
+      <p class="hint" style="margin-top:14px"><b>Come leggere la mappa:</b> la linea verticale piena (col glifo in alto) è il <b>MC</b> — l'energia del pianeta nella tua carriera e immagine pubblica. La verticale tratteggiata è l'<b>IC</b> (casa, radici). Le due curve sono <b>ASC</b> (chi sei, il tuo corpo) e <b>DESC</b> (relazioni). Più sei vicino a una linea, più forte l'effetto. <b>Nota onesta:</b> il calcolo geometrico è preciso, ma il significato è una tradizione interpretativa, non scienza.</p>
     </div>
     <div class="av" id="av-data" style="display:none">
       <table class="astroTable"><thead><tr><th></th><th>Pianeta</th><th>Segno</th><th>Grado</th><th>Casa</th></tr></thead><tbody>${tbl}</tbody></table>
       <div class="eyebrow">Aspetti maggiori</div>${asps||'<p class="hint">Nessun aspetto maggiore entro gli orbi.</p>'}
     </div>`;
+  // tab switch
   box.querySelectorAll('.atb').forEach(b=>b.addEventListener('click',()=>{
     box.querySelectorAll('.atb').forEach(x=>x.classList.remove('active')); b.classList.add('active');
     box.querySelectorAll('.av').forEach(v=>v.style.display='none');
     document.getElementById('av-'+b.dataset.av).style.display='';
   }));
-  const fb=box.querySelector('#acgFilter');
-  if(fb) fb.querySelectorAll('.acgF').forEach(b=>b.addEventListener('click',()=>{
-    fb.querySelectorAll('.acgF').forEach(x=>x.classList.remove('active')); b.classList.add('active');
-    document.getElementById('acgMap').innerHTML=renderACG(A,ASTRO_PLACE.lat,ASTRO_PLACE.lon,b.dataset.p||null);
+  // filtro pianeta singolo
+  let curFilter=null;
+  function applyFilter(p, highlightCard){
+    curFilter=p||null;
+    document.getElementById('acgMap').innerHTML=renderACG(A,ASTRO_PLACE.lat,ASTRO_PLACE.lon,curFilter);
+    const fb=box.querySelector('#acgFilter');
+    fb.querySelectorAll('.acgF').forEach(x=>x.classList.toggle('active',(x.dataset.p||'')===(p||'')));
+    box.querySelectorAll('.acgCard').forEach(c=>c.classList.toggle('hot', highlightCard&&highlightCard.includes(c.dataset.card)));
+  }
+  box.querySelector('#acgFilter').querySelectorAll('.acgF').forEach(b=>b.addEventListener('click',()=>applyFilter(b.dataset.p||null)));
+  // obiettivi → evidenziano i pianeti consigliati (mostra il primo sulla mappa)
+  box.querySelector('#goalRow').querySelectorAll('.goalBtn').forEach(b=>b.addEventListener('click',()=>{
+    box.querySelectorAll('.goalBtn').forEach(x=>x.classList.remove('active')); b.classList.add('active');
+    const g=ACG_GOALS[+b.dataset.goal]; const planets=g.slice(1);
+    applyFilter(planets[0], planets);
+    document.getElementById('acgGuideHead').textContent='Per "'+g[0]+'" guarda: '+planets.join(' e ');
+    const first=box.querySelector('.acgCard[data-card="'+planets[0]+'"]'); if(first) first.scrollIntoView({behavior:'smooth',block:'nearest'});
   }));
+  // card cliccabile → filtra quel pianeta
+  box.querySelectorAll('.acgCard').forEach(c=>c.addEventListener('click',()=>applyFilter(c.dataset.card,[c.dataset.card])));
 }
+
 async function astroSearch(){
   const q=document.getElementById('astroPlace').value.trim(); if(!q) return;
   const res=document.getElementById('astroResults');
