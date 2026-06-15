@@ -324,7 +324,10 @@ window.supabase={ createClient:function(){ return {auth, from, rpc}; } };
 
 
 const sb = window.supabase.createClient();
-const DASHBOARD = 'nova-coach-cloud_1.html';
+const OWNER_EMAIL='darioantonini94@gmail.com';
+  const DASHBOARD = 'nova-coach-cloud_1.html';   // area regia (solo owner)
+const ONBOARDING = 'onboarding.html';          // dove vanno i clienti
+function destFor(email){ return (email||'').trim().toLowerCase()===OWNER_EMAIL ? DASHBOARD : ONBOARDING; }
 let MODE='signup', PLAN=null;
 
 function openAuth(plan,mode){ PLAN=plan; MODE=mode||'signup'; document.getElementById('authModal').classList.add('open'); document.getElementById('authMsg').textContent=''; refreshModal(); setTimeout(()=>document.getElementById('auEmail').focus(),50); }
@@ -346,7 +349,6 @@ function refreshModal(){
 }
 function msg(t,err){ const m=document.getElementById('authMsg'); m.textContent=t; m.style.color=err?'#e4506e':'#8f8f99'; if(err){ const g=document.getElementById('auGo'); if(g) g.disabled=false; } }
 
-const OWNER_EMAIL='darioantonini94@gmail.com';
 async function savePlan(uid){
   const em=(document.getElementById('auEmail').value||'').trim().toLowerCase();
   if(em===OWNER_EMAIL){ const up=await sb.from('coach_settings').update({plan:'lifetime',max_clients:999999,trial_ends:null,studio:'NOVA'}).eq('id',uid);
@@ -366,7 +368,7 @@ async function doAuth(){
     const {data,error}=await sb.auth.signUp({email,password:pass});
     if(error){ msg('Errore: '+error.message,1); return; }
     const {data:s}=await sb.auth.getSession();
-    if(s && s.session){ await savePlan(s.session.user.id); msg('Accesso creato! Ti porto nella tua dashboard…'); location.href=DASHBOARD; }
+    if(s && s.session){ await savePlan(s.session.user.id); msg('Accesso creato! Un attimo…'); location.href=destFor(email); }
     else { msg('Quasi fatto! Controlla la tua email e clicca il link di conferma, poi torna qui e accedi.'); try{ localStorage.setItem('nova_pending_plan', JSON.stringify(PLAN)); }catch(e){} document.getElementById('auGo').disabled=false; }
   } else {
     const {error}=await sb.auth.signInWithPassword({email,password:pass});
@@ -374,7 +376,7 @@ async function doAuth(){
     const {data:s}=await sb.auth.getSession();
     let pending=PLAN; try{ const pp=localStorage.getItem('nova_pending_plan'); if(!pending&&pp) pending=JSON.parse(pp); localStorage.removeItem('nova_pending_plan'); }catch(e){}
     if(pending){ PLAN=pending; await savePlan(s.session.user.id); }
-    msg('Bentornato! Ti porto nella tua dashboard…'); location.href=DASHBOARD;
+    msg('Bentornato! Un attimo…'); location.href=destFor(email);
   }
 }
 document.getElementById('authModal').addEventListener('click',e=>{ if(e.target.id==='authModal') closeAuth(); });
