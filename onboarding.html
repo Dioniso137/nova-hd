@@ -751,7 +751,11 @@ async function saveProfile(){
   setStep(3);
   const token=data.share_token;
   // invio email con il link (via Edge Function) - non blocca il flusso
-  try{ await sb.functions.invoke('send-welcome',{body:{token, name:PREVIEW.name, email:SESSION.user.email}}); }catch(e){}
+  try{
+    const {data:emData,error:emErr}=await sb.functions.invoke('send-welcome',{body:{token, name:PREVIEW.name, email:SESSION.user.email}});
+    if(emErr){ console.error('[send-welcome] errore invocazione:', emErr); }
+    else { console.log('[send-welcome] risposta:', emData); }
+  }catch(e){ console.error('[send-welcome] eccezione:', e); }
   document.getElementById('oDone').textContent='Tutto pronto! Apertura della tua dashboard…';
   setTimeout(()=>{ location.href='nova-cliente-cloud_1.html#t='+token; }, 1400);
 }

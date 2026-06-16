@@ -2443,7 +2443,7 @@ function doPrevisioni(){
   const srC=chartAtJD(sr);
   document.getElementById('srBox').innerHTML=`<div class="cycCard"><h4>Il nuovo anno solare</h4>
     <div class="when">${fmtD2(sr)} · ore ${jdToDateObj(sr).toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})} (istante esatto del ritorno del Sole alla longitudine natale)</div>
-    <p>La carta di quel momento colora i 12 mesi successivi: <b>${srC.type}</b> · profilo ${srC.profKey} · autorità ${srC.authority} · definizione ${srC.definition}.</p>
+    <p>La carta di quel momento colora i 12 mesi successivi: <b>${srC.type}</b> · profilo ${srC.profKey} · autorità ${srC.authority} · definizione ${srC.defLabel}.</p>
     <p style="margin-top:6px">${srC.defChannels.length? 'Canali dell\'anno: '+srC.defChannels.map(x=>`<b>${x[0]}–${x[1]}</b> ${x[2]}`).join(' · ') : 'Nessun canale definito: un anno aperto e ricettivo.'}</p></div>
     <div class="paper" style="padding:10px 6px 4px"><svg id="sr-svg" viewBox="14 14 572 850" xmlns="http://www.w3.org/2000/svg"></svg></div>`;
   renderBodygraph('sr-svg',
