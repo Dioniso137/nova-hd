@@ -413,6 +413,7 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
     <button class="navItem" data-tab="cicli" data-label="Cicli di vita"><span class="ni">↻</span><span class="nlabel">Cicli di vita</span></button>
     <button class="navItem" data-tab="mandala" data-label="Mandala"><span class="ni">❂</span><span class="nlabel">Mandala</span></button>
     <button class="navItem" data-tab="astro" data-label="Astromappa"><span class="ni">🜨</span><span class="nlabel">Astromappa</span></button>
+    <button class="navItem" data-tab="numero" data-label="Numerologia"><span class="ni">№</span><span class="nlabel">Numerologia</span></button>
     <div class="sbGroup">Risorse</div>
     <button class="navItem" data-tab="impara" data-label="Impara"><span class="ni">❖</span><span class="nlabel">Impara</span></button>
   </nav>
@@ -772,6 +773,35 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
   <section class="col">
     <input type="text" id="learnSearch" placeholder="Cerca: porta 34, canale 20-34, sacrale, proiettore…" style="font-family:'Outfit'">
     <div id="learnList" style="margin-top:10px"></div>
+  </section>
+</div>
+</section>
+
+<!-- ════════ TAB NUMEROLOGIA CALDEA ════════ -->
+<section class="tab" id="tab-numero">
+<div class="grid2">
+  <main class="col bordered">
+    <h2 class="pageTitle">Numerologia Caldea</h2>
+    <p class="pageIntro">Strumento interno. I numeri si calcolano da nome e data di nascita. La caldea usa il nome con cui sei più conosciuto: puoi tenere solo il primo o secondo nome. Mostra numero composto (10–52, significato proprio), radice ridotta, pianeta e note karmiche.</p>
+
+    <label>Cliente</label>
+    <select id="numClient"><option value="">— scegli un cliente o scrivi a mano —</option></select>
+
+    <label style="margin-top:10px;display:block">Nome usato per il calcolo</label>
+    <input type="text" id="numName" placeholder="Es. Maria (o Maria Elena)">
+
+    <label style="margin-top:10px;display:block">Data di nascita</label>
+    <input type="date" id="numDate">
+
+    <label style="margin-top:10px;display:flex;align-items:center;gap:8px;cursor:pointer">
+      <input type="checkbox" id="numNine" style="width:auto"> Usa la variante che assegna il <b>9</b> alla E (altrimenti mappa classica di Cheiro 1–8)
+    </label>
+
+    <button class="primary" id="numGo" style="margin-top:14px">Calcola numeri →</button>
+    <p class="hint" style="margin-top:10px">Y è trattata come consonante; gli accenti (à, è…) come la lettera base. Il 9 non è mai un valore di lettera nella mappa classica, ma può comparire come risultato.</p>
+  </main>
+  <section class="col">
+    <div id="numResults"><p class="hint">Scegli un cliente o inserisci nome e data, poi premi “Calcola numeri”.</p></div>
   </section>
 </div>
 </section>
@@ -2074,6 +2104,7 @@ document.querySelectorAll('.navItem').forEach(btn=>{
     if (btn.dataset.tab==='prev') renderPrevisioni();
     if (btn.dataset.tab==='diario') loadJournalCoach();
     if (btn.dataset.tab==='astro') renderAstromappa();
+    if (btn.dataset.tab==='numero') initNumero();
   });
 });
 document.getElementById('themeBtn').addEventListener('click',()=>{
@@ -3128,6 +3159,180 @@ function renderCityFinder(A, place){
 
 document.getElementById('astroGo').addEventListener('click', astroSearch);
 document.getElementById('astroPlace').addEventListener('keydown',e=>{ if(e.key==='Enter') astroSearch(); });
+
+/* ════════════════════════════════════════════════════════════════
+   NUMEROLOGIA CALDEA · strumento interno coach
+   Calcolo deterministico (nessuna AI). Mappa Cheiro classica 1–8,
+   con variante opzionale che assegna 9 alla E.
+   Numeri composti 10–52 con significato proprio (descrizioni
+   classiche, parafrasate). Karmici segnalati.
+   ════════════════════════════════════════════════════════════════ */
+
+const CHALDEAN_CLASSIC = {A:1,I:1,J:1,Q:1,Y:1,B:2,K:2,R:2,C:3,G:3,L:3,S:3,D:4,M:4,T:4,E:5,H:5,N:5,X:5,U:6,V:6,W:6,O:7,Z:7,F:8,P:8};
+const NUM_VOWELS = new Set(['A','E','I','O','U']);
+
+// Pianeta + tema per i numeri radice 1–9
+const NUM_PLANET = {
+  1:{pl:'Sole', t:'Leadership, individualità, iniziativa. Volontà e desiderio di primeggiare.'},
+  2:{pl:'Luna', t:'Sensibilità, cooperazione, adattamento. Diplomazia e vita interiore.'},
+  3:{pl:'Giove', t:'Creatività, espressione, espansione. Ottimismo e comunicazione.'},
+  4:{pl:'Urano/Rahu', t:'Metodo, struttura, ribellione silenziosa. Visione anticonformista.'},
+  5:{pl:'Mercurio', t:'Versatilità, comunicazione, movimento. Mente rapida, libertà.'},
+  6:{pl:'Venere', t:'Amore, armonia, responsabilità, bellezza. Cura degli altri.'},
+  7:{pl:'Nettuno/Ketu', t:'Introspezione, spiritualità, studio. Profondità e mistero.'},
+  8:{pl:'Saturno', t:'Disciplina, karma, materia. Successo guadagnato con sforzo e prove.'},
+  9:{pl:'Marte', t:'Energia, coraggio, completamento, servizio. Combattività e idealismo.'},
+};
+
+// Composti 10–52 (descrizioni classiche parafrasate). k=true => nota karmica/difficile.
+const COMPOUND = {
+  10:{n:'La Ruota della Fortuna', d:'Ascesa o caduta a seconda di come si usa la propria volontà; tendenzialmente onore e fortuna.'},
+  11:{n:'Il Leone Imbavagliato', d:'Forza interiore minata da insidie nascoste e dubbi; serve vigilanza verso tradimenti.', k:true},
+  12:{n:'Il Sacrificio', d:'Rischio di essere usati o sacrificati per i piani altrui; sofferenza più mentale che reale.', k:true},
+  13:{n:'Trasformazione', d:'Potere e cambiamento. Non sfortunato in sé: rinnovamento attraverso il distacco dal passato.', k:true},
+  14:{n:'Movimento e Rischio', d:'Energia, viaggi, fortuna mutevole; lezione sull’uso corretto della libertà. Cautela con eccessi.', k:true},
+  15:{n:'Il Mago', d:'Magnetismo, fascino, eloquenza; grande potere di attrazione, da usare con etica.'},
+  16:{n:'La Cittadella in Rovina', d:'Crolli improvvisi che spezzano l’ego; rinascita più autentica dopo la crisi.', k:true},
+  17:{n:'La Stella dei Magi', d:'Numero molto elevato e spirituale: ciò che si costruisce resiste al tempo; pace dopo le prove.'},
+  18:{n:'Il Conflitto della Luna', d:'Tensione tra volontà personale e dovere karmico; materialismo che lotta con lo spirito.', k:true},
+  19:{n:'Il Principe del Cielo', d:'Uno dei numeri più fortunati: successo, onore, felicità e realizzazione.'},
+  20:{n:'Il Risveglio', d:'Chiamata a un risveglio o a una causa più grande; attesa e pazienza prima dei risultati.'},
+  21:{n:'La Corona dei Magi', d:'Avanzamento, vittoria, onori dopo lotta. Numero di lunga durata e successo garantito.'},
+  22:{n:'Il Buon Uomo Accecato', d:'Illusioni e false certezze; pericolo se ci si lascia ingannare. Sveglia e discernimento.', k:true},
+  23:{n:'La Stella Reale del Leone', d:'Numero molto fortunato: protezione, aiuto dall’alto, riuscita dei progetti.'},
+  24:{n:'Amore e Fortuna', d:'Guadagno tramite l’amore e gli affetti; sostegno di persone influenti. Favorevole.'},
+  25:{n:'Saggezza dall’Esperienza', d:'Successo conquistato tramite prove e osservazione; forza che matura nel tempo.'},
+  26:{n:'Società e Rischio', d:'Avvertimento su alleanze e soci sbagliati; rovesci per cattive associazioni. Prudenza.', k:true},
+  27:{n:'Lo Scettro', d:'Autorità, comando, ricompensa dell’intelletto creativo; agire con fiducia.'},
+  28:{n:'L’Agnello Fidente', d:'Promesse e perdite per eccesso di fiducia; ricominciare più volte. Proteggere i propri averi.', k:true},
+  29:{n:'Tradimenti e Incertezze', d:'Insidie, delusioni dagli altri, prove emotive; serve fede e prudenza.', k:true},
+  30:{n:'Riflessione e Pensiero', d:'Mente superiore, distacco; né fortunato né sfortunato, dipende dall’uso del pensiero.'},
+  31:{n:'L’Eremita', d:'Isolamento, autosufficienza; visione personale lontana dal mondo. Solitudine feconda.'},
+  32:{n:'Magnetismo Collettivo', d:'Simile a 14 e 23: grande forza se si resta fedeli alle proprie idee tra le folle.'},
+  33:{n:'(come 24)', d:'Stessa vibrazione del 24: fortuna attraverso l’amore e gli appoggi.'},
+  34:{n:'(come 25)', d:'Stessa vibrazione del 25: saggezza guadagnata dall’esperienza.'},
+  35:{n:'(come 26)', d:'Stessa vibrazione del 26: cautela nelle associazioni.', k:true},
+  36:{n:'(come 27)', d:'Stessa vibrazione del 27: autorità e ricompensa creativa.'},
+  37:{n:'Amicizia e Buona Sorte', d:'Buone unioni, alleanze felici in amore e affari; numero di fortuna e armonia.'},
+  38:{n:'(come 29)', d:'Stessa vibrazione del 29: incertezze e prove dagli altri.', k:true},
+  39:{n:'(come 30)', d:'Stessa vibrazione del 30: pensiero e riflessione.'},
+  40:{n:'(come 31)', d:'Stessa vibrazione del 31: isolamento e visione propria.'},
+  41:{n:'(come 32)', d:'Stessa vibrazione del 32: magnetismo se fedeli a sé.'},
+  42:{n:'(come 24)', d:'Vibrazione affine al 24: guadagno attraverso gli affetti.'},
+  43:{n:'Rivoluzione e Rovina', d:'Conflitto, sconvolgimenti, ostacoli; sfavorevole per eventi futuri. Grande prudenza.', k:true},
+  44:{n:'Penalità Karmica', d:'Numero molto pesante (doppio 4 e 8): difficoltà materiali serie e prove karmiche.', k:true},
+  45:{n:'La Conquista della Mente', d:'Saggezza al servizio di una causa; preparazione e strategia portano al successo.'},
+  46:{n:'(come 37)', d:'Vibrazione affine al 37: cooperazione fortunata.'},
+  47:{n:'(come 29)', d:'Vibrazione affine al 29: prove relazionali.', k:true},
+  48:{n:'Penalità Karmica', d:'Numero di disastro e vittimismo; pesante sul piano karmico. Massima attenzione.', k:true},
+  49:{n:'(come 31/40)', d:'Vibrazione affine al 31: solitudine; può accentuare disagio interiore.', k:true},
+  50:{n:'(come 41/32)', d:'Comunicazione e socialità spontanea; magnetismo collettivo.'},
+  51:{n:'Il Guerriero', d:'Potenza propria: avanzamento improvviso, vittoria; favorevole a leader e cause, ma attira nemici.'},
+  52:{n:'(come 43)', d:'Stessa vibrazione del 43: sconvolgimenti; i composti si fermano qui.', k:true},
+};
+
+function numLetterVal(ch, useNine){
+  const map = useNine ? Object.assign({}, CHALDEAN_CLASSIC, {E:9}) : CHALDEAN_CLASSIC;
+  return map[ch] || 0;
+}
+function numReduce(n){ while(n>9){ n = String(n).split('').reduce((a,b)=>a+(+b),0); } return n; }
+function numCompound(total){ let c=total; while(c>52){ c = String(c).split('').reduce((a,b)=>a+(+b),0); } return c; }
+
+function numSumName(name, useNine, filter){
+  const up = (name||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  let sum=0, detail=[];
+  for(const ch of up){
+    if(ch<'A'||ch>'Z') continue;
+    const isV = NUM_VOWELS.has(ch);
+    if(filter==='vowels' && !isV) continue;
+    if(filter==='consonants' && isV) continue;
+    const v=numLetterVal(ch, useNine); sum+=v; detail.push({ch, v});
+  }
+  return {sum, detail};
+}
+
+function numComputeAll(name, dateStr, useNine){
+  const all=numSumName(name, useNine, 'all');
+  const vow=numSumName(name, useNine, 'vowels');
+  const con=numSumName(name, useNine, 'consonants');
+  const wrap=o=>({total:o.sum, compound:numCompound(o.sum), root:numReduce(o.sum), detail:o.detail});
+  const out={ destiny:wrap(all), soul:wrap(vow), personality:wrap(con) };
+  if(dateStr){
+    const [y,m,d]=dateStr.split('-').map(Number);
+    const lifeTotal = String(y).split('').reduce((a,b)=>a+(+b),0) + (m||0) + (d||0);
+    out.lifePath = {total:lifeTotal, compound:numCompound(lifeTotal), root:numReduce(lifeTotal)};
+    out.birthDay = {day:d, root:numReduce(d||0)};
+  }
+  return out;
+}
+
+function numCard(title, obj, showDetail){
+  if(!obj) return '';
+  const root = obj.root;
+  const planet = NUM_PLANET[root] || {pl:'—', t:''};
+  const comp = (obj.compound && obj.compound>=10) ? COMPOUND[obj.compound] : null;
+  const karmic = comp && comp.k;
+  const detailHtml = (showDetail && obj.detail && obj.detail.length)
+    ? `<div class="hint" style="margin-top:6px;font-family:monospace">${obj.detail.map(x=>x.ch+'='+x.v).join(' · ')}</div>` : '';
+  return `
+    <div class="paper" style="padding:12px;margin-bottom:10px">
+      <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+        <b style="color:var(--gold)">${title}</b>
+        <span style="font-size:22px;font-weight:700">${root}</span>
+        ${obj.total!=null?`<span class="hint">totale ${obj.total}${obj.compound>=10?` · composto ${obj.compound}`:''}</span>`:''}
+        ${obj.day!=null?`<span class="hint">giorno ${obj.day}</span>`:''}
+        ${karmic?`<span style="font-size:10px;color:#e0862e;border:1px solid #e0862e;border-radius:6px;padding:1px 6px">karmico</span>`:''}
+      </div>
+      <p style="font-size:12.5px;margin:6px 0 0"><b>${planet.pl}</b> · ${planet.t}</p>
+      ${comp?`<p style="font-size:12.5px;margin:6px 0 0"><b>${obj.compound} — ${comp.n}:</b> ${comp.d}</p>`:''}
+      ${detailHtml}
+    </div>`;
+}
+
+function numRender(){
+  const name=document.getElementById('numName').value.trim();
+  const date=document.getElementById('numDate').value;
+  const useNine=document.getElementById('numNine').checked;
+  const box=document.getElementById('numResults');
+  if(!name){ box.innerHTML='<p class="hint">Inserisci almeno un nome.</p>'; return; }
+  const r=numComputeAll(name, date, useNine);
+  box.innerHTML = `
+    <h3 style="margin:0 0 10px;color:var(--gold)">${name}${date?` · ${date}`:''}</h3>
+    ${numCard('Destino / Espressione (nome intero)', r.destiny, true)}
+    ${numCard('Anima / Desiderio (vocali)', r.soul, false)}
+    ${numCard('Personalità (consonanti)', r.personality, false)}
+    ${r.lifePath?numCard('Sentiero di Vita (data)', r.lifePath, false):''}
+    ${r.birthDay?numCard('Giorno di Nascita', r.birthDay, false):''}
+    <p class="hint" style="margin-top:8px">${useNine?'Variante con 9 (E=9) attiva.':'Mappa classica di Cheiro (1–8).'} I composti hanno significato proprio oltre alla radice; quelli segnalati “karmico” indicano prove o lezioni, non condanne.</p>
+  `;
+}
+
+function initNumero(){
+  // popola il menu clienti
+  const sel=document.getElementById('numClient');
+  if(sel && typeof CLIENTS!=='undefined'){
+    sel.innerHTML='<option value="">— scegli un cliente o scrivi a mano —</option>'+
+      CLIENTS.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+  }
+}
+
+// wiring (eseguito una volta, gli elementi esistono già nel DOM)
+(function numWire(){
+  const sel=document.getElementById('numClient');
+  if(sel) sel.addEventListener('change', ()=>{
+    const c=(typeof CLIENTS!=='undefined')?CLIENTS.find(x=>x.id===sel.value):null;
+    if(c){
+      // di default propongo solo il primo nome (la caldea usa il nome più usato)
+      document.getElementById('numName').value = (c.name||'').split(/\s+/)[0] || c.name || '';
+      if(c.birth_date) document.getElementById('numDate').value = c.birth_date;
+    }
+  });
+  const go=document.getElementById('numGo');
+  if(go) go.addEventListener('click', numRender);
+  const nm=document.getElementById('numName');
+  if(nm) nm.addEventListener('keydown', e=>{ if(e.key==='Enter') numRender(); });
+})();
+
 
 /* ════════════════════════════════════════════════════════════════
    REPORT AI · genera un report regalo statico per un cliente
