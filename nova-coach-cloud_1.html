@@ -863,7 +863,19 @@ async function rpc(fn,params){
     return {data:j,error:null};
   }catch(e){ return {data:null,error:{message:e.message||String(e)}}; }
 }
-window.supabase={ createClient:function(){ return {auth, from, rpc}; } };
+// Invocazione Edge Functions (es. generate-report), stesso stile di supabase-js.
+const functions={
+  async invoke(name,opts){
+    opts=opts||{};
+    try{
+      const r=await fetch(SURL+'/functions/v1/'+name,{method:'POST',headers:H(),body:JSON.stringify(opts.body||{})});
+      const t=await r.text(); let j=null; try{ j=t?JSON.parse(t):null; }catch(_){ j={raw:t}; }
+      if(!r.ok) return {data:null,error:{message:(j&&(j.error||j.message))||('HTTP '+r.status),status:r.status,detail:j}};
+      return {data:j,error:null};
+    }catch(e){ return {data:null,error:{message:e.message||String(e)}}; }
+  }
+};
+window.supabase={ createClient:function(){ return {auth, from, rpc, functions}; } };
 })();
 
 </script>
@@ -2226,6 +2238,7 @@ function renderClients(){
         <button class="ghost" data-act="open">Apri carta</button>
         <button class="ghost" data-act="link">Link cliente</button>
         <button class="ghost" data-act="pdf">Report PDF</button>
+        <button class="ghost" data-act="airep">Report AI</button>
         <button class="ghost" data-act="del">Elimina</button>
       </div>
       <div class="cliLink" style="display:none"></div>
@@ -2237,6 +2250,7 @@ document.getElementById('clList').addEventListener('click',async e=>{
   const act=btn.dataset.act;
   if(act==='del'){ if(confirm(`Eliminare ${cl.name}? Si cancellano anche le sue prenotazioni.`)){
     await sb.from('clients').delete().eq('id',cl.id); await loadClients(); } return; }
+  if(act==='airep'){ await openReport(cl, card); return; }
   if(act==='open'||act==='pdf'){
     document.getElementById('bdate').value=cl.birth_date; document.getElementById('btime').value=cl.birth_time; document.getElementById('tz').value=cl.tz;
     document.querySelector('.navItem[data-tab="carta"]').click(); document.getElementById('go').click();
@@ -3114,6 +3128,162 @@ function renderCityFinder(A, place){
 
 document.getElementById('astroGo').addEventListener('click', astroSearch);
 document.getElementById('astroPlace').addEventListener('keydown',e=>{ if(e.key==='Enter') astroSearch(); });
+
+/* ════════════════════════════════════════════════════════════════
+   REPORT AI · genera un report regalo statico per un cliente
+   - carta HD: sempre (serve solo data/ora/tz)
+   - astro (case + astrocartografia): solo se si conferma un luogo di nascita
+   - salvato in client_reports (una volta sola; rigenerabile con conferma)
+   ════════════════════════════════════════════════════════════════ */
+async function openReport(cl, card){
+  let box=card.querySelector('.cliReport');
+  if(!box){ box=document.createElement('div'); box.className='cliReport'; box.style.marginTop='10px'; card.appendChild(box); }
+  box.style.display='block';
+  box.innerHTML='<p class="hint">Carico il report…</p>';
+
+  // Esiste già? (lettura diretta, protetta da RLS)
+  const {data:existing}=await sb.from('client_reports').select('*').eq('client_id',cl.id).maybeSingle();
+  if(existing){ renderReportBox(box, cl, existing); return; }
+
+  // Non esiste: chiedo conferma luogo di nascita per la parte astro (opzionale)
+  box.innerHTML=`
+    <div class="paper" style="padding:12px">
+      <p style="font-size:12.5px;margin:0 0 8px">Genera il report regalo di <b>${cl.name}</b>. La parte di Human Design è sempre inclusa. Per aggiungere <b>case</b> e <b>astrocartografia</b>, indica il luogo di nascita:</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <input type="text" class="repPlace" placeholder="Es. Roma (facoltativo)" style="flex:1;min-width:160px;font-size:12px;padding:6px 8px">
+        <button class="ghost repGen">Genera report</button>
+      </div>
+      <div class="repPlaceRes" style="margin-top:6px"></div>
+    </div>`;
+  let chosenPlace=null;
+  const inp=box.querySelector('.repPlace'), res=box.querySelector('.repPlaceRes');
+  async function lookupPlace(){
+    const q=inp.value.trim(); if(!q){ res.innerHTML=''; chosenPlace=null; return; }
+    res.innerHTML='<p class="hint">Cerco…</p>';
+    const list=await geocode(q);
+    if(!list.length){ res.innerHTML='<p class="hint">Città non trovata. Procederò senza astro.</p>'; chosenPlace=null; return; }
+    res.innerHTML=list.slice(0,4).map((p,i)=>`<button class="ghost repPick" data-i="${i}" style="font-size:11px;margin:2px 4px 0 0">${p.name}</button>`).join('');
+    res.querySelectorAll('.repPick').forEach(b=>b.addEventListener('click',()=>{
+      chosenPlace=list[+b.dataset.i];
+      res.innerHTML='<p class="hint">Luogo: <b>'+chosenPlace.name+'</b> ✓</p>';
+    }));
+  }
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); lookupPlace(); } });
+  box.querySelector('.repGen').addEventListener('click',()=>generateReport(cl, box, chosenPlace, false));
+}
+
+async function generateReport(cl, box, place, force){
+  box.innerHTML='<p class="hint">Calcolo carta e genero il report con l\'AI… (può richiedere ~10s)</p>';
+  try{
+    // 1) Carta HD (solo data/ora/tz)
+    const [y,m,d]=cl.birth_date.split('-').map(Number);
+    const [hh,mm]=(cl.birth_time||'00:00').split(':').map(Number);
+    const chart=computeChart(y,m,d,hh+(mm||0)/60,Number(cl.tz)||0);
+
+    // Centri: defCenters è un Set; derivo definiti/aperti in italiano
+    const allCenters=Object.keys(CENTER_IT);
+    const defined=[...chart.defCenters].map(c=>CENTER_IT[c]||c);
+    const open=allCenters.filter(c=>!chart.defCenters.has(c)).map(c=>CENTER_IT[c]||c);
+
+    const chartPayload={
+      type:chart.type, profKey:chart.profKey, profName:chart.profName,
+      authority:chart.authority, strategy:chart.strategy, defLabel:chart.defLabel,
+      centersDefined:defined, centersOpen:open
+    };
+
+    // 2) Astro (facoltativo: solo se è stato scelto un luogo)
+    let astroPayload=null;
+    if(place){
+      const A=buildAstro(chart, place.lat, place.lon);
+      const L=acgLines(A);
+      const houses=(A.cusps||[]).map((c,i)=>({house:i+1, sign:aSign(c), deg:aDeg(c)}));
+      const lines=Object.entries(L).map(([planet,o])=>({planet, mcLon:o.mcLon, icLon:o.icLon}));
+      astroPayload={houses, acgLines:lines, place:place.name, asc:aSign(A.asc), mc:aSign(A.mc)};
+    }
+
+    // 3) Chiamata Edge Function
+    const {data,error}=await sb.functions.invoke('generate-report',{
+      body:{ client_id:cl.id, chart:chartPayload, astro:astroPayload, force:!!force }
+    });
+    if(error){ box.innerHTML='<div class="banner">Errore: '+(error.message||'imprevisto')+'</div>'; console.error('[generate-report]',error); return; }
+    renderReportBox(box, cl, data.report);
+  }catch(e){
+    box.innerHTML='<div class="banner">Errore nel calcolo: '+(e.message||String(e))+'</div>';
+    console.error('[generate-report] eccezione client:',e);
+  }
+}
+
+function renderReportBox(box, cl, report){
+  const created=report.created_at?new Date(report.created_at).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'}):'';
+  const html=(report.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/^### (.*)$/gm,'<h4 style="color:var(--gold);margin:14px 0 4px">$1</h4>')
+    .replace(/^## (.*)$/gm,'<h3 style="color:var(--gold);margin:16px 0 6px">$1</h3>')
+    .replace(/^# (.*)$/gm,'<h3 style="color:var(--gold);margin:16px 0 6px">$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+    .replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');
+  box.innerHTML=`
+    <div class="paper repPaper" style="padding:14px">
+      <p style="font-size:11px;color:var(--dim);margin:0 0 8px">Report generato il ${created}</p>
+      <div class="repBody" style="font-size:13px;line-height:1.55"><p>${html}</p></div>
+      <div class="cliActions" style="margin-top:12px">
+        <button class="ghost repDl">Scarica PDF</button>
+        <button class="ghost repRegen">Rigenera</button>
+        <button class="ghost repClose">Chiudi</button>
+      </div>
+    </div>`;
+  box.querySelector('.repClose').addEventListener('click',()=>{ box.style.display='none'; });
+  box.querySelector('.repDl').addEventListener('click',()=>downloadReportPDF(cl, report));
+  box.querySelector('.repRegen').addEventListener('click',()=>{
+    if(confirm('Rigenerare il report? Quello attuale verrà sostituito.')) openReportRegen(cl, box);
+  });
+}
+
+async function openReportRegen(cl, box){
+  // Per rigenerare con astro serve di nuovo il luogo: riapro il mini-form ma con force=true
+  box.innerHTML=`
+    <div class="paper" style="padding:12px">
+      <p style="font-size:12.5px;margin:0 0 8px">Rigenero il report di <b>${cl.name}</b>. Luogo di nascita per case/astrocartografia (facoltativo):</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <input type="text" class="repPlace" placeholder="Es. Roma (facoltativo)" style="flex:1;min-width:160px;font-size:12px;padding:6px 8px">
+        <button class="ghost repGen">Rigenera ora</button>
+      </div>
+      <div class="repPlaceRes" style="margin-top:6px"></div>
+    </div>`;
+  let chosenPlace=null;
+  const inp=box.querySelector('.repPlace'), res=box.querySelector('.repPlaceRes');
+  async function lookupPlace(){
+    const q=inp.value.trim(); if(!q){ res.innerHTML=''; chosenPlace=null; return; }
+    res.innerHTML='<p class="hint">Cerco…</p>';
+    const list=await geocode(q);
+    if(!list.length){ res.innerHTML='<p class="hint">Città non trovata.</p>'; chosenPlace=null; return; }
+    res.innerHTML=list.slice(0,4).map((p,i)=>`<button class="ghost repPick" data-i="${i}" style="font-size:11px;margin:2px 4px 0 0">${p.name}</button>`).join('');
+    res.querySelectorAll('.repPick').forEach(b=>b.addEventListener('click',()=>{ chosenPlace=list[+b.dataset.i]; res.innerHTML='<p class="hint">Luogo: <b>'+chosenPlace.name+'</b> ✓</p>'; }));
+  }
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); lookupPlace(); } });
+  box.querySelector('.repGen').addEventListener('click',()=>generateReport(cl, box, chosenPlace, true));
+}
+
+function downloadReportPDF(cl, report){
+  // Stampa pulita via finestra dedicata (il browser salva in PDF)
+  const created=report.created_at?new Date(report.created_at).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'}):'';
+  const html=(report.content||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/^#{1,3} (.*)$/gm,'<h2>$1</h2>')
+    .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
+    .replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');
+  const studio=(SETTINGS&&SETTINGS.studio)||'NOVA HD';
+  const w=window.open('','_blank');
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Report · ${cl.name}</title>
+    <style>body{font-family:Georgia,serif;max-width:720px;margin:40px auto;padding:0 24px;color:#222;line-height:1.6}
+    h1{font-size:24px;color:#b8860b} h2{font-size:17px;color:#b8860b;margin-top:24px;border-bottom:1px solid #eee;padding-bottom:4px}
+    .meta{color:#888;font-size:12px;margin-bottom:24px} .foot{margin-top:40px;color:#999;font-size:11px;text-align:center;border-top:1px solid #eee;padding-top:12px}</style>
+    </head><body>
+    <h1>${cl.name} — Lettura Human Design</h1>
+    <p class="meta">A cura di ${studio} · ${created}</p>
+    <p>${html}</p>
+    <p class="foot">Questo è un ritratto basato sulla tua carta di nascita. Per approfondirlo con una guida, ${studio} è a tua disposizione.</p>
+    </body></html>`);
+  w.document.close(); setTimeout(()=>w.print(),300);
+}
 </script>
 </body>
 </html>
