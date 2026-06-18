@@ -80,6 +80,10 @@ td.z{color:var(--dim);font-size:11px;white-space:nowrap}
 .paper h2{font-family:'Marcellus',serif;color:var(--paper-ink);text-align:center;font-size:16px;letter-spacing:.12em}
 .paper .ph{text-align:center;color:var(--paper-dim);font-size:11px;margin-top:2px;font-family:'Space Grotesk',monospace}
 .paper svg{width:100%;height:auto;display:block}
+/* Card a tema scuro per contenuti testuali (numerologia, report) */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink)}
+.card .karmTag{font-size:10px;color:#e0862e;border:1px solid #e0862e;border-radius:6px;padding:1px 6px;white-space:nowrap}
+.card .detailMono{margin-top:6px;font-family:'Space Grotesk',monospace;font-size:11px;color:var(--dim)}
 .gateBadge{cursor:pointer}
 .gateBadge text{font-family:'Space Grotesk',monospace;font-size:11px;font-weight:500;pointer-events:none}
 .gateBadge:hover circle,.gateBadge:hover path{filter:brightness(1.25)}
@@ -3273,18 +3277,18 @@ function numCard(title, obj, showDetail){
   const comp = (obj.compound && obj.compound>=10) ? COMPOUND[obj.compound] : null;
   const karmic = comp && comp.k;
   const detailHtml = (showDetail && obj.detail && obj.detail.length)
-    ? `<div class="hint" style="margin-top:6px;font-family:monospace">${obj.detail.map(x=>x.ch+'='+x.v).join(' · ')}</div>` : '';
+    ? `<div class="detailMono">${obj.detail.map(x=>x.ch+'='+x.v).join(' · ')}</div>` : '';
   return `
-    <div class="paper" style="padding:12px;margin-bottom:10px">
+    <div class="card" style="margin-bottom:10px">
       <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
         <b style="color:var(--gold)">${title}</b>
-        <span style="font-size:22px;font-weight:700">${root}</span>
+        <span style="font-size:22px;font-weight:700;color:var(--ink)">${root}</span>
         ${obj.total!=null?`<span class="hint">totale ${obj.total}${obj.compound>=10?` · composto ${obj.compound}`:''}</span>`:''}
         ${obj.day!=null?`<span class="hint">giorno ${obj.day}</span>`:''}
-        ${karmic?`<span style="font-size:10px;color:#e0862e;border:1px solid #e0862e;border-radius:6px;padding:1px 6px">karmico</span>`:''}
+        ${karmic?`<span class="karmTag">karmico</span>`:''}
       </div>
-      <p style="font-size:12.5px;margin:6px 0 0"><b>${planet.pl}</b> · ${planet.t}</p>
-      ${comp?`<p style="font-size:12.5px;margin:6px 0 0"><b>${obj.compound} — ${comp.n}:</b> ${comp.d}</p>`:''}
+      <p style="font-size:12.5px;margin:6px 0 0;color:var(--ink)"><b>${planet.pl}</b> · ${planet.t}</p>
+      ${comp?`<p style="font-size:12.5px;margin:6px 0 0;color:var(--ink)"><b>${obj.compound} — ${comp.n}:</b> ${comp.d}</p>`:''}
       ${detailHtml}
     </div>`;
 }
@@ -3352,8 +3356,8 @@ async function openReport(cl, card){
 
   // Non esiste: chiedo conferma luogo di nascita per la parte astro (opzionale)
   box.innerHTML=`
-    <div class="paper" style="padding:12px">
-      <p style="font-size:12.5px;margin:0 0 8px">Genera il report regalo di <b>${cl.name}</b>. La parte di Human Design è sempre inclusa. Per aggiungere <b>case</b> e <b>astrocartografia</b>, indica il luogo di nascita:</p>
+    <div class="card">
+      <p style="font-size:12.5px;margin:0 0 8px;color:var(--ink)">Genera il report regalo di <b>${cl.name}</b>. La parte di Human Design è sempre inclusa. Per aggiungere <b>case</b> e <b>astrocartografia</b>, indica il luogo di nascita:</p>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <input type="text" class="repPlace" placeholder="Es. Roma (facoltativo)" style="flex:1;min-width:160px;font-size:12px;padding:6px 8px">
         <button class="ghost repGen">Genera report</button>
@@ -3427,9 +3431,9 @@ function renderReportBox(box, cl, report){
     .replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')
     .replace(/\n{2,}/g,'</p><p>').replace(/\n/g,'<br>');
   box.innerHTML=`
-    <div class="paper repPaper" style="padding:14px">
+    <div class="card repPaper">
       <p style="font-size:11px;color:var(--dim);margin:0 0 8px">Report generato il ${created}</p>
-      <div class="repBody" style="font-size:13px;line-height:1.55"><p>${html}</p></div>
+      <div class="repBody" style="font-size:13px;line-height:1.55;color:var(--ink)"><p>${html}</p></div>
       <div class="cliActions" style="margin-top:12px">
         <button class="ghost repDl">Scarica PDF</button>
         <button class="ghost repRegen">Rigenera</button>
@@ -3446,8 +3450,8 @@ function renderReportBox(box, cl, report){
 async function openReportRegen(cl, box){
   // Per rigenerare con astro serve di nuovo il luogo: riapro il mini-form ma con force=true
   box.innerHTML=`
-    <div class="paper" style="padding:12px">
-      <p style="font-size:12.5px;margin:0 0 8px">Rigenero il report di <b>${cl.name}</b>. Luogo di nascita per case/astrocartografia (facoltativo):</p>
+    <div class="card">
+      <p style="font-size:12.5px;margin:0 0 8px;color:var(--ink)">Rigenero il report di <b>${cl.name}</b>. Luogo di nascita per case/astrocartografia (facoltativo):</p>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         <input type="text" class="repPlace" placeholder="Es. Roma (facoltativo)" style="flex:1;min-width:160px;font-size:12px;padding:6px 8px">
         <button class="ghost repGen">Rigenera ora</button>
