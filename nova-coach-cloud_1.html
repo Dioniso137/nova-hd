@@ -269,7 +269,9 @@ body.sb-collapsed .sbSearch{justify-content:center;padding:9px}
 .sbNav::-webkit-scrollbar{width:4px}.sbNav::-webkit-scrollbar-thumb{background:#2a2a2e;border-radius:3px}
 .sbGroup{font-family:'Space Grotesk',monospace;font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:#5c5c66;padding:16px 10px 7px;white-space:nowrap}
 .sbGroup:first-child{padding-top:6px}
-body.sb-collapsed .sbGroup{text-align:center;padding:14px 0 6px;font-size:7px;letter-spacing:0}
+body.sb-collapsed .sbGroup{font-size:0;letter-spacing:0;padding:10px 0 8px;text-align:center}
+body.sb-collapsed .sbGroup::after{content:"";display:inline-block;width:22px;height:1px;background:var(--line);vertical-align:middle}
+body.sb-collapsed .sbGroup:first-child{padding-top:4px}
 .navItem{display:flex;align-items:center;gap:12px;width:100%;background:none;border:none;color:var(--dim);font-family:'Outfit';font-size:13.5px;font-weight:450;padding:9px 11px;border-radius:10px;cursor:pointer;text-align:left;transition:background .16s,color .16s;position:relative;white-space:nowrap}
 .navItem:hover{background:rgba(255,255,255,.05);color:var(--ink)}
 .navItem:hover .ni{color:var(--ink)}
@@ -2444,16 +2446,12 @@ if(!sb || SUPABASE_URL.startsWith('INCOLLA')){
 
 function renderPlanBadge(){
   if(!SETTINGS) return;
-  const names={starter:'Starter',pro:'Pro',custom:'Custom'};
+  // Le info di piano vivono ora nella sezione Account, non nella sidebar.
   let el=document.getElementById('planBadge');
-  if(!el){ el=document.createElement('span'); el.id='planBadge'; el.className='hint'; el.style.margin='0 6px';
+  if(!el){ el=document.createElement('span'); el.id='planBadge'; el.style.display='none';
     const w=document.getElementById('whoami'); w.parentNode.insertBefore(el, w.nextSibling); }
-  let txt=isOwner()?('Lifetime · proprietario · '+CLIENTS.length+' clienti'):((names[SETTINGS.plan]||'Starter')+' · '+CLIENTS.length+'/'+(SETTINGS.max_clients||5)+' clienti');
-  if(SETTINGS.trial_ends){
-    const d=Math.ceil((new Date(SETTINGS.trial_ends)-Date.now())/86400000);
-    if(d>0) txt+=' · prova: '+d+'g rimasti';
-  }
-  el.textContent=txt;
+  // aggiorno la sezione Account se è quella attiva
+  if(document.getElementById('tab-account') && document.getElementById('tab-account').classList.contains('active')) renderAccount();
 }
 
 /* ════════════════════════ 18 · PREVISIONI (effemeridi proiettate) ════════════════════════ */
