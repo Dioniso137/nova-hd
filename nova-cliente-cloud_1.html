@@ -107,26 +107,30 @@ details .body p{margin-bottom:10px}
   background:linear-gradient(120deg,var(--gold),#f4dca0 50%,var(--gold))}
 .banner{border:1px dashed var(--line);border-radius:12px;padding:14px;color:var(--dim);font-size:12.5px;line-height:1.55}
 
-/* ── NAV CLIENTE v2 (sidebar desktop + bottom mobile) ── */
-@media(min-width:861px){
-  body{padding-left:212px}
-  #bnav{display:none}
-  #cliSide{position:fixed;left:0;top:0;height:100vh;width:212px;background:linear-gradient(180deg,rgba(20,20,24,.9),rgba(7,7,8,.96));backdrop-filter:blur(20px);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:20px 14px;z-index:60}
-  #cliSide .csLogo{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:0 6px}
-  #cliSide .csLogo .csI{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--gold),#b8893f);display:flex;align-items:center;justify-content:center;color:#0b0b0d;font-family:'Marcellus',serif;font-size:16px}
-  #cliSide .csLogo b{font-family:'Marcellus',serif;font-size:16px;letter-spacing:.08em;font-weight:400}
-  #cliSide .csName{font-size:10.5px;color:var(--dim);padding:0 6px 14px;border-bottom:1px solid var(--line);margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #cliSide a{display:flex;align-items:center;gap:11px;color:var(--dim);text-decoration:none;font-size:13.5px;padding:10px 11px;border-radius:10px;transition:all .15s;margin-bottom:2px}
-  #cliSide a:hover{background:rgba(255,255,255,.05);color:var(--ink)}
-  #cliSide a.on{background:linear-gradient(90deg,rgba(227,184,100,.18),rgba(227,184,100,.05));color:var(--gold)}
-  #cliSide a .ci{font-size:15px;width:18px;text-align:center}
-  #cliSide .csFoot{margin-top:auto;font-size:10px;color:#5c5c66;padding:0 6px;line-height:1.5}
-}
-@media(max-width:860px){ #cliSide{display:none} }
-#bnav{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:3px;background:rgba(14,17,32,.92);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:30px;padding:6px;z-index:60;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+/* ── NAV CLIENTE v3 (no sidebar, bottom nav su tutte le viste) ── */
+#cliSide{display:none}
+#bnav{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:3px;background:rgba(14,17,32,.92);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:30px;padding:6px;z-index:60;box-shadow:0 12px 40px rgba(0,0,0,.5);max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none}
+#bnav::-webkit-scrollbar{display:none}
 #bnav a{color:var(--dim);text-decoration:none;font-size:11.5px;padding:9px 13px;border-radius:20px;white-space:nowrap;transition:all .2s}
 #bnav a.on{color:#0b0d18;background:var(--gold)}
-[id]{scroll-margin-top:14px}
+[id]{scroll-margin-top:20px}
+
+/* ── Layout desktop: sfrutta la larghezza con griglia masonry ── */
+@media(min-width:900px){
+  #wrap{max-width:1180px;padding:30px 32px 80px}
+  header.hero{margin-bottom:8px}
+  /* griglia a colonne: le sezioni si distribuiscono e riempiono lo spazio */
+  #cliGrid{column-count:2;column-gap:20px}
+  #cliGrid>*{break-inside:avoid;margin:0 0 20px;width:100%}
+  /* sintesi e guida in cima, ben visibili */
+  #secSintesi{column-span:all}
+  .typeCard .kv{grid-template-columns:auto 1fr auto 1fr}
+}
+@media(min-width:1300px){
+  #wrap{max-width:1320px}
+  #cliGrid{column-count:3;column-gap:20px}
+  #secSintesi{column-span:all}
+}
 .reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
 .reveal.in{opacity:1;transform:none}
 #chatSend:disabled{opacity:.5}
@@ -206,18 +210,6 @@ footer b{color:var(--gold);font-weight:500}
 <body>
 <div id="errView"><h1>Link non valido</h1><p>Questo link non contiene una carta. Chiedi al tuo coach di generarne uno nuovo dalla sua dashboard NOVA.</p></div>
 <div id="wrap" style="display:none">
-<aside id="cliSide">
-  <div class="csLogo"><span class="csI" id="csLogoI">N</span><b id="csStudio">NOVA</b></div>
-  <div class="csName" id="csName">—</div>
-  <a href="#secSintesi" class="on" data-sec="secSintesi"><span class="ci">✦</span>Sintesi</a>
-  <a href="#secGuida" data-sec="secGuida"><span class="ci">✦</span>Guida</a>
-  <a href="#secCarta" data-sec="secCarta"><span class="ci">◉</span>Carta</a>
-  <a href="#secOggi" data-sec="secOggi"><span class="ci">☉</span>Oggi</a>
-  <a href="#journalEyebrow" data-sec="journalEyebrow"><span class="ci">✎</span>Diario</a>
-  <a href="#secLett" data-sec="secLett"><span class="ci">❖</span>Lettura</a>
-  <a href="#bookEyebrow" id="csBook" data-sec="bookEyebrow" style="display:none"><span class="ci">▦</span>Prenota</a>
-  <div class="csFoot">La tua carta · sempre con te</div>
-</aside>
   <header class="hero">
     <div class="studio" id="hStudio">STUDIO</div>
     <h1 id="hName">—</h1>
@@ -229,6 +221,7 @@ footer b{color:var(--gold);font-weight:500}
     <button id="instX" aria-label="Chiudi">✕</button>
   </div>
 
+  <div id="cliGrid">
   <div class="typeCard" id="secSintesi">
     <div class="t" id="rType">—</div>
     <div class="p" id="rProfile">—</div>
@@ -289,6 +282,7 @@ footer b{color:var(--gold);font-weight:500}
   <div class="eyebrow" id="bookEyebrow" style="display:none">▦ Prenota la tua call</div>
   <div id="bookWrap" style="display:none"></div>
   <a class="bigBtn" id="bookBtn" style="display:none" target="_blank" rel="noopener">Prenota una call →</a>
+  </div><!-- /#cliGrid -->
 
   <footer>
     <p id="a2hs">📲 <b>Trasforma questa pagina in un'app:</b> apri il menu del browser e scegli <b>"Aggiungi alla schermata Home"</b>. Avrai la tua carta sempre con te.</p>
@@ -1364,7 +1358,7 @@ function setupPWA(accent, studio, name){
     const so=new IntersectionObserver(es=>{es.forEach(e=>{ if(e.isIntersecting) links.forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+e.target.id)); document.querySelectorAll('#cliSide a').forEach(l=>l.classList.toggle('on', l.dataset.sec===e.target.id)); });},{rootMargin:'-35% 0px -55% 0px'});
     ['secSintesi','secGuida','secCarta','secOggi','journalEyebrow','bookEyebrow'].forEach(id=>{const el=document.getElementById(id); if(el) so.observe(el);});
     const ro=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } }),{threshold:.06});
-    document.querySelectorAll('#wrap > *:not(header)').forEach(el=>{ el.classList.add('reveal'); ro.observe(el); });
+    document.querySelectorAll('#wrap > *:not(header):not(#cliGrid), #cliGrid > *').forEach(el=>{ el.classList.add('reveal'); ro.observe(el); });
   // ── DIARIO ──
   (function initJournal(){
     const canShare = ['accompagnamento','trasformazione'].includes((DATA.coach&&DATA.coach.plan)||'');
