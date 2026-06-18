@@ -136,6 +136,14 @@ details .body p{margin-bottom:10px}
 
 /* griglia desktop rimossa: torna a colonna singola centrata */
 @media(min-width:900px){ #cliGrid{display:block} }
+
+/* ── Tab cliente: una sezione alla volta ── */
+.cliPanel{display:none}
+.cliPanel.on{display:block;animation:cliFade .25s ease}
+@keyframes cliFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* dentro una tab la sezione è sempre aperta: nascondo il + e rendo il titolo non cliccabile come toggle */
+.cliPanel .sect>summary{cursor:default}
+.cliPanel .sect>summary .sx{display:none}
 .reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s ease}
 .reveal.in{opacity:1;transform:none}
 #chatSend:disabled{opacity:.5}
@@ -226,6 +234,7 @@ footer b{color:var(--gold);font-weight:500}
     <a href="#journalEyebrow" class="cn" data-sec="journalEyebrow"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>Diario</a>
     <a href="#secLett" class="cn" data-sec="secLett"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>Lettura</a>
     <a href="#bookEyebrow" class="cn" id="csBook" data-sec="bookEyebrow" style="display:none"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>Prenota</a>
+    <a href="#secProfilo" class="cn" data-sec="secProfilo"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></span>Profilo</a>
   </nav>
   <div class="csPkg" id="csPkg" style="display:none"></div>
   <div class="csFoot">La tua carta · sempre con te</div>
@@ -243,6 +252,7 @@ footer b{color:var(--gold);font-weight:500}
   </div>
 
   <div id="cliGrid">
+  <div class="cliPanel" data-panel="secSintesi">
   <div class="typeCard" id="secSintesi">
     <div class="t" id="rType">—</div>
     <div class="p" id="rProfile">—</div>
@@ -254,7 +264,10 @@ footer b{color:var(--gold);font-weight:500}
       <span class="k">Non-sé</span><span class="v" id="rNotSelf">—</span>
     </div>
   </div>
+  <details class="sect" id="secVar"><summary><span class="si">◬</span><span class="st">La tua variabile</span><span class="sx">+</span></summary><div class="sbody"><div class="varGrid" id="rVars"></div></div></details>
+  </div>
 
+  <div class="cliPanel" data-panel="secGuida">
   <details class="sect" open id="secGuida"><summary><span class="si">✦</span><span class="st">La tua guida</span><span class="sx">+</span></summary><div class="sbody"><div id="chatBox">
     <div id="chatLog"></div>
     <div id="chips"></div>
@@ -264,16 +277,20 @@ footer b{color:var(--gold);font-weight:500}
     </form>
   </div>
   <p class="hint" id="aiHint"></p></div></details>
+  </div>
 
-  <details class="sect" id="secCarta"><summary><span class="si">◉</span><span class="st">Il tuo bodygraph</span><span class="sx">+</span></summary><div class="sbody"><div id="paper">
+  <div class="cliPanel" data-panel="secCarta">
+  <details class="sect" open id="secCarta"><summary><span class="si">◉</span><span class="st">Il tuo bodygraph</span><span class="sx">+</span></summary><div class="sbody"><div id="paper">
     <svg id="bg-svg" viewBox="14 14 572 850" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bodygraph"></svg>
   </div>
   <div class="detailCard" id="detailCard">
     <h3>Esplora il grafico</h3>
     <p style="color:var(--dim);font-size:12.5px;margin-top:6px">Tocca una porta o un centro per il dettaglio.</p>
   </div></div></details>
+  </div>
 
-  <details class="sect" id="secCase"><summary><span class="si">⊕</span><span class="st">Case & Astrocartografia</span><span class="sx">+</span></summary><div class="sbody">
+  <div class="cliPanel" data-panel="secCase">
+  <details class="sect" open id="secCase"><summary><span class="si">⊕</span><span class="st">Case & Astrocartografia</span><span class="sx">+</span></summary><div class="sbody">
     <p class="hint" id="astroIntro" style="margin-bottom:10px">La tua carta astrologica completa: ascendente, medio cielo, le 12 case, e dove nel mondo la tua energia è più forte.</p>
     <div id="astroPlaceRow" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
       <input type="text" id="cliAstroPlace" placeholder="Luogo di nascita (es. Roma)" style="flex:1;min-width:160px;font-size:13px;padding:8px 10px;background:rgba(127,127,127,.07);border:1px solid var(--line);color:var(--ink);border-radius:10px">
@@ -281,11 +298,13 @@ footer b{color:var(--gold);font-weight:500}
     </div>
     <div id="cliAstroOut"></div>
   </div></details>
+  </div>
 
-  <details class="sect" id="secOggi"><summary><span class="si">☉</span><span class="st">Oggi & la tua settimana</span><span class="sx">+</span></summary><div class="sbody"><div id="todayBox"></div></div></details>
+  <div class="cliPanel" data-panel="secOggi">
+  <details class="sect" open id="secOggi"><summary><span class="si">☉</span><span class="st">Oggi & la tua settimana</span><span class="sx">+</span></summary><div class="sbody"><div id="todayBox"></div></div></details>
+  </div>
 
-  <details class="sect" id="secVar"><summary><span class="si">◬</span><span class="st">La tua variabile</span><span class="sx">+</span></summary><div class="sbody"><div class="varGrid" id="rVars"></div></div></details>
-
+  <div class="cliPanel" data-panel="journalEyebrow">
   <details class="sect" open id="journalEyebrow"><summary><span class="si">✎</span><span class="st">Il tuo diario</span><span class="sx">+</span></summary><div class="sbody"><div id="journalBox">
     <p class="hint" id="jIntro" style="margin-bottom:10px"></p>
     <textarea id="jBody" placeholder="Com'è andata oggi? Cosa hai notato sperimentando la tua strategia e autorità?"></textarea>
@@ -304,14 +323,28 @@ footer b{color:var(--gold);font-weight:500}
     <button class="bigBtn" id="jSave" style="margin-top:12px">Salva nel diario</button>
     <div id="jList" style="margin-top:16px"></div>
   </div></div></details>
+  </div>
 
-  <details class="sect" id="secLett"><summary><span class="si">❖</span><span class="st">La tua lettura completa</span><span class="sx">+</span></summary><div class="sbody">
+  <div class="cliPanel" data-panel="secLett">
+  <details class="sect" open id="secLett"><summary><span class="si">❖</span><span class="st">La tua lettura completa</span><span class="sx">+</span></summary><div class="sbody">
   <p class="hint" id="readingIntro" style="display:none"></p>
   <div id="accordions"></div></div></details>
+  </div>
 
+  <div class="cliPanel" data-panel="bookEyebrow">
   <div class="eyebrow" id="bookEyebrow" style="display:none">▦ Prenota la tua call</div>
   <div id="bookWrap" style="display:none"></div>
   <a class="bigBtn" id="bookBtn" style="display:none" target="_blank" rel="noopener">Prenota una call →</a>
+  </div>
+
+  <div class="cliPanel" data-panel="secProfilo">
+  <details class="sect" open id="secProfilo"><summary><span class="si">☺</span><span class="st">Il tuo profilo</span><span class="sx">+</span></summary><div class="sbody">
+    <div id="profPkgBox"></div>
+    <div class="eyebrow" style="margin-top:18px">I tuoi dati</div>
+    <div id="profDataBox"></div>
+    <p class="hint" style="margin-top:14px">I tuoi dati di nascita e il pacchetto sono gestiti dalla tua guida. Per modifiche, scrivile direttamente.</p>
+  </div></details>
+  </div>
   </div><!-- /#cliGrid -->
 
   <footer>
@@ -329,6 +362,7 @@ footer b{color:var(--gold);font-weight:500}
   <a href="#secOggi">Oggi</a>
   <a href="#journalEyebrow">Diario</a>
   <a href="#bookEyebrow" id="bnavBook" style="display:none">Prenota</a>
+  <a href="#secProfilo">Profilo</a>
 </nav>
 
 <script>
@@ -1394,21 +1428,26 @@ function setupPWA(accent, studio, name){
     if(matchMedia('(display-mode: standalone)').matches || navigator.standalone){ const ic=document.getElementById('installCard'); if(ic) ic.remove(); }
   }catch(e){}
   const _ix=document.getElementById('instX'); if(_ix) _ix.addEventListener('click',()=>document.getElementById('installCard').remove());
-  // navigazione attiva su scroll + reveal delle sezioni
+  // navigazione a TAB: una sezione alla volta
   (function(){
+    function showPanel(sec){
+      document.querySelectorAll('.cliPanel').forEach(p=>p.classList.toggle('on', p.dataset.panel===sec));
+      document.querySelectorAll('#cliSide .cn').forEach(l=>l.classList.toggle('on', l.dataset.sec===sec));
+      document.querySelectorAll('#bnav a').forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+sec));
+      try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+    }
+    // click sidebar
+    document.querySelectorAll('#cliSide .cn').forEach(a=>a.addEventListener('click',ev=>{
+      ev.preventDefault(); showPanel(a.dataset.sec);
+    }));
+    // click bottom nav
     document.querySelectorAll('#bnav a').forEach(a=>a.addEventListener('click',ev=>{
-      const id=a.getAttribute('href').slice(1); const el=document.getElementById(id);
-      if(el && el.tagName==='DETAILS') el.open=true;
+      ev.preventDefault(); showPanel(a.getAttribute('href').slice(1));
     }));
-    document.querySelectorAll('#cliSide a').forEach(a=>a.addEventListener('click',()=>{
-      const id=a.getAttribute('href').slice(1); const el=document.getElementById(id);
-      if(el && el.tagName==='DETAILS') el.open=true;
-    }));
-    const links=[...document.querySelectorAll('#bnav a')];
-    const so=new IntersectionObserver(es=>{es.forEach(e=>{ if(e.isIntersecting) links.forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+e.target.id)); document.querySelectorAll('#cliSide a').forEach(l=>l.classList.toggle('on', l.dataset.sec===e.target.id)); });},{rootMargin:'-35% 0px -55% 0px'});
-    ['secSintesi','secGuida','secCarta','secCase','secOggi','journalEyebrow','bookEyebrow'].forEach(id=>{const el=document.getElementById(id); if(el) so.observe(el);});
-    const ro=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); ro.unobserve(e.target); } }),{threshold:.06});
-    document.querySelectorAll('#cliMain > *:not(header):not(#cliGrid), #cliGrid > *').forEach(el=>{ el.classList.add('reveal'); ro.observe(el); });
+    // pannello iniziale
+    showPanel('secSintesi');
+    window.__showCliPanel=showPanel; // utile per "Prenota" da altri punti
+  })();
   // ── DIARIO ──
   (function initJournal(){
     const canShare = ['accompagnamento','trasformazione'].includes((DATA.coach&&DATA.coach.plan)||'');
@@ -1466,7 +1505,6 @@ function setupPWA(accent, studio, name){
   })();
 
   })();
-})();
 
 
 
@@ -1683,7 +1721,43 @@ function renderPackageStatus(){
       <div style="color:var(--dim)">Scade il ${fmtDateCli(DATA.package_end)}</div>
       <div style="margin-top:6px;color:var(--dim)">Call rimaste: <b style="color:var(--ink)">${left}</b>${DATA.calls_total?` / ${DATA.calls_total}`:''}</div>`;
   }
+  renderProfile();
 }
+
+function renderProfile(){
+  if(!DATA) return;
+  const pkgBox=document.getElementById('profPkgBox');
+  const dataBox=document.getElementById('profDataBox');
+  if(pkgBox){
+    if(DATA.package && PKG_LABEL_CLI[DATA.package]){
+      const left=(DATA.calls_left!=null)?DATA.calls_left:Math.max((DATA.calls_total||0)-(DATA.calls_used||0),0);
+      const daysLeft = DATA.package_end ? Math.max(Math.ceil((new Date(DATA.package_end)-new Date())/86400000),0) : null;
+      const total = DATA.calls_total||0;
+      const usedPct = total ? Math.round((DATA.calls_used||0)/total*100) : 0;
+      pkgBox.innerHTML=`
+        <div class="card" style="border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--panel)">
+          <div style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);font-family:'Space Grotesk',monospace">Il tuo pacchetto</div>
+          <div style="font-size:20px;font-weight:700;color:var(--gold);margin:6px 0 2px">${PKG_LABEL_CLI[DATA.package]}</div>
+          ${daysLeft!=null?`<div style="font-size:13px;color:var(--ink)">${daysLeft} giorni rimanenti · scade il ${fmtDateCli(DATA.package_end)}</div>`:''}
+          <div style="margin-top:14px;display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim)"><span>Call usate</span><span><b style="color:var(--ink)">${DATA.calls_used||0}</b> / ${total}</span></div>
+          <div style="height:8px;background:rgba(127,127,127,.18);border-radius:6px;margin-top:6px;overflow:hidden"><div style="height:100%;width:${usedPct}%;background:var(--gold)"></div></div>
+          <div style="margin-top:8px;font-size:13px;color:var(--ink)"><b style="color:var(--gold)">${left}</b> call ${left===1?'rimasta':'rimaste'}</div>
+        </div>`;
+    } else {
+      pkgBox.innerHTML=`<div class="card" style="border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--panel)"><p class="hint" style="margin:0">Nessun pacchetto attivo al momento. Parla con la tua guida per iniziare un percorso.</p></div>`;
+    }
+  }
+  if(dataBox){
+    const tz=DATA.tz; const tzs=(tz>=0?'+':'')+tz;
+    dataBox.innerHTML=`
+      <div style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;font-size:13.5px">
+        <span style="color:var(--dim)">Nome</span><span style="color:var(--ink)">${DATA.name||'—'}</span>
+        <span style="color:var(--dim)">Data di nascita</span><span style="color:var(--ink)">${DATA.birth_date||'—'}</span>
+        <span style="color:var(--dim)">Ora</span><span style="color:var(--ink)">${DATA.birth_time||'—'} (UTC${tzs})</span>
+      </div>`;
+  }
+}
+
 function showRenewScreen(){
   const wrap=document.getElementById('wrap');
   // schermata di rinnovo che sostituisce il contenuto

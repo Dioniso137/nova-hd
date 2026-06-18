@@ -3242,9 +3242,9 @@ document.getElementById('astroPlace').addEventListener('keydown',e=>{ if(e.key==
    CRM CLIENTE · scheda dettagliata, modifica, pacchetto, note, call
    ════════════════════════════════════════════════════════════════ */
 const PACKAGES = {
-  avvio:          {label:'Avvio · 3 mesi',          months:3, calls:3, price:99},
-  percorso:       {label:'Percorso · 6 mesi',       months:6, calls:6, price:186},
-  trasformazione: {label:'Trasformazione · 9 mesi', months:9, calls:9, price:267},
+  avvio:          {label:'Avvio · 3 mesi',          months:3, calls:3, price:111},
+  percorso:       {label:'Percorso · 6 mesi',       months:6, calls:6, price:333},
+  trasformazione: {label:'Trasformazione · 9 mesi', months:9, calls:9, price:999},
 };
 function pkgEndDate(start, months){ if(!start) return null; const d=new Date(start); d.setMonth(d.getMonth()+months); return d.toISOString().slice(0,10); }
 function fmtDateIt(s){ if(!s) return '—'; try{ return new Date(s).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'}); }catch(e){ return s; } }
