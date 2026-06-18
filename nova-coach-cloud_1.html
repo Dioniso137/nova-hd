@@ -87,6 +87,10 @@ td.z{color:var(--dim);font-size:11px;white-space:nowrap}
 .card .hint{color:var(--dim)}
 .card .karmTag{font-size:10px;color:#e0862e !important;border:1px solid #e0862e;border-radius:6px;padding:1px 6px;white-space:nowrap}
 .card .detailMono{margin-top:6px;font-family:'Space Grotesk',monospace;font-size:11px;color:var(--dim) !important}
+.crmGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.crmGrid label{display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--dim)}
+.crmGrid input,.crmGrid select{font-size:12.5px;padding:7px 9px}
+@media(max-width:560px){.crmGrid{grid-template-columns:1fr}}
 .gateBadge{cursor:pointer}
 .gateBadge text{font-family:'Space Grotesk',monospace;font-size:11px;font-weight:500;pointer-events:none}
 .gateBadge:hover circle,.gateBadge:hover path{filter:brightness(1.25)}
@@ -2343,12 +2347,12 @@ function renderClients(){
       </div>
       ${c.notes?`<div class="cliNotes">${c.notes}</div>`:''}
       <div class="cliActions">
+        <button class="ghost" data-act="crm">Scheda</button>
         <button class="ghost" data-act="open">Apri carta</button>
         <button class="ghost" data-act="link">Link cliente</button>
-        <button class="ghost" data-act="pdf">Report PDF</button>
         <button class="ghost" data-act="airep">Report AI</button>
-        <button class="ghost" data-act="del">Elimina</button>
       </div>
+      <div class="cliCrm" style="display:none"></div>
       <div class="cliLink" style="display:none"></div>
     </div>`).join('') : '<div class="empty"><div class="eIc">☉</div><h3>Il tuo studio è pronto</h3><p>Aggiungi il primo cliente dal pannello qui accanto: la carta si calcola all\'istante e resta salvata nel cloud per sempre.</p></div>';
 }
@@ -2359,6 +2363,7 @@ document.getElementById('clList').addEventListener('click',async e=>{
   if(act==='del'){ if(confirm(`Eliminare ${cl.name}? Si cancellano anche le sue prenotazioni.`)){
     await sb.from('clients').delete().eq('id',cl.id); await loadClients(); } return; }
   if(act==='airep'){ await openReport(cl, card); return; }
+  if(act==='crm'){ await openCrm(cl, card); return; }
   if(act==='open'||act==='pdf'){
     document.getElementById('bdate').value=cl.birth_date; document.getElementById('btime').value=cl.birth_time; document.getElementById('tz').value=cl.tz;
     document.querySelector('.navItem[data-tab="carta"]').click(); document.getElementById('go').click();
@@ -3232,6 +3237,152 @@ function renderCityFinder(A, place){
 
 document.getElementById('astroGo').addEventListener('click', astroSearch);
 document.getElementById('astroPlace').addEventListener('keydown',e=>{ if(e.key==='Enter') astroSearch(); });
+
+/* ════════════════════════════════════════════════════════════════
+   CRM CLIENTE · scheda dettagliata, modifica, pacchetto, note, call
+   ════════════════════════════════════════════════════════════════ */
+const PACKAGES = {
+  avvio:          {label:'Avvio · 3 mesi',          months:3, calls:3, price:99},
+  percorso:       {label:'Percorso · 6 mesi',       months:6, calls:6, price:186},
+  trasformazione: {label:'Trasformazione · 9 mesi', months:9, calls:9, price:267},
+};
+function pkgEndDate(start, months){ if(!start) return null; const d=new Date(start); d.setMonth(d.getMonth()+months); return d.toISOString().slice(0,10); }
+function fmtDateIt(s){ if(!s) return '—'; try{ return new Date(s).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'}); }catch(e){ return s; } }
+
+async function openCrm(cl, card){
+  const box=card.querySelector('.cliCrm');
+  if(box.style.display==='block'){ box.style.display='none'; return; }
+  card.querySelectorAll('.cliLink').forEach(b=>b.style.display='none');
+  box.style.display='block';
+  box.innerHTML='<p class="hint">Carico la scheda…</p>';
+
+  // call history + note
+  const [{data:bk}, {data:notes}] = await Promise.all([
+    sb.from('bookings').select('*').eq('client_id',cl.id).order('starts_at',{ascending:false}),
+    sb.from('client_notes').select('*').eq('client_id',cl.id).order('created_at',{ascending:false})
+  ]);
+  const callsList=(bk||[]);
+  const pkg=cl.package&&PACKAGES[cl.package]?PACKAGES[cl.package]:null;
+  const callsLeft=Math.max((cl.calls_total||0)-(cl.calls_used||0),0);
+  const expired=cl.package_end && new Date(cl.package_end)<new Date();
+
+  box.innerHTML=`
+    <div class="card" style="margin-top:10px">
+      <div class="eyebrow" style="margin-top:0">Dati cliente</div>
+      <div class="crmGrid">
+        <label>Nome<input type="text" class="crmF" data-f="name" value="${(cl.name||'').replace(/"/g,'&quot;')}"></label>
+        <label>Email<input type="text" class="crmF" data-f="email" value="${(cl.email||'').replace(/"/g,'&quot;')}"></label>
+        <label>Telefono<input type="text" class="crmF" data-f="phone" value="${(cl.phone||'').replace(/"/g,'&quot;')}"></label>
+        <label>Data nascita<input type="date" class="crmF" data-f="birth_date" value="${cl.birth_date||''}"></label>
+        <label>Ora<input type="time" class="crmF" data-f="birth_time" value="${cl.birth_time||''}"></label>
+        <label>Fuso (UTC±)<input type="number" step="0.25" class="crmF" data-f="tz" value="${cl.tz??1}"></label>
+        <label>Tag<input type="text" class="crmF" data-f="tags" value="${(cl.tags||'').replace(/"/g,'&quot;')}" placeholder="es. priorità, referral"></label>
+        <label>Stato
+          <select class="crmF" data-f="status">
+            ${['attivo','sospeso','scaduto'].map(s=>`<option value="${s}"${cl.status===s?' selected':''}>${s}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+      <label style="display:block;margin-top:8px">Note interne (CRM)
+        <textarea class="crmF" data-f="notes" rows="2" style="width:100%">${(cl.notes||'').replace(/</g,'&lt;')}</textarea>
+      </label>
+      <label style="display:block;margin-top:8px">Sintesi mostrata al cliente
+        <input type="text" class="crmF" data-f="summary" value="${(cl.summary||'').replace(/"/g,'&quot;')}" placeholder="Es. Generatore · 4/1 · Sacrale">
+      </label>
+      <button class="primary crmSave" style="margin-top:12px">Salva modifiche</button>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="eyebrow" style="margin-top:0">Pacchetto</div>
+      ${pkg?`
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <span style="font-size:16px;font-weight:700;color:var(--gold)">${pkg.label}</span>
+          <span class="hint">${expired?'<b style="color:#e0862e">scaduto</b>':'scade il '+fmtDateIt(cl.package_end)}</span>
+        </div>
+        <div class="hint" style="margin-top:6px">Call: <b style="color:var(--ink)">${callsLeft}</b> rimaste su ${cl.calls_total} · ${cl.calls_used} usate</div>
+      `:`<p class="hint" style="margin-top:0">Nessun pacchetto attivo.</p>`}
+      <div class="crmGrid" style="margin-top:10px">
+        <label>Pacchetto
+          <select class="crmPkg">
+            <option value="">— scegli —</option>
+            ${Object.entries(PACKAGES).map(([k,p])=>`<option value="${k}"${cl.package===k?' selected':''}>${p.label} · ${p.price}€</option>`).join('')}
+          </select>
+        </label>
+        <label>Data inizio<input type="date" class="crmPkgStart" value="${cl.package_start||new Date().toISOString().slice(0,10)}"></label>
+      </div>
+      <button class="ghost crmPkgSave" style="margin-top:10px">Attiva / aggiorna pacchetto</button>
+      <p class="hint" style="margin-top:6px">Manuale finché non colleghi Stripe. Scadenza e call si calcolano dal pacchetto.</p>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="eyebrow" style="margin-top:0">Storico call (${callsList.length})</div>
+      ${callsList.length?callsList.slice(0,6).map(b=>{
+        const s=new Date(b.starts_at);
+        const ann=b.status==='annullata';
+        return `<div class="hint" style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid var(--line)">
+          <span style="${ann?'text-decoration:line-through;opacity:.6':''}">${s.toLocaleDateString('it-IT',{day:'2-digit',month:'short',year:'2-digit'})} · ${s.toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}</span>
+          <span>${ann?'annullata':'<span style="color:var(--gold)">confermata</span>'}</span>
+        </div>`;
+      }).join(''):'<p class="hint" style="margin-top:0">Nessuna call ancora.</p>'}
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="eyebrow" style="margin-top:0">Note datate</div>
+      <div style="display:flex;gap:6px">
+        <input type="text" class="crmNoteIn" placeholder="Aggiungi una nota…" style="flex:1;font-size:12px;padding:7px 9px">
+        <button class="ghost crmNoteAdd">Aggiungi</button>
+      </div>
+      <div class="crmNotesList" style="margin-top:8px">
+        ${(notes||[]).map(n=>`<div class="hint" style="padding:6px 0;border-bottom:1px solid var(--line)"><span style="color:var(--dim)">${new Date(n.created_at).toLocaleDateString('it-IT',{day:'2-digit',month:'short'})}</span> · <span style="color:var(--ink)">${(n.body||'').replace(/</g,'&lt;')}</span></div>`).join('')||'<p class="hint" style="margin-top:0">Nessuna nota.</p>'}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;border-color:rgba(228,80,110,.3)">
+      <button class="ghost crmPdf">Report PDF</button>
+      <button class="ghost crmDel" style="color:#e4506e">Elimina cliente</button>
+    </div>
+  `;
+
+  // — salva modifiche dati —
+  box.querySelector('.crmSave').addEventListener('click', async ()=>{
+    const patch={};
+    box.querySelectorAll('.crmF').forEach(f=>{ let v=f.value; if(f.dataset.f==='tz') v=parseFloat(v)||0; patch[f.dataset.f]=v; });
+    const {error}=await sb.from('clients').update(patch).eq('id',cl.id);
+    if(error){ flash('Errore: '+error.message); return; }
+    flash('Scheda salvata ✓'); await loadClients();
+  });
+
+  // — attiva pacchetto (via RPC, calcola scadenza+call lato server) —
+  box.querySelector('.crmPkgSave').addEventListener('click', async ()=>{
+    const p=box.querySelector('.crmPkg').value;
+    const start=box.querySelector('.crmPkgStart').value || new Date().toISOString().slice(0,10);
+    if(!p){ flash('Scegli un pacchetto'); return; }
+    const {data,error}=await sb.rpc('set_client_package',{p_client:cl.id,p_package:p,p_start:start,p_reset_used:true});
+    if(error||(data&&data.error)){ flash('Errore: '+((data&&data.error)||error.message)); return; }
+    flash('Pacchetto attivato ✓'); await loadClients();
+    const fresh=CLIENTS.find(x=>x.id===cl.id); if(fresh){ box.style.display='none'; openCrm(fresh, card); }
+  });
+
+  // — note datate —
+  box.querySelector('.crmNoteAdd').addEventListener('click', async ()=>{
+    const inp=box.querySelector('.crmNoteIn'); const body=inp.value.trim(); if(!body) return;
+    const {error}=await sb.from('client_notes').insert({coach_id:ME.id,client_id:cl.id,body});
+    if(error){ flash('Errore: '+error.message); return; }
+    inp.value=''; openCrm(CLIENTS.find(x=>x.id===cl.id)||cl, card); box.style.display='block';
+  });
+
+  // — pdf / elimina —
+  box.querySelector('.crmPdf').addEventListener('click', ()=>{
+    document.getElementById('bdate').value=cl.birth_date; document.getElementById('btime').value=cl.birth_time; document.getElementById('tz').value=cl.tz;
+    document.querySelector('.navItem[data-tab="carta"]').click(); document.getElementById('go').click();
+    setTimeout(()=>document.getElementById('printBtn').click(),400);
+  });
+  box.querySelector('.crmDel').addEventListener('click', async ()=>{
+    if(confirm(`Eliminare ${cl.name}? Si cancellano anche le sue prenotazioni e note.`)){
+      await sb.from('clients').delete().eq('id',cl.id); await loadClients();
+    }
+  });
+}
 
 /* ════════════════════════════════════════════════════════════════
    NUMEROLOGIA CALDEA · strumento interno coach
