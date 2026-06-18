@@ -128,10 +128,13 @@ details .body p{margin-bottom:10px}
 #cliSide .cn .cni svg{width:18px;height:18px}
 #cliSide .csPkg{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-size:11.5px}
 #cliSide .csFoot{margin-top:auto;font-size:10px;color:#5c5c66;padding:12px 6px 0;line-height:1.5}
-#bnav{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:3px;background:rgba(14,17,32,.92);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:30px;padding:6px;z-index:60;box-shadow:0 12px 40px rgba(0,0,0,.5);max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none}
+#bnav{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:2px;background:rgba(14,17,32,.94);backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:24px;padding:6px;z-index:60;box-shadow:0 12px 40px rgba(0,0,0,.5);max-width:calc(100vw - 20px);overflow-x:auto;scrollbar-width:none}
 #bnav::-webkit-scrollbar{display:none}
-#bnav a{color:var(--dim);text-decoration:none;font-size:11.5px;padding:9px 13px;border-radius:20px;white-space:nowrap;transition:all .2s}
+#bnav a{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--dim);text-decoration:none;font-size:10px;padding:6px 10px;border-radius:16px;white-space:nowrap;transition:all .2s;min-width:54px}
+#bnav a svg{width:19px;height:19px}
 #bnav a.on{color:#0b0d18;background:var(--gold)}
+/* la bottom nav è SOLO mobile: nascosta da 900px in su (regola dopo la base per vincere) */
+@media(min-width:900px){ #bnav{display:none} }
 [id]{scroll-margin-top:20px}
 
 /* griglia desktop rimossa: torna a colonna singola centrata */
@@ -355,14 +358,15 @@ footer b{color:var(--gold);font-weight:500}
 </div>
 
 <nav id="bnav" aria-label="Navigazione rapida">
-  <a href="#secSintesi" class="on">Sintesi</a>
-  <a href="#secGuida">Guida</a>
-  <a href="#secCarta">Carta</a>
-  <a href="#secCase">Astro</a>
-  <a href="#secOggi">Oggi</a>
-  <a href="#journalEyebrow">Diario</a>
-  <a href="#bookEyebrow" id="bnavBook" style="display:none">Prenota</a>
-  <a href="#secProfilo">Profilo</a>
+  <a href="#secSintesi" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 7v10l8 5 8-5V7l-8-5Z"/><path d="M12 22V12M4 7l8 5 8-5"/></svg><span>Sintesi</span></a>
+  <a href="#secGuida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg><span>Guida</span></a>
+  <a href="#secCarta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg><span>Carta</span></a>
+  <a href="#secCase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg><span>Astro</span></a>
+  <a href="#secOggi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg><span>Oggi</span></a>
+  <a href="#journalEyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Diario</span></a>
+  <a href="#secLett"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg><span>Lettura</span></a>
+  <a href="#bookEyebrow" id="bnavBook" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Prenota</span></a>
+  <a href="#secProfilo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg><span>Profilo</span></a>
 </nav>
 
 <script>
