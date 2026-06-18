@@ -81,9 +81,12 @@ td.z{color:var(--dim);font-size:11px;white-space:nowrap}
 .paper .ph{text-align:center;color:var(--paper-dim);font-size:11px;margin-top:2px;font-family:'Space Grotesk',monospace}
 .paper svg{width:100%;height:auto;display:block}
 /* Card a tema scuro per contenuti testuali (numerologia, report) */
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink)}
-.card .karmTag{font-size:10px;color:#e0862e;border:1px solid #e0862e;border-radius:6px;padding:1px 6px;white-space:nowrap}
-.card .detailMono{margin-top:6px;font-family:'Space Grotesk',monospace;font-size:11px;color:var(--dim)}
+.card{background:var(--panel) !important;border:1px solid var(--line);border-radius:14px;padding:14px;color:var(--ink) !important;box-shadow:none !important}
+.card *{color:var(--ink)}
+.card b{color:var(--ink)}
+.card .hint{color:var(--dim)}
+.card .karmTag{font-size:10px;color:#e0862e !important;border:1px solid #e0862e;border-radius:6px;padding:1px 6px;white-space:nowrap}
+.card .detailMono{margin-top:6px;font-family:'Space Grotesk',monospace;font-size:11px;color:var(--dim) !important}
 .gateBadge{cursor:pointer}
 .gateBadge text{font-family:'Space Grotesk',monospace;font-size:11px;font-weight:500;pointer-events:none}
 .gateBadge:hover circle,.gateBadge:hover path{filter:brightness(1.25)}
