@@ -158,46 +158,46 @@ footer{border-top:1px solid var(--line);padding:34px 0;text-align:center;color:v
 
 <section id="percorsi">
   <h2 class="sec">Scegli il tuo percorso</h2>
-  <p class="sub">Ogni percorso include la dashboard personale completa con guida AI, e <b>una call al mese</b> con me. Più lungo è il cammino, più in profondità andiamo insieme.</p>
+  <p class="sub">Tutti includono la tua dashboard personale completa con guida AI. Cambia ciò che conta: quanto cammino insieme.</p>
   <div class="prices">
     <div class="price">
-      <h3>Avvio</h3>
-      <div class="tag">Per iniziare a conoscerti e mettere a fuoco la tua carta.</div>
-      <div class="amt">111€<span>/ 3 mesi</span></div>
+      <h3>Esplora</h3>
+      <div class="tag">Per scoprire la tua carta in autonomia, al tuo ritmo.</div>
+      <div class="amt">39€<span>/mese</span></div>
       <ul>
         <li>Dashboard personale completa</li>
-        <li>Bodygraph, case, astrocartografia</li>
+        <li>Bodygraph, transiti e previsioni</li>
         <li>Guida AI sempre disponibile</li>
-        <li><b>3 call dedicate</b> (1 al mese)</li>
         <li>La tua app sul telefono</li>
+        <li class="no">Call dedicate</li>
       </ul>
-      <button class="btn ghost" style="color:var(--gold);border-color:var(--gold)" onclick="openAuth({plan:'avvio',price:111,months:3,calls:'3 call'},'signup')">Scegli Avvio</button>
+      <button class="btn ghost" style="color:var(--gold);border-color:var(--gold)" onclick="openAuth({plan:'esplora',price:39,calls:'nessuna call'},'signup')">Inizia con Esplora</button>
     </div>
     <div class="price hot">
-      <h3>Percorso</h3>
-      <div class="tag">Il cammino completo: sei mesi per radicare i cambiamenti.</div>
-      <div class="amt">333€<span>/ 6 mesi</span></div>
+      <h3>Accompagnamento</h3>
+      <div class="tag">Il percorso completo: la tua carta e io al tuo fianco, ogni mese.</div>
+      <div class="amt">120€<span>/mese</span></div>
       <ul>
-        <li>Tutto di Avvio, incluso</li>
-        <li><b>6 call dedicate</b> (1 al mese)</li>
+        <li>Tutto di Esplora, incluso</li>
+        <li><b>1 call dedicata al mese con me</b></li>
         <li>Lettura guidata della tua carta</li>
+        <li>Domande prioritarie tra una call e l'altra</li>
         <li>Previsioni personali commentate</li>
-        <li style="color:var(--gold)">Accompagnamento continuativo su 6 mesi</li>
       </ul>
-      <button class="btn" onclick="openAuth({plan:'percorso',price:333,months:6,calls:'6 call'},'signup')">Scegli Percorso</button>
+      <button class="btn" onclick="openAuth({plan:'accompagnamento',price:120,calls:'1 call al mese'},'signup')">Scegli Accompagnamento</button>
     </div>
     <div class="price">
       <h3>Trasformazione</h3>
-      <div class="tag">Nove mesi, un cammino intensivo e in profondità.</div>
-      <div class="amt">999€<span>/ 9 mesi</span></div>
+      <div class="tag">Un cammino intensivo, per chi vuole andare in profondità.</div>
+      <div class="amt">240€<span>/mese</span></div>
       <ul>
-        <li>Tutto di Percorso, incluso</li>
-        <li><b>9 call dedicate</b> (1 al mese)</li>
-        <li>Percorso strutturato su misura</li>
+        <li>Tutto di Accompagnamento</li>
+        <li><b>2 call al mese (ogni due settimane)</b></li>
+        <li>Percorso strutturato su più mesi</li>
         <li>Supporto prioritario tra le call</li>
-        <li style="color:var(--gold)">Il percorso più completo e intensivo</li>
+        <li>Approfondimenti su misura</li>
       </ul>
-      <button class="btn ghost" style="color:var(--gold);border-color:var(--gold)" onclick="openAuth({plan:'trasformazione',price:999,months:9,calls:'9 call'},'signup')">Scegli Trasformazione</button>
+      <button class="btn ghost" style="color:var(--gold);border-color:var(--gold)" onclick="openAuth({plan:'trasformazione',price:240,calls:'2 call al mese'},'signup')">Scegli Trasformazione</button>
     </div>
   </div>
   <p class="sub" style="margin-top:30px">Non sai quale scegliere? <b style="color:var(--gold);cursor:pointer" onclick="openAuth(null,'login')">Accedi</b> o scrivimi: troviamo insieme il punto di partenza giusto.</p>
@@ -324,10 +324,10 @@ window.supabase={ createClient:function(){ return {auth, from, rpc}; } };
 
 
 const sb = window.supabase.createClient();
-const OWNER_EMAIL='darioantonini94@gmail.com';
+const OWNER_EMAILS=['darioantonini94@gmail.com','simone.amato@samurailab.it'].map(e=>e.toLowerCase());
   const DASHBOARD = 'nova-coach-cloud_1.html';   // area regia (solo owner)
 const ONBOARDING = 'onboarding.html';          // dove vanno i clienti
-function destFor(email){ return (email||'').trim().toLowerCase()===OWNER_EMAIL ? DASHBOARD : ONBOARDING; }
+function destFor(email){ return OWNER_EMAILS.includes((email||'').trim().toLowerCase()) ? DASHBOARD : ONBOARDING; }
 let MODE='signup', PLAN=null;
 
 function openAuth(plan,mode){ PLAN=plan; MODE=mode||'signup'; document.getElementById('authModal').classList.add('open'); document.getElementById('authMsg').textContent=''; refreshModal(); setTimeout(()=>document.getElementById('auEmail').focus(),50); }
@@ -337,7 +337,7 @@ function refreshModal(){
   const t=document.getElementById('auTitle'), p=document.getElementById('auPlan'), g=document.getElementById('auGo'), s=document.getElementById('auSwitch');
   if(MODE==='signup'){
     t.textContent='Crea il tuo accesso';
-    p.textContent = PLAN ? `Percorso ${PLAN.plan.charAt(0).toUpperCase()+PLAN.plan.slice(1)} · ${PLAN.price}€${PLAN.months?' / '+PLAN.months+' mesi':''} · ${PLAN.calls}` : 'Scegli un percorso dalla pagina';
+    p.textContent = PLAN ? `Percorso ${PLAN.plan.charAt(0).toUpperCase()+PLAN.plan.slice(1)} · ${PLAN.price}€/mese · ${PLAN.calls}` : 'Scegli un percorso dalla pagina';
     g.textContent='Crea accesso';
     s.innerHTML='Hai già un accesso? <b onclick="switchMode()">Accedi</b>';
   } else {
@@ -351,7 +351,7 @@ function msg(t,err){ const m=document.getElementById('authMsg'); m.textContent=t
 
 async function savePlan(uid){
   const em=(document.getElementById('auEmail').value||'').trim().toLowerCase();
-  if(em===OWNER_EMAIL){ const up=await sb.from('coach_settings').update({plan:'lifetime',max_clients:999999,trial_ends:null,studio:'NOVA'}).eq('id',uid);
+  if(OWNER_EMAILS.includes(em)){ const up=await sb.from('coach_settings').update({plan:'lifetime',max_clients:999999,trial_ends:null,studio:'NOVA'}).eq('id',uid);
     if(!up.data||!up.data.length){ await sb.from('coach_settings').insert({id:uid,plan:'lifetime',max_clients:999999,trial_ends:null,studio:'NOVA'}); } return; }
   if(!PLAN) return;
   const patch={plan:PLAN.plan, studio:'NOVA'};

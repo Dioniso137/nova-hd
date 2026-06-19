@@ -2220,8 +2220,8 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // ▲▲──────────────────────────────────────────────▲▲
 const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 let ME=null, SETTINGS=null, CLIENTS=[];
-const OWNER_EMAIL='darioantonini94@gmail.com';
-function isOwner(){ return ME && (ME.email||'').toLowerCase()===OWNER_EMAIL; }
+const OWNER_EMAILS=['darioantonini94@gmail.com','simone.amato@samurailab.it'].map(e=>e.toLowerCase());
+function isOwner(){ return ME && OWNER_EMAILS.includes((ME.email||'').toLowerCase()); }
 const DAYS_IT=['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
 
 function authMsg(t,err){ const m=document.getElementById('authMsg'); m.textContent=t; m.style.color=err?'#e4506e':'var(--dim)'; }
