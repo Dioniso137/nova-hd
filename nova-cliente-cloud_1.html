@@ -143,6 +143,11 @@ details .body p{margin-bottom:10px}
 /* ── Tab cliente: una sezione alla volta ── */
 .cliPanel{display:none}
 .cliPanel.on{display:block;animation:cliFade .25s ease}
+/* numerologia cliente */
+#cliNumOut .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+#cliNumOut .card h4{font-family:'Marcellus',serif;font-size:16px;color:var(--gold);margin-bottom:6px}
+#cliNumOut .detailMono{font-family:'Space Grotesk',monospace;font-size:11px;color:var(--dim);margin-top:6px;word-break:break-word}
+#cliNumOut .karmTag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(227,184,100,.15);color:var(--gold);margin-left:6px}
 @keyframes cliFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 /* dentro una tab la sezione è sempre aperta: nascondo il + e rendo il titolo non cliccabile come toggle */
 .cliPanel .sect>summary{cursor:default}
@@ -233,6 +238,7 @@ footer b{color:var(--gold);font-weight:500}
     <a href="#secGuida" class="cn" data-sec="secGuida"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></span>Guida</a>
     <a href="#secCarta" class="cn" data-sec="secCarta"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></span>Bodygraph</a>
     <a href="#secCase" class="cn" data-sec="secCase"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg></span>Case & Astro</a>
+    <a href="#secNumero" class="cn" data-sec="secNumero"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/></svg></span>Numerologia</a>
     <a href="#secOggi" class="cn" data-sec="secOggi"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></span>Oggi</a>
     <a href="#journalEyebrow" class="cn" data-sec="journalEyebrow"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></span>Diario</a>
     <a href="#secLett" class="cn" data-sec="secLett"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>Lettura</a>
@@ -303,6 +309,13 @@ footer b{color:var(--gold);font-weight:500}
   </div></details>
   </div>
 
+  <div class="cliPanel" data-panel="secNumero">
+  <details class="sect" open id="secNumero"><summary><span class="si">#</span><span class="st">Numerologia Caldea</span><span class="sx">+</span></summary><div class="sbody">
+    <p class="hint" style="margin-bottom:12px">I numeri della tua data di nascita e del tuo nome, secondo il sistema caldeo classico.</p>
+    <div id="cliNumOut"></div>
+  </div></details>
+  </div>
+
   <div class="cliPanel" data-panel="secOggi">
   <details class="sect" open id="secOggi"><summary><span class="si">☉</span><span class="st">Oggi & la tua settimana</span><span class="sx">+</span></summary><div class="sbody"><div id="todayBox"></div></div></details>
   </div>
@@ -362,6 +375,7 @@ footer b{color:var(--gold);font-weight:500}
   <a href="#secGuida"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg><span>Guida</span></a>
   <a href="#secCarta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg><span>Carta</span></a>
   <a href="#secCase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg><span>Astro</span></a>
+  <a href="#secNumero"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16M4 15h16M10 3 8 21M16 3l-2 18"/></svg><span>Numeri</span></a>
   <a href="#secOggi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg><span>Oggi</span></a>
   <a href="#journalEyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>Diario</span></a>
   <a href="#secLett"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg><span>Lettura</span></a>
@@ -1462,6 +1476,7 @@ function setupPWA(accent, studio, name){
 
   // ── Pacchetto: scadenza, call rimaste, blocco se scaduto ──
   renderPackageStatus();
+  applyTierGating();
   (function(){ const RA=['1/3','1/4','2/4','2/5','3/5','3/6'];
     const ang=c.profKey==='4/1'?'Giustapposizione':RA.includes(c.profKey)?'Angolo Retto':'Angolo Sinistro';
     const d=document.createElement('div'); d.className='varCell'; d.style.marginTop='10px';
@@ -1491,6 +1506,7 @@ function setupPWA(accent, studio, name){
       document.querySelectorAll('#cliSide .cn').forEach(l=>l.classList.toggle('on', l.dataset.sec===sec));
       document.querySelectorAll('#bnav a').forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+sec));
       try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
+      if(sec==='secNumero' && typeof renderCliNumero==='function' && !window.__numDone){ renderCliNumero(); window.__numDone=true; }
     }
     // click sidebar
     document.querySelectorAll('#cliSide .cn').forEach(a=>a.addEventListener('click',ev=>{
@@ -1761,6 +1777,16 @@ const PLANET_IN_HOUSE_VERB={
    ════════════════════════════════════════════════════════════════ */
 const PKG_LABEL_CLI={avvio:'Avvio · 3 mesi',percorso:'Percorso · 6 mesi',trasformazione:'Trasformazione · 9 mesi'};
 function fmtDateCli(s){ if(!s) return '—'; try{ return new Date(s).toLocaleDateString('it-IT',{day:'2-digit',month:'long',year:'numeric'}); }catch(e){ return s; } }
+/* ── Tier: 'base' (33€) nasconde Case&Astro e Numerologia; 'plus' (111€+) mostra tutto ── */
+function applyTierGating(){
+  const tier=(DATA&&DATA.tier)||'plus';
+  if(tier!=='base') return;
+  ['secCase','secNumero'].forEach(sec=>{
+    document.querySelectorAll('.cliPanel[data-panel="'+sec+'"]').forEach(p=>p.remove());
+    document.querySelectorAll('#cliSide .cn[data-sec="'+sec+'"]').forEach(a=>a.remove());
+    document.querySelectorAll('#bnav a[href="#'+sec+'"]').forEach(a=>a.remove());
+  });
+}
 function renderPackageStatus(){
   if(!DATA) return;
   const box=document.getElementById('csPkg');
@@ -1883,6 +1909,148 @@ function renderCliAstro(){
     ${houses}
     ${acg}
   `;
+}
+
+
+const CHALDEAN_CLASSIC = {A:1,I:1,J:1,Q:1,Y:1,B:2,K:2,R:2,C:3,G:3,L:3,S:3,D:4,M:4,T:4,E:5,H:5,N:5,X:5,U:6,V:6,W:6,O:7,Z:7,F:8,P:8};
+const NUM_VOWELS = new Set(['A','E','I','O','U']);
+
+// Pianeta + tema per i numeri radice 1–9
+const NUM_PLANET = {
+  1:{pl:'Sole', t:'Leadership, individualità, iniziativa. Volontà e desiderio di primeggiare.'},
+  2:{pl:'Luna', t:'Sensibilità, cooperazione, adattamento. Diplomazia e vita interiore.'},
+  3:{pl:'Giove', t:'Creatività, espressione, espansione. Ottimismo e comunicazione.'},
+  4:{pl:'Urano/Rahu', t:'Metodo, struttura, ribellione silenziosa. Visione anticonformista.'},
+  5:{pl:'Mercurio', t:'Versatilità, comunicazione, movimento. Mente rapida, libertà.'},
+  6:{pl:'Venere', t:'Amore, armonia, responsabilità, bellezza. Cura degli altri.'},
+  7:{pl:'Nettuno/Ketu', t:'Introspezione, spiritualità, studio. Profondità e mistero.'},
+  8:{pl:'Saturno', t:'Disciplina, karma, materia. Successo guadagnato con sforzo e prove.'},
+  9:{pl:'Marte', t:'Energia, coraggio, completamento, servizio. Combattività e idealismo.'},
+};
+
+// Composti 10–52 (descrizioni classiche parafrasate). k=true => nota karmica/difficile.
+const COMPOUND = {
+  10:{n:'La Ruota della Fortuna', d:'Ascesa o caduta a seconda di come si usa la propria volontà; tendenzialmente onore e fortuna.'},
+  11:{n:'Il Leone Imbavagliato', d:'Forza interiore minata da insidie nascoste e dubbi; serve vigilanza verso tradimenti.', k:true},
+  12:{n:'Il Sacrificio', d:'Rischio di essere usati o sacrificati per i piani altrui; sofferenza più mentale che reale.', k:true},
+  13:{n:'Trasformazione', d:'Potere e cambiamento. Non sfortunato in sé: rinnovamento attraverso il distacco dal passato.', k:true},
+  14:{n:'Movimento e Rischio', d:'Energia, viaggi, fortuna mutevole; lezione sull’uso corretto della libertà. Cautela con eccessi.', k:true},
+  15:{n:'Il Mago', d:'Magnetismo, fascino, eloquenza; grande potere di attrazione, da usare con etica.'},
+  16:{n:'La Cittadella in Rovina', d:'Crolli improvvisi che spezzano l’ego; rinascita più autentica dopo la crisi.', k:true},
+  17:{n:'La Stella dei Magi', d:'Numero molto elevato e spirituale: ciò che si costruisce resiste al tempo; pace dopo le prove.'},
+  18:{n:'Il Conflitto della Luna', d:'Tensione tra volontà personale e dovere karmico; materialismo che lotta con lo spirito.', k:true},
+  19:{n:'Il Principe del Cielo', d:'Uno dei numeri più fortunati: successo, onore, felicità e realizzazione.'},
+  20:{n:'Il Risveglio', d:'Chiamata a un risveglio o a una causa più grande; attesa e pazienza prima dei risultati.'},
+  21:{n:'La Corona dei Magi', d:'Avanzamento, vittoria, onori dopo lotta. Numero di lunga durata e successo garantito.'},
+  22:{n:'Il Buon Uomo Accecato', d:'Illusioni e false certezze; pericolo se ci si lascia ingannare. Sveglia e discernimento.', k:true},
+  23:{n:'La Stella Reale del Leone', d:'Numero molto fortunato: protezione, aiuto dall’alto, riuscita dei progetti.'},
+  24:{n:'Amore e Fortuna', d:'Guadagno tramite l’amore e gli affetti; sostegno di persone influenti. Favorevole.'},
+  25:{n:'Saggezza dall’Esperienza', d:'Successo conquistato tramite prove e osservazione; forza che matura nel tempo.'},
+  26:{n:'Società e Rischio', d:'Avvertimento su alleanze e soci sbagliati; rovesci per cattive associazioni. Prudenza.', k:true},
+  27:{n:'Lo Scettro', d:'Autorità, comando, ricompensa dell’intelletto creativo; agire con fiducia.'},
+  28:{n:'L’Agnello Fidente', d:'Promesse e perdite per eccesso di fiducia; ricominciare più volte. Proteggere i propri averi.', k:true},
+  29:{n:'Tradimenti e Incertezze', d:'Insidie, delusioni dagli altri, prove emotive; serve fede e prudenza.', k:true},
+  30:{n:'Riflessione e Pensiero', d:'Mente superiore, distacco; né fortunato né sfortunato, dipende dall’uso del pensiero.'},
+  31:{n:'L’Eremita', d:'Isolamento, autosufficienza; visione personale lontana dal mondo. Solitudine feconda.'},
+  32:{n:'Magnetismo Collettivo', d:'Simile a 14 e 23: grande forza se si resta fedeli alle proprie idee tra le folle.'},
+  33:{n:'(come 24)', d:'Stessa vibrazione del 24: fortuna attraverso l’amore e gli appoggi.'},
+  34:{n:'(come 25)', d:'Stessa vibrazione del 25: saggezza guadagnata dall’esperienza.'},
+  35:{n:'(come 26)', d:'Stessa vibrazione del 26: cautela nelle associazioni.', k:true},
+  36:{n:'(come 27)', d:'Stessa vibrazione del 27: autorità e ricompensa creativa.'},
+  37:{n:'Amicizia e Buona Sorte', d:'Buone unioni, alleanze felici in amore e affari; numero di fortuna e armonia.'},
+  38:{n:'(come 29)', d:'Stessa vibrazione del 29: incertezze e prove dagli altri.', k:true},
+  39:{n:'(come 30)', d:'Stessa vibrazione del 30: pensiero e riflessione.'},
+  40:{n:'(come 31)', d:'Stessa vibrazione del 31: isolamento e visione propria.'},
+  41:{n:'(come 32)', d:'Stessa vibrazione del 32: magnetismo se fedeli a sé.'},
+  42:{n:'(come 24)', d:'Vibrazione affine al 24: guadagno attraverso gli affetti.'},
+  43:{n:'Rivoluzione e Rovina', d:'Conflitto, sconvolgimenti, ostacoli; sfavorevole per eventi futuri. Grande prudenza.', k:true},
+  44:{n:'Penalità Karmica', d:'Numero molto pesante (doppio 4 e 8): difficoltà materiali serie e prove karmiche.', k:true},
+  45:{n:'La Conquista della Mente', d:'Saggezza al servizio di una causa; preparazione e strategia portano al successo.'},
+  46:{n:'(come 37)', d:'Vibrazione affine al 37: cooperazione fortunata.'},
+  47:{n:'(come 29)', d:'Vibrazione affine al 29: prove relazionali.', k:true},
+  48:{n:'Penalità Karmica', d:'Numero di disastro e vittimismo; pesante sul piano karmico. Massima attenzione.', k:true},
+  49:{n:'(come 31/40)', d:'Vibrazione affine al 31: solitudine; può accentuare disagio interiore.', k:true},
+  50:{n:'(come 41/32)', d:'Comunicazione e socialità spontanea; magnetismo collettivo.'},
+  51:{n:'Il Guerriero', d:'Potenza propria: avanzamento improvviso, vittoria; favorevole a leader e cause, ma attira nemici.'},
+  52:{n:'(come 43)', d:'Stessa vibrazione del 43: sconvolgimenti; i composti si fermano qui.', k:true},
+};
+
+function numLetterVal(ch, useNine){
+  const map = useNine ? Object.assign({}, CHALDEAN_CLASSIC, {E:9}) : CHALDEAN_CLASSIC;
+  return map[ch] || 0;
+}
+function numReduce(n){ while(n>9){ n = String(n).split('').reduce((a,b)=>a+(+b),0); } return n; }
+function numCompound(total){ let c=total; while(c>52){ c = String(c).split('').reduce((a,b)=>a+(+b),0); } return c; }
+
+function numSumName(name, useNine, filter){
+  const up = (name||'').toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  let sum=0, detail=[];
+  for(const ch of up){
+    if(ch<'A'||ch>'Z') continue;
+    const isV = NUM_VOWELS.has(ch);
+    if(filter==='vowels' && !isV) continue;
+    if(filter==='consonants' && isV) continue;
+    const v=numLetterVal(ch, useNine); sum+=v; detail.push({ch, v});
+  }
+  return {sum, detail};
+}
+
+function numComputeAll(name, dateStr, useNine){
+  const all=numSumName(name, useNine, 'all');
+  const vow=numSumName(name, useNine, 'vowels');
+  const con=numSumName(name, useNine, 'consonants');
+  const wrap=o=>({total:o.sum, compound:numCompound(o.sum), root:numReduce(o.sum), detail:o.detail});
+  const out={ destiny:wrap(all), soul:wrap(vow), personality:wrap(con) };
+  if(dateStr){
+    const [y,m,d]=dateStr.split('-').map(Number);
+    const lifeTotal = String(y).split('').reduce((a,b)=>a+(+b),0) + (m||0) + (d||0);
+    out.lifePath = {total:lifeTotal, compound:numCompound(lifeTotal), root:numReduce(lifeTotal)};
+    out.birthDay = {day:d, root:numReduce(d||0)};
+  }
+  return out;
+}
+
+function numCard(title, obj, showDetail){
+  if(!obj) return '';
+  const root = obj.root;
+  const planet = NUM_PLANET[root] || {pl:'—', t:''};
+  const comp = (obj.compound && obj.compound>=10) ? COMPOUND[obj.compound] : null;
+  const karmic = comp && comp.k;
+  const detailHtml = (showDetail && obj.detail && obj.detail.length)
+    ? `<div class="detailMono">${obj.detail.map(x=>x.ch+'='+x.v).join(' · ')}</div>` : '';
+  return `
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+        <b style="color:var(--gold)">${title}</b>
+        <span style="font-size:22px;font-weight:700;color:var(--ink)">${root}</span>
+        ${obj.total!=null?`<span class="hint">totale ${obj.total}${obj.compound>=10?` · composto ${obj.compound}`:''}</span>`:''}
+        ${obj.day!=null?`<span class="hint">giorno ${obj.day}</span>`:''}
+        ${karmic?`<span class="karmTag">karmico</span>`:''}
+      </div>
+      <p style="font-size:12.5px;margin:6px 0 0;color:var(--ink)"><b>${planet.pl}</b> · ${planet.t}</p>
+      ${comp?`<p style="font-size:12.5px;margin:6px 0 0;color:var(--ink)"><b>${obj.compound} — ${comp.n}:</b> ${comp.d}</p>`:''}
+      ${detailHtml}
+    </div>`;
+}
+
+/* ── Numerologia Caldea lato cliente (auto dalla carta) ── */
+function renderCliNumero(){
+  const out=document.getElementById('cliNumOut');
+  if(!out || !DATA) return;
+  const name=DATA.name||'';
+  const date=DATA.birth_date||'';
+  if(!name || !date){ out.innerHTML='<p class="hint">Dati insufficienti per il calcolo.</p>'; return; }
+  let res;
+  try{ res=numComputeAll(name, date, false); }catch(e){ out.innerHTML='<p class="hint">Errore nel calcolo.</p>'; return; }
+  // numCard restituisce HTML; lo riuso per coerenza col coach
+  const cards=[
+    numCard('Sentiero di Vita', res.lifePath, true),
+    numCard('Destino (nome completo)', res.destiny, true),
+    numCard('Anima (vocali)', res.soul, true),
+    numCard('Personalità (consonanti)', res.personality, true),
+    numCard('Giorno di Nascita', res.birthDay, true),
+  ].join('');
+  out.innerHTML=cards;
 }
 
 </script>

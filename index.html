@@ -158,49 +158,54 @@ footer{border-top:1px solid var(--line);padding:34px 0;text-align:center;color:v
 
 <section id="percorsi">
   <h2 class="sec">Scegli il tuo percorso</h2>
-  <p class="sub">Ogni percorso include la dashboard personale completa con guida AI, e <b>una call al mese</b> con me. Più lungo è il cammino, più in profondità andiamo insieme.</p>
-  <div class="prices">
+  <p class="sub">Due modi di vivere la tua carta: in autonomia, o accompagnato da un coach con call dedicate. Abbonamento mensile, disdici quando vuoi.</p>
+  <div class="prices" style="max-width:760px;margin:0 auto">
     <div class="price">
-      <h3>Avvio</h3>
-      <div class="tag">Per iniziare a conoscerti e mettere a fuoco la tua carta.</div>
-      <div class="amt">111€<span>/ 3 mesi</span></div>
+      <h3>Esplora</h3>
+      <div class="tag">La tua carta completa, da esplorare al tuo ritmo.</div>
+      <div class="amt">33€<span>/mese</span></div>
       <ul>
         <li>Dashboard personale completa</li>
-        <li>Bodygraph, case, astrocartografia</li>
-        <li>Guida AI sempre disponibile</li>
-        <li><b>3 call dedicate</b> (1 al mese)</li>
+        <li>Bodygraph interattivo</li>
+        <li>Guida AI sulla tua carta</li>
+        <li>Transiti del giorno e diario</li>
+        <li>Lettura completa</li>
         <li>La tua app sul telefono</li>
+        <li class="no">Case &amp; astrocartografia</li>
+        <li class="no">Numerologia caldea</li>
+        <li class="no">Call con un coach</li>
       </ul>
-      <button class="btn ghost" style="color:var(--gold);border-color:var(--gold)" onclick="openAuth({plan:'avvio',price:111,months:3,calls:'3 call'},'signup')">Scegli Avvio</button>
+      <button class="btn ghost" style="color:var(--gold);border-color:var(--gold)" onclick="openAuth({plan:'esplora',tier:'base',price:33},'signup')">Inizia con Esplora</button>
     </div>
     <div class="price hot">
-      <h3>Percorso</h3>
-      <div class="tag">Il cammino completo: sei mesi per radicare i cambiamenti.</div>
-      <div class="amt">333€<span>/ 6 mesi</span></div>
+      <h3>Accompagnato</h3>
+      <div class="tag">Tutto, più un coach al tuo fianco con call ogni mese.</div>
+      <div class="amt" id="plusAmt">111€<span>/mese</span></div>
       <ul>
-        <li>Tutto di Avvio, incluso</li>
-        <li><b>6 call dedicate</b> (1 al mese)</li>
-        <li>Lettura guidata della tua carta</li>
+        <li><b>Tutto di Esplora, incluso</b></li>
+        <li>Case &amp; astrocartografia</li>
+        <li>Numerologia caldea</li>
+        <li>Coach dedicato a tua scelta</li>
+        <li><b>Call mensili con il tuo coach</b></li>
         <li>Previsioni personali commentate</li>
-        <li>Accompagnamento continuativo su 6 mesi</li>
       </ul>
-      <button class="btn" onclick="openAuth({plan:'percorso',price:333,months:6,calls:'6 call'},'signup')">Scegli Percorso</button>
-    </div>
-    <div class="price">
-      <h3>Trasformazione</h3>
-      <div class="tag">Nove mesi, un cammino intensivo e in profondità.</div>
-      <div class="amt">999€<span>/ 9 mesi</span></div>
-      <ul>
-        <li>Tutto di Percorso, incluso</li>
-        <li><b>9 call dedicate</b> (1 al mese)</li>
-        <li>Percorso strutturato su misura</li>
-        <li>Supporto prioritario tra le call</li>
-        <li>Il percorso più completo e intensivo</li>
-      </ul>
-      <button class="btn ghost" style="color:var(--gold);border-color:var(--gold)" onclick="openAuth({plan:'trasformazione',price:999,months:9,calls:'9 call'},'signup')">Scegli Trasformazione</button>
+      <div style="text-align:left;margin:6px 0 16px">
+        <label style="font-size:12px;color:var(--dim);display:block;margin-bottom:5px">Quante call al mese?</label>
+        <select id="plusCalls" onchange="updatePlusPrice()" style="width:100%;background:rgba(127,127,127,.08);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:11px;font-size:14px;font-family:'Outfit'">
+          <option value="1">1 call al mese — 111€</option>
+          <option value="2">2 call al mese — 222€</option>
+          <option value="3">3 call al mese — 333€</option>
+        </select>
+        <label style="font-size:12px;color:var(--dim);display:block;margin:12px 0 5px">Con quale coach?</label>
+        <select id="plusCoach" style="width:100%;background:rgba(127,127,127,.08);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:11px;font-size:14px;font-family:'Outfit'">
+          <option value="dario">Dario Antonini</option>
+          <option value="simone">Simone Amato</option>
+        </select>
+      </div>
+      <button class="btn" onclick="openPlus()">Scegli Accompagnato</button>
     </div>
   </div>
-  <p class="sub" style="margin-top:30px">Non sai quale scegliere? <b style="color:var(--gold);cursor:pointer" onclick="openAuth(null,'login')">Accedi</b> o scrivimi: troviamo insieme il punto di partenza giusto.</p>
+  <p class="sub" style="margin-top:30px">Hai già un accesso? <b style="color:var(--gold);cursor:pointer" onclick="openAuth(null,'login')">Accedi</b></p>
 </section>
 
 <section id="faq">
@@ -331,6 +336,17 @@ const ONBOARDING = 'onboarding.html';          // dove vanno i clienti
 function destFor(email){ return OWNER_EMAILS.includes((email||'').trim().toLowerCase()) ? DASHBOARD : ONBOARDING; }
 let MODE='signup', PLAN=null;
 
+function updatePlusPrice(){
+  const n=parseInt(document.getElementById('plusCalls').value,10)||1;
+  document.getElementById('plusAmt').innerHTML=(n*111)+'€<span>/mese</span>';
+}
+function openPlus(){
+  const n=parseInt(document.getElementById('plusCalls').value,10)||1;
+  const coach=document.getElementById('plusCoach').value;
+  const coachName=coach==='dario'?'Dario Antonini':'Simone Amato';
+  openAuth({plan:'accompagnato',tier:'plus',price:n*111,calls:n,callsLabel:n+(n===1?' call/mese':' call/mese'),coach,coachName},'signup');
+}
+
 function openAuth(plan,mode){ PLAN=plan; MODE=mode||'signup'; document.getElementById('authModal').classList.add('open'); document.getElementById('authMsg').textContent=''; refreshModal(); setTimeout(()=>document.getElementById('auEmail').focus(),50); }
 function closeAuth(){ document.getElementById('authModal').classList.remove('open'); }
 function switchMode(){ MODE = MODE==='signup'?'login':'signup'; refreshModal(); }
@@ -338,7 +354,11 @@ function refreshModal(){
   const t=document.getElementById('auTitle'), p=document.getElementById('auPlan'), g=document.getElementById('auGo'), s=document.getElementById('auSwitch');
   if(MODE==='signup'){
     t.textContent='Crea il tuo accesso';
-    p.textContent = PLAN ? `Percorso ${PLAN.plan.charAt(0).toUpperCase()+PLAN.plan.slice(1)} · ${PLAN.price}€${PLAN.months?' / '+PLAN.months+' mesi':''} · ${PLAN.calls}` : 'Scegli un percorso dalla pagina';
+    if(PLAN){
+      if(PLAN.tier==='plus'){ p.textContent=`Accompagnato · ${PLAN.price}€/mese · ${PLAN.callsLabel} · con ${PLAN.coachName}`; }
+      else if(PLAN.tier==='base'){ p.textContent=`Esplora · ${PLAN.price}€/mese`; }
+      else { p.textContent=`${PLAN.price}€/mese`; }
+    } else p.textContent='Scegli un percorso dalla pagina';
     g.textContent='Crea accesso';
     s.innerHTML='Hai già un accesso? <b onclick="switchMode()">Accedi</b>';
   } else {

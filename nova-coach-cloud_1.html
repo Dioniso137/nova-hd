@@ -3297,7 +3297,27 @@ async function openCrm(cl, card){
     </div>
 
     <div class="card" style="margin-top:12px">
-      <div class="eyebrow" style="margin-top:0">Pacchetto</div>
+      <div class="eyebrow" style="margin-top:0">Abbonamento (mensile)</div>
+      <div class="hint" style="margin-bottom:10px">Tier attuale: <b style="color:var(--gold)">${(cl.tier||'plus')==='base'?'Base · 33€/mese':'Plus · 111€+/mese'}</b>${cl.calls_per_month?` · ${cl.calls_per_month} call/mese`:''}</div>
+      <div class="crmGrid">
+        <label>Tier
+          <select class="crmTier">
+            <option value="base"${(cl.tier||'')==='base'?' selected':''}>Base · 33€ (no Case&Astro, no Numerologia)</option>
+            <option value="plus"${(cl.tier||'plus')==='plus'?' selected':''}>Plus · 111€+ (tutto + call)</option>
+          </select>
+        </label>
+        <label>Call al mese (solo Plus)
+          <select class="crmCalls">
+            ${[0,1,2,3].map(n=>`<option value="${n}"${(cl.calls_per_month||0)===n?' selected':''}>${n===0?'nessuna':n+' call · '+(n*111)+'€'}</option>`).join('')}
+          </select>
+        </label>
+      </div>
+      <button class="primary crmTierSave" style="margin-top:10px">Salva abbonamento</button>
+      <p class="hint" style="margin-top:6px">Base = dashboard senza Case&Astro e Numerologia. Plus = tutto + call mensili (1→111€, 2→222€, 3→333€). Manuale finché non colleghi Stripe.</p>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="eyebrow" style="margin-top:0">Pacchetto a durata (legacy)</div>
       ${pkg?`
         <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
           <span style="font-size:16px;font-weight:700;color:var(--gold)">${pkg.label}</span>
@@ -3359,6 +3379,17 @@ async function openCrm(cl, card){
     const {error}=await sb.from('clients').update(patch).eq('id',cl.id);
     if(error){ flash('Errore: '+error.message); return; }
     flash('Scheda salvata ✓'); await loadClients();
+  });
+
+  // — salva abbonamento (tier + call mensili) via RPC set_client_tier —
+  box.querySelector('.crmTierSave').addEventListener('click', async ()=>{
+    const tier=box.querySelector('.crmTier').value;
+    const calls=parseInt(box.querySelector('.crmCalls').value,10)||0;
+    const callsFinal = tier==='base' ? 0 : calls; // base non ha call
+    const {data,error}=await sb.rpc('set_client_tier',{p_client:cl.id,p_tier:tier,p_calls_per_month:callsFinal,p_chosen_coach:null});
+    if(error||(data&&data.error)){ flash('Errore: '+((data&&data.error)||error.message)); return; }
+    flash('Abbonamento salvato ✓'); await loadClients();
+    const fresh=CLIENTS.find(x=>x.id===cl.id); if(fresh){ box.style.display='none'; openCrm(fresh, card); }
   });
 
   // — attiva pacchetto (via RPC, calcola scadenza+call lato server) —
