@@ -1297,21 +1297,26 @@ function addMsg(role, text, cls){
 }
 async function sendChat(text){
   if(!text.trim()) return;
-  const ai = DATA.coach && DATA.coach.ai_endpoint;
   addMsg('user', text); CHAT.push({role:'user', content:text});
   document.getElementById('chatInput').value='';
-  if(!ai){ addMsg('ai','La guida AI non è ancora attiva. Esplora la lettura qui sotto o prenota una call!'); return; }
   const th=addMsg('ai','','ai thinking'); th.innerHTML='<span class="dots"><i></i><i></i><i></i></span>';
   const _send=document.getElementById('chatSend'); _send.disabled=true;
   try{
-    const r=await fetch(ai,{method:'POST',headers:{'content-type':'application/json'},
-      body:JSON.stringify({system:sysPrompt(), messages:CHAT.slice(-12)})});
-    if(!r.ok) throw 0;
-    const j=await r.json();
-    const reply=j.text||'Risposta vuota.';
+    const {data,error}=await sb.functions.invoke('ai-guide',{body:{token:TOKEN, system:sysPrompt(), messages:CHAT.slice(-12)}});
+    if(error||!data||data.error){ throw (error||data); }
+    const reply=data.text||'Risposta vuota.';
     th.classList.remove('thinking'); th.textContent=reply;
-    CHAT.push({role:'assistant', content:reply}); _send.disabled=false;
+    CHAT.push({role:'assistant', content:reply});
+    _send.disabled=false;
+    // aggiorna il contatore visibile
+    if(typeof data.left==='number') updateAiCounter(data.left);
   }catch(e){ th.classList.remove('thinking'); th.textContent='La guida AI non è raggiungibile ora. Riprova tra poco.'; CHAT.pop(); _send.disabled=false; }
+}
+function updateAiCounter(left){
+  const hint=document.getElementById('aiHint');
+  if(!hint) return;
+  if(left<=0){ hint.textContent='Hai esaurito i messaggi della guida per questa settimana. Per approfondire, prenota una call!'; }
+  else { hint.textContent=`Ti restano ${left} ${left===1?'messaggio':'messaggi'} questa settimana · Risposte di Claude Fable 5 sulla tua carta. Per i temi importanti, parlane in call.`; }
 }
 
 /* ── Prenotazione integrata ── */
@@ -1469,10 +1474,10 @@ function setupPWA(accent, studio, name){
   document.getElementById('chips').innerHTML=chips.map(q=>`<button class="chip2" type="button">${q}</button>`).join('');
   document.querySelectorAll('.chip2').forEach(b=>b.addEventListener('click',()=>sendChat(b.textContent)));
   document.getElementById('chatForm').addEventListener('submit',e=>{e.preventDefault();sendChat(document.getElementById('chatInput').value);});
-  if (DATA.coach.ai_endpoint){
-    addMsg('ai',`Ciao ${(DATA.name||'').split(' ')[0]}! Sono la tua guida Human Design: conosco la tua carta nei dettagli. Chiedimi del tuo tipo, delle decisioni, del tema di oggi — o prenota una call col tuo coach qui sotto.`);
-    document.getElementById('aiHint').textContent='Risposte generate da Claude Fable 5 sulla base della tua carta. Per le decisioni importanti, parlane in call con il tuo coach.';
-  } else addMsg('ai','La chat AI verrà attivata dal tuo coach. Intanto esplora la tua lettura completa qui sotto!');
+  addMsg('ai',`Ciao ${(DATA.name||'').split(' ')[0]}! Sono la tua guida Human Design: conosco la tua carta nei dettagli. Chiedimi del tuo tipo, delle decisioni, del tema di oggi — o prenota una call col tuo coach qui sotto.`);
+  document.getElementById('aiHint').textContent='Risposte di Claude Fable 5 sulla base della tua carta. Per le decisioni importanti, parlane in call con il tuo coach.';
+  // mostra i messaggi rimasti questa settimana
+  (async()=>{ try{ const {data}=await sb.rpc('ai_status',{p_token:TOKEN}); if(data&&typeof data.left==='number') updateAiCounter(data.left); }catch(e){} })();
 
   // card installazione: nascosta se già installata come app
   try{
