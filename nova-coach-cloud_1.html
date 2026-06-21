@@ -3289,6 +3289,10 @@ async function openCrm(cl, card){
       <label style="display:block;margin-top:8px">Sintesi mostrata al cliente
         <input type="text" class="crmF" data-f="summary" value="${(cl.summary||'').replace(/"/g,'&quot;')}" placeholder="Es. Generatore · 4/1 · Sacrale">
       </label>
+      <label style="display:flex;align-items:center;gap:10px;margin-top:12px;cursor:pointer;font-size:13px;color:var(--ink)">
+        <input type="checkbox" class="crmF" data-f="agent_enabled" style="width:auto"${cl.agent_enabled?' checked':''}>
+        <span>🌅 <b>Messaggio del giorno</b> — l'AI invia ogni mattina un messaggio personale sul transito, visibile nella sua dashboard</span>
+      </label>
       <button class="primary crmSave" style="margin-top:12px">Salva modifiche</button>
     </div>
 
@@ -3346,7 +3350,12 @@ async function openCrm(cl, card){
   // — salva modifiche dati —
   box.querySelector('.crmSave').addEventListener('click', async ()=>{
     const patch={};
-    box.querySelectorAll('.crmF').forEach(f=>{ let v=f.value; if(f.dataset.f==='tz') v=parseFloat(v)||0; patch[f.dataset.f]=v; });
+    box.querySelectorAll('.crmF').forEach(f=>{
+      let v;
+      if(f.type==='checkbox') v=f.checked;
+      else { v=f.value; if(f.dataset.f==='tz') v=parseFloat(v)||0; }
+      patch[f.dataset.f]=v;
+    });
     const {error}=await sb.from('clients').update(patch).eq('id',cl.id);
     if(error){ flash('Errore: '+error.message); return; }
     flash('Scheda salvata ✓'); await loadClients();

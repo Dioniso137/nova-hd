@@ -456,7 +456,18 @@ async function rpc(fn,params){
     return {data:j,error:null};
   }catch(e){ return {data:null,error:{message:e.message||String(e)}}; }
 }
-window.supabase={ createClient:function(){ return {auth, from, rpc}; } };
+const functions={
+  async invoke(name,opts){
+    opts=opts||{};
+    try{
+      const r=await fetch(SURL+'/functions/v1/'+name,{method:'POST',headers:H(),body:JSON.stringify(opts.body||{})});
+      const t=await r.text(); let j=null; try{ j=t?JSON.parse(t):null; }catch(_){ j={raw:t}; }
+      if(!r.ok) return {data:null,error:{message:(j&&(j.error||j.message))||('HTTP '+r.status),status:r.status}};
+      return {data:j,error:null};
+    }catch(e){ return {data:null,error:{message:e.message||String(e)}}; }
+  }
+};
+window.supabase={ createClient:function(){ return {auth, from, rpc, functions}; } };
 })();
 
 </script>
@@ -1224,7 +1235,43 @@ function renderToday(c){
     week+=`<div class="gline"><span class="gnum b">${dd.toLocaleDateString('it-IT',{weekday:'short',day:'2-digit'})}</span><span class="gtxt">${hits.join(' · ')||'<span style=\"color:var(--dim)\">nella tua energia di base</span>'}</span></div>`;
   }
   html += `<div class="eyebrow" style="margin-top:18px">☽ La tua settimana</div>${week}<p class="hint">Quando il cielo completerà temporaneamente i tuoi canali sospesi nei prossimi 7 giorni.</p>`;
-  document.getElementById('todayBox').innerHTML = html;
+  document.getElementById('todayBox').innerHTML = '<div id="agentMsgBox"></div>' + html;
+  loadAgentMessage(c, S);
+}
+
+/* ── Messaggio del giorno (agent) ── */
+async function loadAgentMessage(c, S){
+  const box=document.getElementById('agentMsgBox');
+  if(!box || !TOKEN) return;
+  let info=null;
+  try{ const {data}=await sb.rpc('get_daily_message',{p_token:TOKEN}); info=data; }catch(e){ return; }
+  if(!info || info.agent_enabled!==true) return; // agent non attivo: niente card
+  if(info.message){ showAgentMsg(box, info.message); return; }
+  // non esiste ancora: genero ora
+  box.innerHTML='<div class="cycCard" style="opacity:.7"><p class="hint" style="margin:0">🌅 Sto preparando il tuo messaggio di oggi…</p></div>';
+  // costruisco i dati del transito (gli stessi di renderToday)
+  const bridges=[];
+  const nowJD=Date.now()/86400000+2440587.5;
+  const lons=longitudesAt(nowJD);
+  const trGates=new Set(); for(const [k] of BODIES) trGates.add(lonToGate(lons[k]).gate);
+  for (const [a,b] of CHANNELS){ const na=c.allGates.has(a), nb=c.allGates.has(b);
+    if(na!==nb){ const miss=na?b:a; if(trGates.has(miss)) bridges.push({ch:a+'–'+b, desc:(CHANNEL_DESC[a+'-'+b]||'').slice(0,80)}); } }
+  const payload={ token:TOKEN, transit:{
+    name:(DATA&&DATA.name)||'', sunGate:S.gate, sunLine:S.line, sunGateName:GATE_NAMES[S.gate]||'',
+    bridges, type:c.type, authority:c.authority } };
+  try{
+    const {data,error}=await sb.functions.invoke('daily-agent',{body:payload});
+    if(error||!data||data.error){ box.innerHTML=''; return; } // fallisce in silenzio: resta il resto di Oggi
+    showAgentMsg(box, data.message);
+  }catch(e){ box.innerHTML=''; }
+}
+function showAgentMsg(box, msg){
+  const today=new Date().toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
+  box.innerHTML=`<div class="cycCard" style="border:1px solid rgba(227,184,100,.35);background:linear-gradient(180deg,rgba(227,184,100,.06),transparent)">
+    <h4>🌅 Il tuo messaggio di oggi</h4>
+    <div class="when">${today}</div>
+    <p style="white-space:pre-wrap">${(msg||'').replace(/</g,'&lt;')}</p>
+  </div>`;
 }
 function chartContext(c, name){
   const gl = k => Object.fromEntries(BODIES.map(([b])=>[b, c[k][b].gate+'.'+c[k][b].line]));
