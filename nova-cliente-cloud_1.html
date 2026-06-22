@@ -1693,6 +1693,31 @@ function renderNatalWheel(A){
 
 
 // confini terrestri reali (Natural Earth 1:110m, semplificati)
+/* converte una longitudine geografica (-180..180) in una zona del mondo leggibile */
+function lonToZone(lon){
+  // normalizza in -180..180
+  let L=((lon+540)%360)-180;
+  const dir = L>=0 ? 'E' : 'O';
+  const abs=Math.abs(Math.round(L));
+  // fasce approssimative del mondo per dare un riferimento concreto
+  const bands=[
+    [-170,-115,'Oceano Pacifico / Alaska'],
+    [-115,-95,'Nord/Centro America (ovest)'],
+    [-95,-75,'America centrale / USA est'],
+    [-75,-55,'Sud America (est) / Atlantico'],
+    [-55,-20,'Atlantico'],
+    [-20,0,'Africa occidentale / Europa ovest'],
+    [0,20,'Europa centrale / Africa'],
+    [20,45,'Europa est / Medio Oriente'],
+    [45,75,'Asia centrale / Russia ovest'],
+    [75,100,'India / Asia centrale'],
+    [100,125,'Cina / Sud-est asiatico'],
+    [125,150,'Giappone / Indonesia'],
+    [150,180,'Pacifico / Oceania'],
+  ];
+  for(const [a,b,name] of bands){ if(L>=a && L<b) return `${name} (${abs}°${dir})`; }
+  return `${abs}°${dir}`;
+}
 function acgLines(A){
   // Per ogni pianeta: linea MC (meridiano), IC, e curve ASC/DESC.
   const lines={};
@@ -1888,16 +1913,26 @@ function renderCliAstro(){
   try{ A=buildAstro(CHART, p.lat, p.lon); }catch(e){ out.innerHTML='<p class="hint">Errore nel calcolo: '+(e.message||e)+'</p>'; return; }
   const wheel = (typeof renderNatalWheel==='function') ? renderNatalWheel(A) : '';
   // 12 case
-  const houses=(A.cusps||[]).map((c,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px"><span style="color:var(--dim)">Casa ${i+1}${(typeof HOUSE_MEANING!=='undefined'&&HOUSE_MEANING[i+1])?' · '+HOUSE_MEANING[i+1].nome:''}</span><span style="color:var(--ink)">${aSign(c)} ${aDeg(c)}</span></div>`).join('');
+  const houses=(A.cusps||[]).slice(0,12).map((c,i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line);font-size:13px"><span style="color:var(--dim)">Casa ${i+1}${(typeof HOUSE_MEANING!=='undefined'&&HOUSE_MEANING[i+1])?' · '+HOUSE_MEANING[i+1].nome:''}</span><span style="color:var(--ink)">${aSign(c)} ${aDeg(c)}</span></div>`).join('');
   // astrocartografia: linee più rilevanti
   let acg='';
   try{
     const L=acgLines(A);
-    const items=Object.entries(L).slice(0,8).map(([planet,o])=>{
-      const mean=(typeof ACG_MEANING!=='undefined'&&ACG_MEANING[planet])?ACG_MEANING[planet]:'';
-      return `<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:13px"><b style="color:var(--gold)">${planet}</b> <span style="color:var(--dim)">${mean}</span></div>`;
-    }).join('');
-    acg=`<div class="eyebrow" style="margin-top:18px">Astrocartografia</div><p class="hint" style="margin-bottom:8px">Dove nel mondo ogni energia planetaria è più forte per te.</p>${items}`;
+    const ITplanets={Sun:'Sole',Moon:'Luna',Mercury:'Mercurio',Venus:'Venere',Mars:'Marte',Jupiter:'Giove',Saturn:'Saturno',Uranus:'Urano',Neptune:'Nettuno',Pluto:'Plutone'};
+    const items=Object.entries(L).map(([planet,o])=>{
+      const itName=ITplanets[planet]||planet;
+      const m=(typeof ACG_MEANING!=='undefined'&&ACG_MEANING[itName])?ACG_MEANING[itName]:null;
+      if(!m) return '';
+      const zona=lonToZone(o.mcLon);
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--line)">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <b style="color:var(--gold);font-size:14px">${itName} · ${m.tema}</b>
+          <span class="hint" style="font-size:11px">linea verso ${zona}</span>
+        </div>
+        <p style="color:var(--dim);font-size:12.5px;line-height:1.5;margin-top:4px">${m.cosa}</p>
+      </div>`;
+    }).filter(Boolean).join('');
+    acg=`<div class="eyebrow" style="margin-top:18px">Astrocartografia</div><p class="hint" style="margin-bottom:8px">Dove nel mondo ogni energia planetaria è più forte per te. La "linea" indica la fascia di longitudine dove quel pianeta culmina.</p>${items}`;
   }catch(e){ acg=''; }
   out.innerHTML=`
     <div style="background:var(--paper,#f6f1e6);border-radius:16px;padding:10px;margin-bottom:16px">${wheel}</div>
