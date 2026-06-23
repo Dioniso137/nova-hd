@@ -37,13 +37,15 @@ body{background:var(--bgGrad);color:var(--ink);font-family:'Outfit',system-ui,sa
 /* ───── layout tab ───── */
 .tab{display:none}
 .tab.active{display:block}
-.grid3{display:grid;grid-template-columns:330px minmax(420px,560px) 1fr;min-height:calc(100vh - 56px)}
-.grid2{display:grid;grid-template-columns:minmax(420px,620px) 1fr;min-height:calc(100vh - 56px)}
+.grid3{display:grid;grid-template-columns:330px minmax(420px,1fr) minmax(320px,520px);max-width:1600px;margin:0 auto;min-height:calc(100vh - 56px)}
+.grid2{display:grid;grid-template-columns:minmax(420px,1fr) minmax(320px,560px);max-width:1320px;margin:0 auto;min-height:calc(100vh - 56px)}
 .col{padding:24px 22px 80px;overflow-y:auto;max-height:calc(100vh - 56px);
   scrollbar-width:thin;scrollbar-color:#2a3150 transparent}
 .col.bordered{border-right:1px solid var(--line)}
-@media (max-width:1280px){ .grid3{grid-template-columns:330px 1fr} .grid3 .col:last-child{grid-column:1/-1;border-top:1px solid var(--line);max-height:none} .col{max-height:none} }
-@media (max-width:860px){ .grid3,.grid2{grid-template-columns:1fr} .col.bordered{border-right:none;border-bottom:1px solid var(--line)} }
+@media (max-width:1320px){ .grid2{grid-template-columns:minmax(380px,1fr) minmax(300px,1fr);max-width:none} .grid3{grid-template-columns:300px minmax(380px,1fr) minmax(300px,1fr);max-width:none} }
+@media (max-width:1180px){ .grid3{grid-template-columns:300px 1fr} .grid3 .col:last-child{grid-column:1/-1;border-top:1px solid var(--line);max-height:none} .col{max-height:none} }
+@media (max-width:980px){ .grid2{grid-template-columns:1fr;max-width:none} .grid2 .col{max-height:none} .grid2 .col.bordered{border-right:none;border-bottom:1px solid var(--line)} }
+@media (max-width:860px){ .grid3,.grid2{grid-template-columns:1fr} .col.bordered{border-right:none;border-bottom:1px solid var(--line)} .col{max-height:none;padding:18px 16px 70px} }
 /* ───── componenti ───── */
 .eyebrow{font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:20px 0 10px;display:flex;align-items:center;gap:10px}
 .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
@@ -150,6 +152,22 @@ p.pageIntro{color:var(--dim);font-size:12.5px;line-height:1.6;margin:8px 0 18px}
 .learnItem b{font-weight:600}
 .learnItem .cat{font-family:'Space Grotesk',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-right:8px}
 #flashCard{border:1px solid var(--gold);border-radius:14px;padding:22px;text-align:center;margin:14px 0;cursor:pointer;background:var(--panel)}
+/* corso Impara */
+.modItem{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;color:var(--ink);transition:border-color .2s,background .2s}
+.modItem:hover{border-color:rgba(227,184,100,.45)}
+.modItem.active{border-color:var(--gold);background:linear-gradient(90deg,rgba(227,184,100,.1),transparent)}
+.modItem .modN{width:30px;height:30px;flex-shrink:0;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',monospace;font-size:13px;color:var(--gold)}
+.modItem.active .modN{background:var(--gold);color:#15140f;border-color:var(--gold)}
+.modItem .modT{display:flex;flex-direction:column;line-height:1.3}
+.modItem .modT b{font-size:14px}
+.modItem .modT small{font-size:11px;color:var(--dim)}
+.learnTabs .lt{flex:1;background:rgba(255,255,255,.03);border:1px solid var(--line);color:var(--dim);border-radius:10px;padding:9px;font-size:13px;cursor:pointer;font-family:'Outfit';transition:all .2s}
+.learnTabs .lt.active{background:var(--gold);color:#15140f;border-color:var(--gold)}
+.lessonProse p{margin:0 0 12px;line-height:1.7;font-size:14.5px;color:var(--ink)}
+.lessonProse ul,.lessonProse ol{margin:0 0 12px;padding-left:20px}
+.lessonProse li{margin-bottom:7px;line-height:1.6;font-size:14px;color:var(--ink)}
+.lessonProse b{color:var(--gold)}
+.lessonProse i{color:var(--dim);font-style:italic}
 #flashCard .fq{font-family:'Marcellus',serif;font-size:19px}
 #flashCard .fa{font-size:13px;color:var(--dim);margin-top:10px;line-height:1.55}
 /* stampa */
@@ -790,7 +808,7 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
   <section class="col">
     <div class="detailCard" id="mdDetail" style="margin-top:0">
       <h3>Il mandala</h3>
-      <p style="color:var(--dim);font-size:12.5px;margin-top:6px">L'anello esterno mostra i 12 segni zodiacali, quello interno le 64 porte (esagrammi I Ching) nell'ordine della ruota Rave, che inizia con la porta 41 a 2° dell'Acquario. Ogni porta contiene 6 linee, ogni linea 6 colori, ogni colore 6 toni: è da qui che nasce tutta la precisione del calcolo.</p>
+      <p style="color:var(--dim);font-size:12.5px;margin-top:6px">L'anello esterno mostra i 12 segni zodiacali, quello interno le 64 porte (esagrammi I Ching) nell'ordine della ruota delle porte, che inizia con la porta 41 a 2° dell'Acquario. Ogni porta contiene 6 linee, ogni linea 6 colori, ogni colore 6 toni: è da qui che nasce tutta la precisione del calcolo.</p>
     </div>
     <div class="eyebrow">Le tue posizioni esatte</div>
     <table><thead><tr><th></th><th>Design</th><th>Personalità</th></tr></thead><tbody id="mdTable"></tbody></table>
@@ -802,17 +820,32 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
 <section class="tab" id="tab-impara">
 <div class="grid2">
   <main class="col bordered">
-    <h2 class="pageTitle">Impara</h2>
-    <p class="pageIntro">Glossario completo e ripasso: 64 porte, 36 canali, 9 centri, 5 tipi, 12 profili. Cerca o allenati con le flashcard.</p>
-    <div id="flashCard" title="Tocca per girare la carta">
-      <div class="fq" id="fcQ">Tocca qui per una flashcard casuale</div>
-      <div class="fa" id="fcA"></div>
-    </div>
-    <button class="ghost" id="fcNext">Nuova flashcard →</button>
+    <h2 class="pageTitle">Impara lo Human Design</h2>
+    <p class="pageIntro">Un percorso dall'inizio: parti dal Modulo 1 e prosegui in ordine. Ogni modulo spiega un concetto con parole semplici ed esempi. Alla fine saprai leggere una carta nei suoi elementi fondamentali.</p>
+    <div id="courseProgress" style="margin:6px 0 16px"></div>
+    <div id="courseModules"></div>
+    <p class="hint" style="margin-top:18px;padding-top:14px;border-top:1px solid var(--line)">Questo percorso è materiale didattico originale a scopo formativo e di crescita personale. NOVA è un progetto indipendente, non affiliato a Jovian Archive, IHDS o altri enti ufficiali. I contenuti non sostituiscono consulenza medica, psicologica o finanziaria.</p>
   </main>
   <section class="col">
-    <input type="text" id="learnSearch" placeholder="Cerca: porta 34, canale 20-34, sacrale, proiettore…" style="font-family:'Outfit'">
-    <div id="learnList" style="margin-top:10px"></div>
+    <div class="learnTabs" style="display:flex;gap:6px;margin-bottom:12px">
+      <button class="lt active" data-lt="lesson">Lezione</button>
+      <button class="lt" data-lt="glossary">Glossario</button>
+      <button class="lt" data-lt="flash">Flashcard</button>
+    </div>
+    <div id="ltLesson" class="ltPane">
+      <div id="lessonBody"><p class="hint">Seleziona un modulo a sinistra per aprire la lezione qui.</p></div>
+    </div>
+    <div id="ltGlossary" class="ltPane" style="display:none">
+      <input type="text" id="learnSearch" placeholder="Cerca: porta 34, canale 20-34, sacrale, proiettore…" style="font-family:'Outfit'">
+      <div id="learnList" style="margin-top:10px"></div>
+    </div>
+    <div id="ltFlash" class="ltPane" style="display:none">
+      <div id="flashCard" title="Tocca per girare la carta">
+        <div class="fq" id="fcQ">Tocca qui per una flashcard casuale</div>
+        <div class="fa" id="fcA"></div>
+      </div>
+      <button class="ghost" id="fcNext">Nuova flashcard →</button>
+    </div>
   </section>
 </div>
 </section>
@@ -828,7 +861,7 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
     <select id="numClient"><option value="">— scegli un cliente o scrivi a mano —</option></select>
 
     <label style="margin-top:10px;display:block">Nome usato per il calcolo</label>
-    <input type="text" id="numName" placeholder="Es. Maria (o Maria Elena)">
+    <input type="text" id="numName" placeholder="Es. Maria Elena Rossi (nome completo)">
 
     <label style="margin-top:10px;display:block">Data di nascita</label>
     <input type="date" id="numDate">
@@ -840,8 +873,8 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
     <button class="primary" id="numGo" style="margin-top:14px">Calcola numeri →</button>
     <p class="hint" style="margin-top:10px">Y è trattata come consonante; gli accenti (à, è…) come la lettera base. Il 9 non è mai un valore di lettera nella mappa classica, ma può comparire come risultato.</p>
   </main>
-  <section class="col">
-    <div id="numResults"><p class="hint">Scegli un cliente o inserisci nome e data, poi premi “Calcola numeri”.</p></div>
+  <section class="col" style="display:flex;align-items:center;justify-content:center">
+    <div id="numResults" style="width:100%"><div style="text-align:center;color:var(--dim);opacity:.7;padding:40px 20px"><div style="font-size:30px;margin-bottom:10px">#</div><p class="hint" style="margin:0">Scegli un cliente o inserisci nome e data,<br>poi premi “Calcola numeri”.</p></div></div>
   </section>
 </div>
 </section>
@@ -2136,6 +2169,168 @@ function renderMandala(){
 
 /* ════════════════════════ 15 · IMPARA ════════════════════════ */
 let LEARN_ITEMS=[];
+
+/* ════════════════ CORSO "IMPARA LO HUMAN DESIGN" ════════════════
+   Contenuto didattico originale, scritto con parole proprie a scopo
+   formativo. Nessun testo copiato da fonti dei titolari del sistema. */
+const HD_COURSE = [
+  { id:'m1', t:'Cos\'è lo Human Design', mins:6, sec:'Fondamenta', body:`
+<p>Lo Human Design è un modello di auto-conoscenza nato alla fine degli anni '80. Mette insieme spunti che arrivano da tradizioni diverse — l'astrologia occidentale, l'antico sistema cinese dei mutamenti, i centri energetici di matrice indiana, e alcune idee ispirate alla genetica — per restituire una "mappa" personale calcolata a partire dal momento esatto di nascita.</p>
+<p>L'idea di fondo è semplice: ognuno di noi avrebbe un modo "di fabbrica" di prendere decisioni e di spendere le proprie energie. Quando viviamo seguendo quel modo naturale, tendiamo a sentirci più allineati; quando lo forziamo, arrivano attrito e stanchezza.</p>
+<p><b>Come prenderlo.</b> Non è una verità scientifica né una previsione del futuro: è uno strumento di riflessione. Si usa al meglio come invito a osservare te stesso ("provo a decidere così e vedo come mi sento"), non come etichetta rigida. In NOVA lo trattiamo esattamente in questo spirito: una lente per conoscersi, mai un oroscopo che decide al posto tuo.</p>
+<p><b>Cosa imparerai in questo percorso.</b> Partiremo dalle fondamenta (da dove nascono i dati, i centri) per arrivare a saper leggere una carta nei suoi elementi principali: tipo, strategia, autorità, profilo, centri, canali e porte. Ogni modulo è breve e con esempi.</p>` },
+
+  { id:'m2', t:'La carta: da dove nascono i dati', mins:5, sec:'Fondamenta', body:`
+<p>La tua carta si calcola da <b>tre informazioni</b>: data, ora e luogo di nascita. Da questi, il motore astronomico ricava la posizione del Sole, della Luna e dei pianeti in due momenti: la nascita stessa e un punto circa tre mesi prima (un secondo "strato" che il sistema chiama Design, e che rappresenta la parte più inconscia e corporea di te).</p>
+<p>Ogni posizione planetaria viene tradotta in un numero da 1 a 64 (una "porta") e in una sua sfumatura (una "linea", da 1 a 6). È da questa traduzione che nascono tutti gli altri elementi: centri, canali, tipo, autorità e profilo.</p>
+<p><b>I due colori della carta.</b> Vedrai numeri in due colori: uno rappresenta la parte conscia (quella che riconosci come "te", legata al momento della nascita), l'altro la parte inconscia (il Design, il tuo lato corporeo e istintivo). Insieme formano il quadro completo.</p>
+<p><b>Perché l'ora conta tanto.</b> La Luna e i punti più veloci cambiano porta in poche ore: un orario impreciso può spostare alcuni elementi. Per questo in NOVA chiediamo l'ora il più precisa possibile e il luogo, da cui calcoliamo il fuso corretto. Se l'ora non è certa, la lettura resta utile ma alcuni dettagli fini vanno presi con cautela.</p>` },
+
+  { id:'m3', t:'I 9 centri', mins:8, sec:'Fondamenta', body:`
+<p>Il diagramma corporeo (il "grafico") ha <b>nove centri</b>, disegnati come forme geometriche. Ognuno rappresenta un'area di esperienza. Un centro può essere <b>definito</b> (colorato) o <b>aperto</b> (bianco).</p>
+<ul>
+<li><b>Definito</b>: lavori in modo stabile e affidabile in quell'area. È una tua risorsa costante, qualcosa su cui puoi contare e che emani verso gli altri.</li>
+<li><b>Aperto</b>: in quell'area sei più sensibile e influenzabile dall'ambiente. È un luogo di apprendimento e, se vissuto con consapevolezza, di grande saggezza — ma anche dove è facile farsi condizionare o cercare conferme.</li>
+</ul>
+<p>I nove centri, in breve: <b>Testa</b> (ispirazione, domande), <b>Ajna</b> (elaborare idee e concetti), <b>Gola</b> (comunicare e agire), <b>G/Identità</b> (direzione, identità e amore), <b>Cuore/Ego</b> (volontà, valore, promesse), <b>Sacrale</b> (energia vitale e lavoro), <b>Milza</b> (istinto, salute, paura), <b>Plesso Solare</b> (emozioni e sentimenti), <b>Radice</b> (spinta, pressione, stress).</p>
+<p><b>Esempio.</b> Una persona con la Gola definita ha un modo affidabile e costante di esprimersi; una con la Gola aperta può essere camaleontica nella voce, brillante in certi contesti e silenziosa in altri, a seconda di chi ha intorno.</p>
+<p>Nel <b>Glossario</b> (scheda a destra) trovi la descrizione di ogni centro, sia da definito che da aperto.</p>` },
+
+  { id:'m4', t:'Porte e canali', mins:7, sec:'Fondamenta', body:`
+<p>Le <b>porte</b> sono i 64 numeri sui bordi dei centri: piccoli "temi" specifici, come sfumature del carattere. Quando due porte che si trovano alle estremità di una stessa linea sono entrambe attive, formano un <b>canale</b> che collega due centri.</p>
+<p>Un canale completo "accende" i due centri che unisce, rendendoli definiti. Per questo i canali sono importanti: sono loro a determinare quali centri sono colorati nella tua carta, e quindi il tuo tipo.</p>
+<p><b>Le mezze porte.</b> Avere una sola delle due porte di un canale è frequente: significa avere quel "mezzo tema" attivo, che cerca naturalmente l'altra metà — in un'altra persona, o in un transito del cielo del giorno. È uno dei motivi per cui certe persone o certi periodi ci "accendono": completano temporaneamente un nostro canale.</p>
+<p><b>Esempio pratico.</b> Se hai una sola porta di un canale che porta energia, potresti notare di sentirti particolarmente "in moto" vicino a chi possiede la porta complementare. In NOVA, la sezione Transiti mostra proprio quando il cielo del giorno completa una tua mezza porta.</p>
+<p>Anche qui, il Glossario elenca tutte le 64 porte e i 36 canali con una breve descrizione.</p>` },
+
+  { id:'m5', t:'I 5 tipi e la Strategia', mins:9, sec:'Leggere una carta', body:`
+<p>In base a quali centri sono definiti e a come sono collegati, ogni carta appartiene a uno di <b>cinque tipi</b>. Il tipo suggerisce una "strategia", cioè il modo più naturale di muoversi nel mondo e prendere iniziativa.</p>
+<ul>
+<li><b>Generatore</b> e <b>Generatore Manifestante</b>: hanno energia vitale (Sacrale definito). Funzionano al meglio <i>rispondendo</i> a ciò che la vita propone, invece di forzare. La spinta a fare nasce reagendo a qualcosa di concreto. Il Generatore Manifestante è una variante più rapida e multitasking.</li>
+<li><b>Proiettore</b>: non ha energia vitale costante, ma una grande capacità di vedere e guidare gli altri. Dà il meglio quando viene <i>riconosciuto e invitato</i>, non quando si impone. Il suo dono è la guida, non la forza bruta.</li>
+<li><b>Manifestatore</b>: è fatto per dare inizio alle cose. La sua strategia è <i>informare</i> chi sarà coinvolto prima di agire, per ridurre le resistenze e muoversi libero.</li>
+<li><b>Riflettore</b>: raro, con tutti i centri aperti. È uno specchio dell'ambiente in cui vive; gli serve <i>tempo</i> (idealmente un ciclo lunare di circa 28 giorni) prima delle scelte importanti.</li>
+</ul>
+<p><b>Il "segnale" di ogni tipo.</b> Quando vivi in linea con la tua strategia, provi una sensazione positiva (soddisfazione per il Generatore, successo per il Proiettore, pace per il Manifestatore, sorpresa per il Riflettore). Quando la forzi, arriva il segnale opposto: frustrazione, amarezza, rabbia o delusione. Sono bussole, non giudizi.</p>
+<p>La strategia non è una regola morale: è un'ipotesi pratica da sperimentare per ridurre l'attrito e aumentare la sensazione di fluire.</p>` },
+
+  { id:'m6', t:'L\'Autorità: come decidere', mins:8, sec:'Leggere una carta', body:`
+<p>Se la Strategia dice <i>come muoverti</i>, l'<b>Autorità</b> dice <i>come prendere le decisioni</i>. È forse la parte più pratica e immediatamente utile di tutto il sistema.</p>
+<p>L'autorità indica a cosa dare ascolto nel momento di una scelta. Le più comuni:</p>
+<ul>
+<li><b>Emotiva</b>: se il Plesso Solare è definito, conviene non decidere "a caldo". Aspettare e lasciar passare l'onda emotiva (a volte ore, a volte giorni) porta più chiarezza. La regola pratica: nessuna verità nell'istante.</li>
+<li><b>Sacrale</b>: una risposta di pancia, immediata, quasi un suono istintivo di sì/no che arriva nel momento.</li>
+<li><b>Splenica</b>: un'intuizione rapida e silenziosa, nell'istante presente, che non si ripete due volte.</li>
+<li><b>Altre forme</b> legate al Cuore (decidere da ciò che si vuole davvero), alla G, o — per certi Proiettori — al confronto con persone fidate e all'ambiente giusto.</li>
+</ul>
+<p>Il senso comune a tutte: spostare la decisione dalla testa (che ragiona, confronta e teme) verso un segnale corporeo più affidabile. È qualcosa da <b>provare</b> nelle piccole scelte quotidiane, prima che nelle grandi: "cosa mi dice il corpo se aspetto un attimo?".</p>` },
+
+  { id:'m7', t:'Il Profilo', mins:6, sec:'Leggere una carta', body:`
+<p>Il <b>profilo</b> sono due numeri (es. 1/3, 4/6) che descrivono lo "stile" con cui vivi e impari. Derivano dalle linee del Sole e della Terra alla nascita e nel Design.</p>
+<p>Ogni linea ha un carattere di base:</p>
+<ul>
+<li><b>Linea 1</b> — cerca basi solide, studio, sicurezza prima di esporsi.</li>
+<li><b>Linea 2</b> — ha un talento naturale e ama il proprio spazio; viene "chiamata" fuori dagli altri.</li>
+<li><b>Linea 3</b> — impara per tentativi ed errori: prova, sbaglia, aggiusta.</li>
+<li><b>Linea 4</b> — si muove attraverso le relazioni e la rete di persone che conosce.</li>
+<li><b>Linea 5</b> — è chiamata a dare soluzioni pratiche; gli altri proiettano molto su di lei.</li>
+<li><b>Linea 6</b> — è un modello che matura in tre fasi di vita, osservando prima di guidare.</li>
+</ul>
+<p>Il profilo non cambia il tipo o l'autorità: aggiunge una sfumatura su <i>come</i> porti la tua natura nel mondo. È utile per riconoscersi ("ecco perché imparo sbagliando e riprovando") senza farne una gabbia.</p>` },
+
+  { id:'m8', t:'Definizione, croce e variabili', mins:7, sec:'Approfondimenti', body:`
+<p>Una volta capiti centri, canali e tipo, ci sono alcuni elementi che aggiungono profondità.</p>
+<p><b>La definizione.</b> Indica come sono "collegati" tra loro i tuoi centri definiti. Se sono tutti uniti in un blocco si parla di definizione singola; se sono in due o più gruppi separati, di definizione divisa. Una definizione divisa spesso descrive una persona che cerca un "ponte" — esperienze o persone che uniscano le sue parti.</p>
+<p><b>La croce d'incarnazione.</b> Nasce dalle porte del Sole e della Terra (consce e inconsce) ed è spesso associata a un tema di vita più ampio, una direzione di fondo. È un elemento avanzato: utile dopo aver assimilato le basi.</p>
+<p><b>Le variabili.</b> Sono indicazioni fini (le frecce in alcune carte) su come funzioni al meglio rispetto ad ambiente, alimentazione, attenzione. Vanno prese come spunti di sperimentazione, mai come prescrizioni rigide — e mai come consiglio medico o nutrizionale.</p>` },
+
+  { id:'m9', t:'I transiti: il cielo di oggi', mins:6, sec:'Approfondimenti', body:`
+<p>La tua carta natale è fissa, ma il cielo continua a muoversi. I <b>transiti</b> sono le posizioni planetarie del momento presente, lette sulla tua carta.</p>
+<p>Ogni giorno il Sole, la Luna e i pianeti attivano certe porte. Quando una porta in transito completa una tua mezza porta, accende temporaneamente un canale: per quel periodo "senti" un'energia che di solito non hai in modo stabile.</p>
+<p><b>Come usarli in NOVA.</b> La sezione Transiti (e il "Messaggio del giorno") mostrano queste attivazioni. Vanno letti come un meteo energetico — "oggi è enfatizzata questa qualità, osserva come la vivi" — e mai come previsioni deterministiche del tipo "oggi andrà bene/male". Non sono oroscopi: sono inviti all'osservazione.</p>` },
+
+  { id:'m10', t:'Mettere tutto insieme', mins:7, sec:'Approfondimenti', body:`
+<p>Quando leggi una carta, un ordine utile è questo:</p>
+<ol>
+<li><b>Tipo e Strategia</b>: qual è il modo naturale di muoversi.</li>
+<li><b>Autorità</b>: come prendere decisioni allineate.</li>
+<li><b>Centri definiti e aperti</b>: dove sei stabile e dove sei sensibile.</li>
+<li><b>Canali e porte</b>: i temi specifici che colorano il carattere.</li>
+<li><b>Profilo</b>: lo stile con cui vivi tutto questo.</li>
+<li><b>Definizione, croce, variabili</b>: i dettagli che aggiungi quando le basi sono solide.</li>
+</ol>
+<p><b>Il vero "esperimento".</b> Lo Human Design suggerisce di non credere a nulla sulla fiducia, ma di provarlo: vivere secondo la propria strategia e autorità per qualche tempo e osservare cosa cambia nel proprio modo di sentirsi. NOVA, con il diario e i transiti, serve proprio ad accompagnare questa osservazione quotidiana.</p>
+<p><b>Come accompagnare un cliente.</b> Parti sempre da tipo e autorità (le leve più pratiche), usa parole semplici, porta esempi dalla sua vita, e ricorda che il tuo ruolo è offrire spunti di consapevolezza — non diagnosi né certezze. Da qui in poi, usa il <b>Glossario</b> per approfondire ogni elemento e le <b>Flashcard</b> per fissare i concetti.</p>
+<p class="hint" style="margin-top:14px">Promemoria: questi materiali sono a scopo formativo e di crescita personale, non sostituiscono consulenza medica, psicologica o finanziaria.</p>` },
+];
+
+
+/* ── Render del corso + progressi (localStorage) ── */
+let CURRENT_LESSON=null;
+function courseDone(){ try{ return JSON.parse(localStorage.getItem('nova_course_done')||'[]'); }catch(e){ return []; } }
+function setCourseDone(arr){ try{ localStorage.setItem('nova_course_done',JSON.stringify(arr)); }catch(e){} }
+function renderCourseProgress(){
+  const done=courseDone(); const pct=Math.round(done.length/HD_COURSE.length*100);
+  const el=document.getElementById('courseProgress');
+  if(el) el.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--dim);margin-bottom:5px"><span>Progresso</span><span>${done.length}/${HD_COURSE.length} moduli</span></div><div style="height:7px;background:rgba(127,127,127,.18);border-radius:6px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--gold);transition:width .3s"></div></div>`;
+}
+function renderModules(){
+  const done=courseDone();
+  const el=document.getElementById('courseModules'); if(!el) return;
+  let html=''; let lastSec=null;
+  HD_COURSE.forEach((m,i)=>{
+    if(m.sec && m.sec!==lastSec){
+      html+=`<div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);font-family:'Space Grotesk',monospace;margin:${lastSec?'18px':'4px'} 0 8px">${m.sec}</div>`;
+      lastSec=m.sec;
+    }
+    const isDone=done.includes(m.id);
+    const active=CURRENT_LESSON===m.id?' active':'';
+    html+=`<button class="modItem${active}" data-mod="${m.id}">
+      <span class="modN">${isDone?'✓':(i+1)}</span>
+      <span class="modT"><b>${m.t}</b><small>${m.mins} min di lettura</small></span>
+    </button>`;
+  });
+  el.innerHTML=html;
+  el.querySelectorAll('.modItem').forEach(b=>b.addEventListener('click',()=>openLesson(b.dataset.mod)));
+}
+function openLesson(id){
+  const m=HD_COURSE.find(x=>x.id===id); if(!m) return;
+  CURRENT_LESSON=id;
+  // passa alla scheda Lezione
+  switchLearnTab('lesson');
+  const done=courseDone(); const idx=HD_COURSE.findIndex(x=>x.id===id);
+  const next=HD_COURSE[idx+1];
+  document.getElementById('lessonBody').innerHTML=`
+    <div style="font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-family:'Space Grotesk',monospace">Modulo ${idx+1} di ${HD_COURSE.length}</div>
+    <h3 style="font-family:'Marcellus',serif;font-size:24px;margin:6px 0 14px">${m.t}</h3>
+    <div class="lessonProse">${m.body}</div>
+    <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap">
+      <button class="primary" id="lessDone">${done.includes(m.id)?'✓ Completato':'Segna come completato'}</button>
+      ${next?`<button class="ghost" id="lessNext">Prossimo: ${next.t} →</button>`:'<span class="hint" style="align-self:center">Hai raggiunto l’ultimo modulo 🎉</span>'}
+    </div>`;
+  const bd=document.getElementById('lessDone');
+  bd.addEventListener('click',()=>{
+    let d=courseDone();
+    if(!d.includes(m.id)){ d.push(m.id); setCourseDone(d); }
+    renderCourseProgress(); renderModules(); openLesson(id);
+  });
+  const nx=document.getElementById('lessNext');
+  if(nx) nx.addEventListener('click',()=>{ // completa l'attuale e apri il prossimo
+    let d=courseDone(); if(!d.includes(m.id)){ d.push(m.id); setCourseDone(d); }
+    renderCourseProgress(); renderModules(); openLesson(next.id);
+    document.getElementById('lessonBody').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+  renderModules();
+}
+function switchLearnTab(which){
+  document.querySelectorAll('.lt').forEach(b=>b.classList.toggle('active',b.dataset.lt===which));
+  document.getElementById('ltLesson').style.display = which==='lesson'?'':'none';
+  document.getElementById('ltGlossary').style.display = which==='glossary'?'':'none';
+  document.getElementById('ltFlash').style.display = which==='flash'?'':'none';
+}
+document.querySelectorAll('.lt').forEach(b=>b.addEventListener('click',()=>switchLearnTab(b.dataset.lt)));
+function initCourse(){ renderCourseProgress(); renderModules(); }
+
 function buildLearn(){
   LEARN_ITEMS=[];
   for(let g=1;g<=64;g++) LEARN_ITEMS.push({cat:'Porta', term:`${hexGlyph(g)} Porta ${g} · ${GATE_NAMES[g]}`, def:GATE_DESC[g]});
@@ -2208,6 +2403,7 @@ function afterChartComputed(){
   if (lastTransit) renderTransit();
 }
 buildLearn();
+initCourse();
 renderLibSelects();
 setTrNow();
 
@@ -3558,9 +3754,15 @@ function numRender(){
   const date=document.getElementById('numDate').value;
   const useNine=document.getElementById('numNine').checked;
   const box=document.getElementById('numResults');
+  if(box.parentElement){ box.parentElement.style.alignItems='flex-start'; }
   if(!name){ box.innerHTML='<p class="hint">Inserisci almeno un nome.</p>'; return; }
+  const wordCount = name.split(/\s+/).filter(Boolean).length;
+  const nameWarn = wordCount < 2
+    ? `<div style="background:rgba(227,184,100,.1);border:1px solid rgba(227,184,100,.35);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12.5px;color:var(--gold)">⚠️ Per un calcolo corretto serve il <b>nome completo</b> (nome + eventuale secondo nome + cognome). Stai calcolando solo su «${name}».</div>`
+    : '';
   const r=numComputeAll(name, date, useNine);
   box.innerHTML = `
+    ${nameWarn}
     <h3 style="margin:0 0 10px;color:var(--gold)">${name}${date?` · ${date}`:''}</h3>
     ${numCard('Destino / Espressione (nome intero)', r.destiny, true)}
     ${numCard('Anima / Desiderio (vocali)', r.soul, false)}
@@ -3617,8 +3819,8 @@ function renderAccount(){
   if(sel) sel.addEventListener('change', ()=>{
     const c=(typeof CLIENTS!=='undefined')?CLIENTS.find(x=>x.id===sel.value):null;
     if(c){
-      // di default propongo solo il primo nome (la caldea usa il nome più usato)
-      document.getElementById('numName').value = (c.name||'').split(/\s+/)[0] || c.name || '';
+      // carico il nome COMPLETO (nome + eventuale secondo nome + cognome): la caldea calcola sul nome intero
+      document.getElementById('numName').value = (c.name||'').trim();
       if(c.birth_date) document.getElementById('numDate').value = c.birth_date;
     }
   });
