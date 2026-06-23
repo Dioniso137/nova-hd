@@ -672,7 +672,7 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
 
   <main class="col bordered">
     <div id="paper" class="paper">
-      <h2 id="paperTitle">RAVE BODYGRAPH</h2>
+      <h2 id="paperTitle">BODYGRAPH</h2>
       <div class="ph" id="paperSub">inserisci i dati di nascita</div>
       <svg id="bg-svg" viewBox="14 14 572 850" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bodygraph"></svg>
     </div>
@@ -781,7 +781,7 @@ body.sb-collapsed .sbCollapse{transform:rotate(180deg)}
 <section class="tab" id="tab-mandala">
 <div class="grid2">
   <main class="col bordered">
-    <h2 class="pageTitle">Rave Mandala</h2>
+    <h2 class="pageTitle">Mandala dei Cancelli</h2>
     <p class="pageIntro">La ruota: 64 porte sullo zodiaco, ognuna ampia 5°37'30". I segmenti colorati sono le tue attivazioni; i glifi planetari sono posizionati alla longitudine esatta. Tocca una porta per il dettaglio.</p>
     <div class="paper" style="padding:14px">
       <svg id="md-svg" viewBox="0 0 600 600" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -1723,7 +1723,7 @@ function run(){
   document.getElementById('rNotSelf').textContent=c.notSelf;
   document.getElementById('rUTC').textContent=jdToUTCString(c.jdBirth);
   document.getElementById('rDesignUTC').textContent=jdToUTCString(c.jdDesign);
-  document.getElementById('paperTitle').textContent = 'RAVE BODYGRAPH';
+  document.getElementById('paperTitle').textContent = 'BODYGRAPH';
   document.getElementById('paperSub').textContent = `${c.type} · ${c.profKey} · ${dStr} ${tStr} (UTC${tz>=0?'+':''}${tz})`;
 
   const tb=document.getElementById('rPlanets'); tb.innerHTML='';
