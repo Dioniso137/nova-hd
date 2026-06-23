@@ -244,6 +244,9 @@ footer b{color:var(--gold);font-weight:500}
     <a href="#secLett" class="cn" data-sec="secLett"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg></span>Lettura</a>
     <a href="#bookEyebrow" class="cn" id="csBook" data-sec="bookEyebrow" style="display:none"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>Prenota</a>
     <a href="#secProfilo" class="cn" data-sec="secProfilo"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg></span>Profilo</a>
+    <div style="height:1px;background:var(--line);margin:10px 14px"></div>
+    <a href="#secFeed" class="cn" data-sec="secFeed"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg></span>Community</a>
+    <a href="#secMatch" class="cn" data-sec="secMatch"><span class="cni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1Z"/></svg></span>Match</a>
   </nav>
   <div class="csPkg" id="csPkg" style="display:none"></div>
   <div class="csFoot">La tua carta · sempre con te</div>
@@ -359,6 +362,33 @@ footer b{color:var(--gold);font-weight:500}
     <div class="eyebrow" style="margin-top:18px">I tuoi dati</div>
     <div id="profDataBox"></div>
     <p class="hint" style="margin-top:14px">I tuoi dati di nascita e il pacchetto sono gestiti dalla tua guida. Per modifiche, scrivile direttamente.</p>
+
+    <div class="eyebrow" style="margin-top:24px">Profilo Community</div>
+    <div id="socialProfileBox">
+      <p class="hint">Caricamento…</p>
+    </div>
+  </div></details>
+  </div>
+
+  <div class="cliPanel" data-panel="secFeed">
+  <details class="sect" open id="secFeed"><summary><span class="si">▦</span><span class="st">Community</span><span class="sx">+</span></summary><div class="sbody">
+    <div id="feedGate"></div>
+    <div id="feedComposer" style="display:none">
+      <textarea id="feedInput" rows="3" maxlength="1000" placeholder="Condividi un pensiero con la community…" style="width:100%;background:rgba(127,127,127,.08);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:12px;font-family:'Outfit';resize:vertical"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+        <span class="hint" id="feedCount">0/1000</span>
+        <button class="bigBtn" id="feedPostBtn" style="width:auto;padding:9px 20px">Pubblica</button>
+      </div>
+    </div>
+    <div id="feedList" style="margin-top:16px"></div>
+  </div></details>
+  </div>
+
+  <div class="cliPanel" data-panel="secMatch">
+  <details class="sect" open id="secMatch"><summary><span class="si">♡</span><span class="st">Match</span><span class="sx">+</span></summary><div class="sbody">
+    <p class="hint" style="margin-bottom:14px">Persone della community con cui la tua carta risuona. La percentuale è una stima di affinità basata sul tuo tipo e profilo Human Design — un punto di partenza, non una sentenza.</p>
+    <div id="matchGate"></div>
+    <div id="matchList"></div>
   </div></details>
   </div>
   </div><!-- /#cliGrid -->
@@ -382,6 +412,8 @@ footer b{color:var(--gold);font-weight:500}
   <a href="#secLett"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg><span>Lettura</span></a>
   <a href="#bookEyebrow" id="bnavBook" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Prenota</span></a>
   <a href="#secProfilo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg><span>Profilo</span></a>
+  <a href="#secFeed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 12h16M4 19h10"/></svg><span>Community</span></a>
+  <a href="#secMatch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1Z"/></svg><span>Match</span></a>
 </nav>
 
 <script>
@@ -1485,6 +1517,8 @@ function setupPWA(accent, studio, name){
     document.querySelector('.typeCard').after(d); })();
 
   buildSVG(c); renderVars(c); renderToday(c); renderReading(c); renderBooking();
+  // sync silenzioso del tipo/profilo HD pubblico (per il match); non blocca nulla
+  try{ if(TOKEN && c && c.type){ sb.rpc('social_set_hd',{p_token:TOKEN,p_type:c.type,p_profile:c.profKey||''}); } }catch(e){}
 
   const chips=['Spiegami il mio tipo in parole semplici','Come dovrei prendere le decisioni?','Qual è il mio tema di oggi?','Cosa significa il mio profilo?'];
   document.getElementById('chips').innerHTML=chips.map(q=>`<button class="chip2" type="button">${q}</button>`).join('');
@@ -1508,6 +1542,9 @@ function setupPWA(accent, studio, name){
       document.querySelectorAll('#bnav a').forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+sec));
       try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
       if(sec==='secNumero' && typeof renderCliNumero==='function' && !window.__numDone){ renderCliNumero(); window.__numDone=true; }
+      if(sec==='secProfilo' && typeof loadSocialProfile==='function'){ loadSocialProfile(); }
+      if(sec==='secFeed' && typeof loadFeed==='function'){ loadFeed(); }
+      if(sec==='secMatch' && typeof loadMatch==='function'){ loadMatch(); }
     }
     // click sidebar
     document.querySelectorAll('#cliSide .cn').forEach(a=>a.addEventListener('click',ev=>{
@@ -2089,6 +2126,167 @@ function renderCliNumero(){
   out.innerHTML=cards;
 }
 
+
+
+/* ════════════════════════════════════════════════════════════════
+   SOCIAL · profilo · feed · match   (community globale, opt-in)
+   ════════════════════════════════════════════════════════════════ */
+let SOCIAL_ME=null;
+
+function avatarChip(handle, avatar, size){
+  size=size||40;
+  const ini=(handle||'?').slice(0,2).toUpperCase();
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:${size*0.36}px;background:radial-gradient(circle at 38% 32%,rgba(227,184,100,.5),rgba(20,24,34,.7));border:1px solid rgba(227,184,100,.4);color:var(--gold)">${ini}</div>`;
+}
+function esc(s){ return (s||'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+function timeAgo(iso){ try{ const s=(Date.now()-new Date(iso))/1000;
+  if(s<60)return 'ora'; if(s<3600)return Math.floor(s/60)+'m'; if(s<86400)return Math.floor(s/3600)+'h';
+  return Math.floor(s/86400)+'g'; }catch(e){ return ''; } }
+
+/* ── PROFILO SOCIAL ── */
+async function loadSocialProfile(){
+  const box=document.getElementById('socialProfileBox'); if(!box||!TOKEN) return;
+  try{
+    const {data}=await sb.rpc('social_get_me',{p_token:TOKEN});
+    SOCIAL_ME=data||{};
+  }catch(e){ box.innerHTML='<p class="hint">Profilo community non disponibile.</p>'; return; }
+  renderSocialProfile();
+}
+function renderSocialProfile(){
+  const box=document.getElementById('socialProfileBox'); if(!box) return;
+  const m=SOCIAL_ME||{};
+  const on=!!m.opt_in;
+  box.innerHTML=`
+    <div class="card" style="border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--panel)">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13.5px">
+        <input type="checkbox" id="soOpt" ${on?'checked':''} style="width:auto">
+        <span><b>Partecipa alla Community</b> — appari nel feed e nei match, e puoi vedere gli altri. Disattivato, resti privato.</span>
+      </label>
+      <div id="soFields" style="margin-top:14px;${on?'':'opacity:.5;pointer-events:none'}">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          ${avatarChip(m.handle||(m.name||'?'), m.avatar, 52)}
+          <div style="font-size:12px;color:var(--dim)">${m.hd_type?`<b style="color:var(--gold)">${esc(m.hd_type)}</b>`:''} ${m.hd_profile?'· '+esc(m.hd_profile):''}</div>
+        </div>
+        <label class="hint" style="display:block;margin-bottom:4px">Nickname pubblico (@)</label>
+        <input type="text" id="soHandle" value="${esc(m.handle||'')}" maxlength="20" placeholder="es. luna_84" style="width:100%;background:rgba(127,127,127,.08);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px;font-family:'Outfit';margin-bottom:10px">
+        <label class="hint" style="display:block;margin-bottom:4px">Bio (max 280)</label>
+        <textarea id="soBio" rows="3" maxlength="280" placeholder="Due parole su di te…" style="width:100%;background:rgba(127,127,127,.08);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px;font-family:'Outfit';resize:vertical">${esc(m.bio||'')}</textarea>
+      </div>
+      <button class="bigBtn" id="soSave" style="margin-top:14px">Salva profilo</button>
+      <div id="soMsg" class="hint" style="margin-top:8px;text-align:center"></div>
+      <p class="hint" style="margin-top:10px;font-size:11px;opacity:.8">Nel match e nel feed mostriamo solo nickname, avatar, bio e tipo HD. La tua data, ora e luogo di nascita <b>non</b> sono mai visibili agli altri.</p>
+    </div>`;
+  document.getElementById('soOpt').addEventListener('change',e=>{
+    document.getElementById('soFields').style.opacity=e.target.checked?'1':'.5';
+    document.getElementById('soFields').style.pointerEvents=e.target.checked?'auto':'none';
+  });
+  document.getElementById('soSave').addEventListener('click',saveSocialProfile);
+}
+async function saveSocialProfile(){
+  const msg=document.getElementById('soMsg');
+  const opt=document.getElementById('soOpt').checked;
+  const handle=document.getElementById('soHandle').value;
+  const bio=document.getElementById('soBio').value;
+  msg.textContent='Salvo…'; msg.style.color='var(--dim)';
+  try{
+    const {data,error}=await sb.rpc('social_update_me',{p_token:TOKEN,p_opt_in:opt,p_handle:handle,p_bio:bio,p_avatar:''});
+    if(error||(data&&data.error)){ msg.textContent=(data&&data.error)||'Errore'; msg.style.color='#e0686e'; return; }
+    msg.textContent='Salvato ✓'; msg.style.color='var(--gold)';
+    await loadSocialProfile();
+  }catch(e){ msg.textContent='Errore di rete'; msg.style.color='#e0686e'; }
+}
+
+/* ── FEED ── */
+function feedGateHTML(){
+  return `<div class="card" style="border:1px solid rgba(227,184,100,.3);border-radius:14px;padding:18px;background:linear-gradient(180deg,rgba(227,184,100,.05),transparent);text-align:center">
+    <p style="margin:0 0 12px;font-size:14px">Per vedere e scrivere nella Community, attiva il tuo profilo pubblico.</p>
+    <button class="bigBtn" style="width:auto;padding:9px 20px" onclick="document.querySelector('#cliSide .cn[data-sec=&quot;secProfilo&quot;]').click()">Vai al profilo →</button>
+  </div>`;
+}
+async function loadFeed(){
+  const gate=document.getElementById('feedGate'), comp=document.getElementById('feedComposer'), list=document.getElementById('feedList');
+  if(!gate||!TOKEN) return;
+  list.innerHTML='<p class="hint">Caricamento…</p>';
+  let data;
+  try{ const r=await sb.rpc('feed_list',{p_token:TOKEN,p_limit:30}); data=r.data; }catch(e){ list.innerHTML='<p class="hint">Feed non disponibile.</p>'; return; }
+  if(data && data.error==='opt_in_required'){ gate.innerHTML=feedGateHTML(); comp.style.display='none'; list.innerHTML=''; return; }
+  gate.innerHTML=''; comp.style.display='block';
+  renderFeed(Array.isArray(data)?data:[]);
+}
+function renderFeed(posts){
+  const list=document.getElementById('feedList');
+  if(!posts.length){ list.innerHTML='<p class="hint" style="text-align:center;padding:30px">Ancora nessun post. Scrivi il primo!</p>'; return; }
+  list.innerHTML=posts.map(p=>`
+    <div class="card" style="border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--panel);margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        ${avatarChip(p.handle,p.avatar,38)}
+        <div style="flex:1">
+          <div style="font-size:13px"><b>@${esc(p.handle||'utente')}</b> ${p.hd_type?`<span style="color:var(--gold);font-size:11px">· ${esc(p.hd_type)}</span>`:''}</div>
+          <div class="hint" style="font-size:11px">${timeAgo(p.created_at)} fa</div>
+        </div>
+        <button class="feedMenu" data-id="${p.id}" data-mine="${p.mine?1:0}" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:18px;padding:4px">⋯</button>
+      </div>
+      <p style="white-space:pre-wrap;font-size:14px;line-height:1.5;margin:0 0 10px">${esc(p.body)}</p>
+      <button class="feedLike" data-id="${p.id}" data-on="${p.liked?1:0}" style="background:none;border:none;cursor:pointer;color:${p.liked?'var(--gold)':'var(--dim)'};font-size:13px;display:inline-flex;align-items:center;gap:5px">♥ ${p.like_count||0}</button>
+    </div>`).join('');
+  list.querySelectorAll('.feedLike').forEach(b=>b.addEventListener('click',async()=>{
+    const on=b.dataset.on!=='1';
+    await sb.rpc('feed_like',{p_token:TOKEN,p_post:b.dataset.id,p_on:on}); loadFeed();
+  }));
+  list.querySelectorAll('.feedMenu').forEach(b=>b.addEventListener('click',()=>{
+    const mine=b.dataset.mine==='1';
+    if(mine){ if(confirm('Eliminare il tuo post?')){ sb.rpc('feed_delete_mine',{p_token:TOKEN,p_post:b.dataset.id}).then(loadFeed); } }
+    else {
+      const a=prompt('Segnala questo post: scrivi "1" per segnalare come inappropriato, o "blocca" per non vedere più questo utente.');
+      if(a==='1'){ sb.rpc('feed_report',{p_token:TOKEN,p_post:b.dataset.id,p_reason:''}).then(()=>{alert('Segnalato. Grazie.');loadFeed();}); }
+    }
+  }));
+}
+function wireComposer(){
+  const inp=document.getElementById('feedInput'), cnt=document.getElementById('feedCount'), btn=document.getElementById('feedPostBtn');
+  if(!inp) return;
+  inp.addEventListener('input',()=>{ cnt.textContent=inp.value.length+'/1000'; });
+  btn.addEventListener('click',async()=>{
+    const body=inp.value.trim(); if(!body) return;
+    btn.disabled=true;
+    const {data,error}=await sb.rpc('feed_post',{p_token:TOKEN,p_body:body});
+    btn.disabled=false;
+    if(error||(data&&data.error)){ alert((data&&data.error)||'Errore'); return; }
+    inp.value=''; cnt.textContent='0/1000'; loadFeed();
+  });
+}
+
+/* ── MATCH ── */
+async function loadMatch(){
+  const gate=document.getElementById('matchGate'), list=document.getElementById('matchList');
+  if(!list||!TOKEN) return;
+  list.innerHTML='<p class="hint">Cerco affinità…</p>';
+  let data;
+  try{ const r=await sb.rpc('match_candidates',{p_token:TOKEN,p_limit:12}); data=r.data; }catch(e){ list.innerHTML='<p class="hint">Match non disponibile.</p>'; return; }
+  if(data && data.error==='opt_in_required'){ gate.innerHTML=feedGateHTML(); list.innerHTML=''; return; }
+  gate.innerHTML='';
+  const arr=Array.isArray(data)?data:[];
+  if(!arr.length){ list.innerHTML='<p class="hint" style="text-align:center;padding:30px">Ancora nessuna persona nella community. Torna presto!</p>'; return; }
+  // normalizza lo score in percentuale 40-98
+  const pct=s=>Math.max(40,Math.min(98,Math.round(s)));
+  list.innerHTML=arr.map(p=>{
+    const P=pct(p.score);
+    return `<div class="card" style="border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--panel);margin-bottom:10px;display:flex;gap:14px;align-items:center">
+      ${avatarChip(p.handle,p.avatar,54)}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px"><b>@${esc(p.handle||'utente')}</b></div>
+        <div style="font-size:11.5px;color:var(--gold);margin:1px 0 4px">${esc(p.hd_type||'')} ${p.hd_profile?'· '+esc(p.hd_profile):''}</div>
+        ${p.bio?`<div class="hint" style="font-size:12px;line-height:1.4">${esc(p.bio)}</div>`:''}
+      </div>
+      <div style="text-align:center;flex-shrink:0">
+        <div style="font-family:'Marcellus',serif;font-size:26px;color:var(--gold);line-height:1">${P}%</div>
+        <div class="hint" style="font-size:10px">affinità</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+if(typeof wireComposer==="function"){ try{wireComposer();}catch(e){} }
 </script>
 </body>
 </html>
