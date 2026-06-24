@@ -30,6 +30,29 @@ header.hero h1{font-family:'Marcellus',serif;font-size:27px;letter-spacing:.06em
 header.hero .sub{color:var(--dim);font-size:12.5px;margin-top:6px;font-family:'Space Grotesk',monospace}
 .eyebrow{font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin:26px 0 12px;display:flex;align-items:center;gap:10px}
 .eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+/* ── Dashboard home cliente ── */
+#dashHeader{margin-bottom:18px}
+#dgHi{font-family:'Marcellus',serif;font-size:clamp(26px,4vw,38px);font-weight:400;line-height:1.1}
+#dgHi em{font-style:italic;color:var(--gold)}
+#dashStats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.dStat{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--panel);cursor:pointer;transition:border-color .2s,transform .2s}
+.dStat:hover{border-color:rgba(227,184,100,.45);transform:translateY(-2px)}
+.dsTop{font-size:12px;color:var(--dim);display:flex;align-items:center;gap:6px}
+.dsIco{color:var(--gold)}
+.dsVal{font-family:'Marcellus',serif;font-size:26px;color:var(--gold);line-height:1.1;margin-top:6px}
+.dsLbl{font-size:11px;color:var(--dim)}
+.dashCard{border:1px solid var(--line);border-radius:16px;padding:20px;background:linear-gradient(180deg,rgba(227,184,100,.05),transparent);margin-bottom:18px}
+.dcEyebrow{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--gold);margin-bottom:12px}
+.dailyProse{font-family:'Marcellus',serif;font-style:italic;font-size:clamp(16px,2.2vw,20px);line-height:1.55;color:var(--ink)}
+@media(max-width:560px){#dashStats{grid-template-columns:1fr}}
+/* ── Profilo social card ── */
+#profileCard{border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-bottom:18px;background:var(--panel)}
+#profBanner{height:120px;background:radial-gradient(120% 160% at 20% 0%, rgba(227,184,100,.4), transparent 55%),linear-gradient(135deg,#1b1c24,#0d0d11)}
+#profCardBody{display:flex;align-items:flex-end;gap:16px;padding:0 22px 18px;margin-top:-40px}
+#profAvatar{width:84px;height:84px;border-radius:50%;border:4px solid var(--panel);background:radial-gradient(circle at 38% 32%,rgba(227,184,100,.6),rgba(20,24,34,.8));display:flex;align-items:center;justify-content:center;font-family:'Marcellus',serif;font-size:32px;color:var(--gold);flex-shrink:0}
+#profCardInfo{padding-bottom:4px}
+#profCardName{font-family:'Marcellus',serif;font-size:24px;font-weight:400}
+#profCardType{color:var(--gold);font-size:13px;margin-top:2px}
 .typeCard{padding:18px;border-radius:16px;border:1px solid rgba(227,184,100,.4);
   background:linear-gradient(150deg, rgba(227,184,100,.10), rgba(127,127,127,.03))}
 .typeCard .t{font-family:'Marcellus',serif;font-size:24px;color:var(--gold);line-height:1.15}
@@ -93,6 +116,16 @@ details .body p{margin-bottom:10px}
 .msg.ai{align-self:flex-start;background:rgba(127,127,127,.09);border:1px solid var(--line);border-bottom-left-radius:4px}
 .msg.ai.thinking{color:var(--dim);font-style:italic}
 #chips{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 10px}
+/* ── Guida split: chat a sinistra, bodygraph a destra ── */
+#guideSplit{display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:start}
+#guideChatCol{min-width:0}
+#guideChatCol #chatLog{max-height:none;min-height:340px}
+#guideChartCol{position:sticky;top:14px;border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:16px}
+#guidePaper{background:var(--cream,#f4f1ea);border-radius:12px;padding:10px}
+#guidePaper svg{width:100%;height:auto;display:block;cursor:pointer}
+#bg-svg-guide .cgate:hover,#bg-svg-guide .cgate:focus{opacity:.7}
+@media(max-width:1080px){#guideSplit{grid-template-columns:1fr}#guideChartCol{position:static;max-width:420px;margin:0 auto}}
+
 .chip2{font-size:11.5px;border:1px solid var(--line);border-radius:20px;padding:6px 12px;color:var(--dim);cursor:pointer;background:none;font-family:'Outfit'}
 .chip2:hover{color:var(--gold);border-color:var(--gold)}
 #chatForm{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}
@@ -110,9 +143,12 @@ details .body p{margin-bottom:10px}
 /* ── NAV CLIENTE v4: sidebar sinistra (desktop) + bottom nav (mobile) ── */
 @media(min-width:900px){
   body{padding-left:240px}
+  #wrap{max-width:1240px;padding:18px 32px}
   #bnav{display:none}
   #cliSide{position:fixed;left:0;top:0;height:100vh;width:240px;background:linear-gradient(180deg,rgba(20,20,24,.92),rgba(7,7,8,.97));backdrop-filter:blur(20px);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:20px 14px;z-index:60;overflow-y:auto}
-  #cliMain{max-width:760px;margin:0 auto}
+  #cliMain{max-width:760px;margin:0 auto;transition:max-width .3s ease}
+  /* la Guida (chat + bodygraph affiancati) usa tutta la larghezza */
+  #cliMain.wideGuide{max-width:1180px}
 }
 @media(max-width:899px){ #cliSide{display:none} }
 #cliSide .csHead{display:flex;align-items:center;gap:11px;padding:4px 6px 16px}
@@ -265,6 +301,25 @@ footer b{color:var(--gold);font-weight:500}
 
   <div id="cliGrid">
   <div class="cliPanel" data-panel="secSintesi">
+  <div id="dashHeader">
+    <div id="dashGreet">
+      <h1 id="dgHi">Bentornato</h1>
+      <p id="dgSub" class="hint">La tua carta, i tuoi transiti e la community, in un colpo d'occhio.</p>
+    </div>
+    <div id="dashStats">
+      <div class="dStat" data-go="secOggi"><div class="dsTop"><span class="dsIco">☀</span>Oggi</div><div class="dsVal" id="dsToday">—</div><div class="dsLbl">il tuo clima</div></div>
+      <div class="dStat" data-go="secFeed"><div class="dsTop"><span class="dsIco">▦</span>Community</div><div class="dsVal" id="dsFeed">—</div><div class="dsLbl">nuovi post</div></div>
+      <div class="dStat" data-go="secMatch"><div class="dsTop"><span class="dsIco">♡</span>Match</div><div class="dsVal" id="dsMatch">—</div><div class="dsLbl">affinità trovate</div></div>
+    </div>
+  </div>
+  <div id="dashDaily" class="dashCard" style="display:none">
+    <div class="dcEyebrow"><span>✦ Il tuo messaggio del giorno</span><span id="dashDailyGate" class="hint"></span></div>
+    <div id="dashDailyBody" class="dailyProse"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="bigBtn" style="width:auto;padding:9px 18px" onclick="document.querySelector('#cliSide .cn[data-sec=&quot;secOggi&quot;]').click()">Apri Oggi →</button>
+      <button class="ghost" style="padding:9px 18px" onclick="document.querySelector('#cliSide .cn[data-sec=&quot;secGuida&quot;]').click()">Chiedi alla guida</button>
+    </div>
+  </div>
   <div class="typeCard" id="secSintesi">
     <div class="t" id="rType">—</div>
     <div class="p" id="rProfile">—</div>
@@ -280,15 +335,26 @@ footer b{color:var(--gold);font-weight:500}
   </div>
 
   <div class="cliPanel" data-panel="secGuida">
-  <details class="sect" open id="secGuida"><summary><span class="si">✦</span><span class="st">La tua guida</span><span class="sx">+</span></summary><div class="sbody"><div id="chatBox">
-    <div id="chatLog"></div>
-    <div id="chips"></div>
-    <form id="chatForm">
-      <input id="chatInput" type="text" placeholder="Chiedi qualcosa sulla tua carta…" autocomplete="off">
-      <button id="chatSend" type="submit">Invia</button>
-    </form>
+  <div id="guideSplit">
+    <div id="guideChatCol">
+      <details class="sect" open id="secGuida"><summary><span class="si">✦</span><span class="st">La tua guida</span><span class="sx">+</span></summary><div class="sbody"><div id="chatBox">
+        <div id="chatLog"></div>
+        <div id="chips"></div>
+        <form id="chatForm">
+          <input id="chatInput" type="text" placeholder="Chiedi qualcosa sulla tua carta…" autocomplete="off">
+          <button id="chatSend" type="submit">Invia</button>
+        </form>
+      </div>
+      <p class="hint" id="aiHint"></p></div></details>
+    </div>
+    <div id="guideChartCol">
+      <div class="eyebrow" style="margin:0 0 8px">Il tuo bodygraph · tocca per chiedere</div>
+      <div id="guidePaper">
+        <svg id="bg-svg-guide" viewBox="14 14 572 850" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bodygraph interattivo"></svg>
+      </div>
+      <p class="hint" style="margin-top:8px;font-size:11.5px">Tocca una <b style="color:var(--gold)">porta</b> o un <b style="color:var(--gold)">centro</b>: preparo una domanda per te, poi premi invio.</p>
+    </div>
   </div>
-  <p class="hint" id="aiHint"></p></div></details>
   </div>
 
   <div class="cliPanel" data-panel="secCarta">
@@ -357,6 +423,16 @@ footer b{color:var(--gold);font-weight:500}
   </div>
 
   <div class="cliPanel" data-panel="secProfilo">
+  <div id="profileCard">
+    <div id="profBanner"></div>
+    <div id="profCardBody">
+      <div id="profAvatar"></div>
+      <div id="profCardInfo">
+        <h2 id="profCardName">—</h2>
+        <div id="profCardType" class="hint">—</div>
+      </div>
+    </div>
+  </div>
   <details class="sect" open id="secProfilo"><summary><span class="si">☺</span><span class="st">Il tuo profilo</span><span class="sx">+</span></summary><div class="sbody">
     <div id="profPkgBox"></div>
     <div class="eyebrow" style="margin-top:18px">I tuoi dati</div>
@@ -1076,7 +1152,84 @@ function buildSVG(chart){
   );
 }
 
-/* ── dati Variabile ── */
+// Bodygraph interattivo nella Guida: al tocco auto-compila una domanda nella chat
+function buildGuideChart(chart){
+  const svg=document.getElementById('bg-svg-guide'); if(!svg) return;
+  renderBodygraph('bg-svg-guide',
+    g => { const s = gateStateOf(g, chart);
+      return s ? {fill: s==='both' ? 'url(#pBoth_bg-svg-guide)' : s==='pers' ? '#1f1f1f' : '#e4002b'} : null; },
+    name => (chart && chart.defCenters.has(name)) ? CENTER_SHAPES[name].fill : null,
+    g => { askAboutGate(g, chart); },
+    n => { askAboutCenter(n, chart); }
+  );
+}
+function fillChat(q){
+  const inp=document.getElementById('chatInput'); if(!inp) return;
+  inp.value=q; inp.focus();
+  // feedback visivo: scrolla la chat e lampeggia l'input
+  try{ inp.scrollIntoView({behavior:'smooth',block:'center'}); }catch(e){}
+  inp.style.borderColor='var(--gold)';
+  setTimeout(()=>{ inp.style.borderColor=''; }, 900);
+}
+function askAboutGate(g, chart){
+  const name = (typeof GATE_NAMES!=='undefined' && GATE_NAMES[g]) ? GATE_NAMES[g] : '';
+  const active = chart && chart.allGates && chart.allGates.has(g);
+  const q = active
+    ? `Cosa significa avere la Porta ${g}${name?' ('+name+')':''} attiva nella mia carta?`
+    : `La Porta ${g}${name?' ('+name+')':''} non è attiva nella mia carta: cosa rappresenta e come posso viverla?`;
+  fillChat(q);
+}
+function askAboutCenter(n, chart){
+  const it = (typeof CENTER_IT!=='undefined' && CENTER_IT[n]) ? CENTER_IT[n] : n;
+  const def = chart && chart.defCenters && chart.defCenters.has(n);
+  const q = def
+    ? `Il mio centro ${it} è definito: cosa significa per me nella pratica?`
+    : `Il mio centro ${it} è aperto: come lo vivo e cosa devo sapere?`;
+  fillChat(q);
+}
+
+// Home dashboard: saluto, stat rapide, messaggio del giorno (se presente)
+function renderDashboard(c){
+  const hi=document.getElementById('dgHi');
+  if(hi){
+    const h=new Date().getHours();
+    const greet = h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera';
+    const nome=(DATA&&DATA.name)?DATA.name.split(' ')[0]:'';
+    hi.innerHTML=`${greet}${nome?', <em>'+esc(nome)+'</em>':''}`;
+  }
+  const today=document.getElementById('dsToday');
+  if(today && c){
+    // mostra il tipo come "clima" sintetico
+    today.textContent = c.type||'—';
+  }
+  // stat community/match: caricamento leggero (best effort, non blocca)
+  if(TOKEN){
+    sb.rpc('feed_list',{p_token:TOKEN,p_limit:20}).then(r=>{
+      const el=document.getElementById('dsFeed');
+      if(el) el.textContent = (r.data && Array.isArray(r.data)) ? r.data.length : '–';
+    }).catch(()=>{});
+    sb.rpc('match_candidates',{p_token:TOKEN,p_limit:12}).then(r=>{
+      const el=document.getElementById('dsMatch');
+      if(el) el.textContent = (r.data && Array.isArray(r.data)) ? r.data.length : '–';
+    }).catch(()=>{});
+  }
+  // wire stat -> naviga
+  document.querySelectorAll('.dStat').forEach(s=>s.addEventListener('click',()=>{
+    const go=s.dataset.go; const lnk=document.querySelector('#cliSide .cn[data-sec="'+go+'"]');
+    if(lnk) lnk.click();
+  }));
+  // messaggio del giorno: se la funzione esiste e c'è testo, mostralo anche qui
+  if(typeof loadDashDaily==='function') loadDashDaily();
+}
+async function loadDashDaily(){
+  if(!TOKEN) return;
+  let info;
+  try{ const {data}=await sb.rpc('get_daily_message',{p_token:TOKEN}); info=data; }catch(e){ return; }
+  if(info && info.text){
+    const card=document.getElementById('dashDaily'), body=document.getElementById('dashDailyBody');
+    if(card&&body){ body.textContent=info.text; if(info.gate_label){document.getElementById('dashDailyGate').textContent=info.gate_label;} card.style.display='block'; }
+  }
+}
 const DET_COLORS = {1:["Appetito","Cibo semplice, una cosa per volta, solo quando c'è fame vera."],2:["Gusto","Mangia (e scegli) solo ciò che il corpo riconosce come buono per te."],3:["Sete","Il liquido guida la digestione: piccole quantità, ritmo dei fluidi."],4:["Tatto","L'ambiente e il contatto col cibo contano: cucina toccando, mangia ciò che senti 'giusto'."],5:["Suono","Digerisci meglio in ambienti sonori coerenti: silenzio o suono, ma scelto."],6:["Luce","Mangia con la luce: pasti di giorno o ben illuminati, il corpo segue il ciclo luminoso."]};
 const COG_TONES = {1:["Olfatto","Il naso come radar: annusi letteralmente persone e situazioni."],2:["Gusto","Discriminazione raffinata: 'assaggi' la vita prima di fidarti."],3:["Visione esterna","Cogli i dettagli visivi del mondo: ciò che vedi è ciò che sai."],4:["Visione interna","Immagini mentali potenti: vedi dentro prima di vedere fuori."],5:["Sentire","Percezione vibrazionale dell'atmosfera: senti i campi delle persone."],6:["Tatto","La conoscenza passa dal contatto: capisci toccando ed essendo presente."]};
 const ENV_COLORS = {1:["Grotte","Spazi protetti con un solo ingresso: la tua tana sicura, controlli chi entra."],2:["Mercati","Luoghi di scambio e varietà: fiorisci dove le cose (e le idee) circolano."],3:["Cucine","Ambienti dove si trasforma: laboratori, cucine, officine, luoghi 'in lavorazione'."],4:["Montagne","Punti alti e asciutti, con prospettiva: ti serve vedere da sopra."],5:["Valli","Passaggi e flussi: strade, corridoi, luoghi dove la vita ti scorre incontro."],6:["Rive","Zone di confine tra due mondi (terra/acqua, città/natura): vivi sul bordo."]};
@@ -1517,6 +1670,9 @@ function setupPWA(accent, studio, name){
     document.querySelector('.typeCard').after(d); })();
 
   buildSVG(c); renderVars(c); renderToday(c); renderReading(c); renderBooking();
+  buildGuideChart(c);
+  renderDashboard(c);
+  if(typeof renderProfile==='function') renderProfile();
   // sync silenzioso del tipo/profilo HD pubblico (per il match); non blocca nulla
   try{ if(TOKEN && c && c.type){ sb.rpc('social_set_hd',{p_token:TOKEN,p_type:c.type,p_profile:c.profKey||''}); } }catch(e){}
 
@@ -1540,6 +1696,7 @@ function setupPWA(accent, studio, name){
       document.querySelectorAll('.cliPanel').forEach(p=>p.classList.toggle('on', p.dataset.panel===sec));
       document.querySelectorAll('#cliSide .cn').forEach(l=>l.classList.toggle('on', l.dataset.sec===sec));
       document.querySelectorAll('#bnav a').forEach(l=>l.classList.toggle('on', l.getAttribute('href')==='#'+sec));
+      const main=document.getElementById('cliMain'); if(main) main.classList.toggle('wideGuide', sec==='secGuida');
       try{ window.scrollTo({top:0,behavior:'smooth'}); }catch(e){ window.scrollTo(0,0); }
       if(sec==='secNumero' && typeof renderCliNumero==='function' && !window.__numDone){ renderCliNumero(); window.__numDone=true; }
       if(sec==='secProfilo' && typeof loadSocialProfile==='function'){ loadSocialProfile(); }
@@ -1871,6 +2028,12 @@ function renderPackageStatus(){
 
 function renderProfile(){
   if(!DATA) return;
+  // social card header
+  const nm=DATA.name||'—';
+  const cn=document.getElementById('profCardName'); if(cn) cn.textContent=nm;
+  const av=document.getElementById('profAvatar'); if(av) av.textContent=(nm[0]||'?').toUpperCase();
+  const ct=document.getElementById('profCardType');
+  if(ct && CHART){ ct.textContent=`${CHART.profKey||''} · ${CHART.type||''}`.trim().replace(/^· /,''); }
   const pkgBox=document.getElementById('profPkgBox');
   const dataBox=document.getElementById('profDataBox');
   if(pkgBox){
