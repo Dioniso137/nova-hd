@@ -10,15 +10,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&family=Marcellus&family=Outfit:wght@300;400;500;600&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --void:#070708; --void2:#0c0c10; --panel:rgba(20,20,24,.74); --panel-solid:#141418;
-  --line:rgba(190,190,200,.12); --line-2:rgba(190,190,200,.07);
-  --ink:#ececf0; --dim:#8f8f99; --dim2:#65656f;
-  --gold:#e3b864; --gold-soft:#f2dca0; --gold-deep:#b8893f;
+  --void:#ffffff; --void2:#f4f3ef; --panel:#ffffff; --panel-solid:#ffffff;
+  --line:rgba(28,26,20,.10); --line-2:rgba(28,26,20,.055);
+  --ink:#222019; --dim:#6e6c64; --dim2:#a6a49c;
+  --gold:#a8792c; --gold-soft:#f0e4c6; --gold-deep:#8a6320;
   --paper:#f6f1e6; --paper-ink:#2a2420; --paper-dim:#857c6c;
   --des:#e4002b; --pers:#1f1f1f;
-  --teal:#4aa3c9; --rose:#e4506e; --green:#5bbf8a;
-  --r:18px;
-  --bg:radial-gradient(1100px 680px at 82% -8%, #1a1a22 0%, var(--void) 58%), var(--void);
+  --teal:#2c7a95; --rose:#cf4d6a; --green:#2f9c68;
+  --r:14px;
+  --ink-bg:#0c0c11;
+  --shadow:0 1px 2px rgba(24,20,10,.05), 0 6px 20px rgba(24,20,10,.06);
+  --bg:radial-gradient(1200px 760px at 86% -12%, #faf7ee 0%, #f7f6f2 48%, #f4f3ef 100%);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -32,7 +34,7 @@ button{font-family:inherit}
 ::selection{background:rgba(227,184,100,.25)}
 /* scrollbar */
 ::-webkit-scrollbar{width:10px;height:10px}
-::-webkit-scrollbar-thumb{background:rgba(190,190,200,.14);border-radius:8px}
+::-webkit-scrollbar-thumb{background:rgba(28,26,20,.16);border-radius:8px}
 ::-webkit-scrollbar-track{background:transparent}
 
 /* ───────── APP SHELL ───────── */
@@ -44,7 +46,7 @@ button{font-family:inherit}
 /* topbar */
 #topbar{position:sticky;top:0;z-index:70;display:flex;align-items:center;gap:8px;
   padding:11px 20px;border-bottom:1px solid var(--line);
-  background:linear-gradient(180deg,rgba(10,10,13,.92),rgba(10,10,13,.78));backdrop-filter:blur(18px)}
+  background:rgba(255,255,255,.8);backdrop-filter:blur(20px) saturate(1.4)}
 #topbar .brand{display:flex;align-items:center;gap:9px;margin-right:6px;cursor:pointer}
 #topbar .brand .logo{width:30px;height:30px;border-radius:9px;background:conic-gradient(from 210deg,var(--gold),#b8893f,#f2dca0,var(--gold));
   display:flex;align-items:center;justify-content:center;color:#0b0b0d;font-family:'Marcellus',serif;font-size:16px;
@@ -60,7 +62,7 @@ button{font-family:inherit}
   display:flex;align-items:center;justify-content:center;color:var(--dim);cursor:pointer;transition:.16s}
 .tbtn:hover{color:var(--gold);border-color:rgba(227,184,100,.4)}
 .tbtn svg{width:18px;height:18px}
-.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2a2a32,#16161a);border:1px solid var(--line);
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#f3efe6,#e6e2d6);border:1px solid var(--line);
   display:flex;align-items:center;justify-content:center;font-family:'Marcellus',serif;color:var(--gold);cursor:pointer;font-size:15px}
 
 /* layout */
@@ -148,8 +150,8 @@ h1.ph{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(26px,4vw,38px
 
 /* ───────── MATCH (tinder) ───────── */
 .match-stage{max-width:420px;margin:0 auto;position:relative;height:600px}
-.swipe-card{position:absolute;inset:0;border-radius:24px;overflow:hidden;border:1px solid var(--line);
-  background:var(--panel-solid);box-shadow:0 30px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;
+.swipe-card{position:absolute;inset:0;border-radius:22px;overflow:hidden;border:1px solid var(--line);
+  background:var(--panel-solid);box-shadow:0 24px 56px rgba(24,20,10,.14);display:flex;flex-direction:column;
   will-change:transform;user-select:none;cursor:grab}
 .swipe-card:active{cursor:grabbing}
 .sc-top{height:230px;position:relative;display:flex;align-items:flex-end;padding:20px;
@@ -176,7 +178,7 @@ h1.ph{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(26px,4vw,38px
 .sc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
 .sc-tag{font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:20px;padding:4px 11px}
 .swipe-actions{display:flex;justify-content:center;gap:18px;margin-top:24px}
-.sw-btn{width:62px;height:62px;border-radius:50%;border:1px solid var(--line);background:var(--panel-solid);
+.sw-btn{width:62px;height:62px;border-radius:50%;border:1px solid var(--line);background:var(--panel-solid);box-shadow:var(--shadow);
   display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.16s}
 .sw-btn:hover{transform:scale(1.08)}
 .sw-btn svg{width:26px;height:26px}
@@ -261,7 +263,7 @@ h1.ph{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(26px,4vw,38px
 #chatSend{border:none;border-radius:12px;padding:0 18px;cursor:pointer;font-family:'Marcellus',serif;font-size:14px;color:#0b0b0d;background:linear-gradient(120deg,var(--gold),#f4dca0)}
 
 /* ───────── MODAL ───────── */
-.modal-bg{position:fixed;inset:0;background:rgba(4,4,6,.78);backdrop-filter:blur(6px);z-index:200;
+.modal-bg{position:fixed;inset:0;background:rgba(30,26,18,.42);backdrop-filter:blur(6px);z-index:200;
   display:none;align-items:center;justify-content:center;padding:20px}
 .modal-bg.on{display:flex}
 .modal{width:min(460px,100%);max-height:90vh;overflow-y:auto;border:1px solid var(--line);border-radius:22px;
@@ -303,7 +305,7 @@ h1.ph{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(26px,4vw,38px
 #bnav{display:none}
 @media(max-width:760px){
   #bnav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:80;
-    background:linear-gradient(180deg,rgba(10,10,13,.85),rgba(7,7,8,.97));backdrop-filter:blur(18px);
+    background:rgba(255,255,255,.9);backdrop-filter:blur(18px) saturate(1.4);
     border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
   #bnav a{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--dim2);font-size:9.5px;cursor:pointer;padding:4px}
   #bnav a svg{width:21px;height:21px}
@@ -316,6 +318,85 @@ h1.ph{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(26px,4vw,38px
 .fade{animation:fade .4s ease}
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ═══════════════════ MODERN LIGHT POLISH ═══════════════════ */
+.card{box-shadow:var(--shadow)}
+.card.daily{border-color:rgba(168,121,44,.3);box-shadow:0 1px 2px rgba(168,121,44,.06),0 10px 30px rgba(168,121,44,.07)}
+.btn.gold{background:linear-gradient(135deg,#c89f49,#a8792c);color:#fff}
+.btn.gold:hover{filter:brightness(1.06);box-shadow:0 6px 18px rgba(168,121,44,.3)}
+.btn.ghost{background:#fff}
+.chart-card{background:#fff;box-shadow:var(--shadow);background-image:none}
+.chart-card:hover{box-shadow:0 8px 26px rgba(24,20,10,.1)}
+.stat{background:#fbfaf6}
+.lib-card{background:#fbfaf6}
+.lib-ic{background:rgba(44,122,149,.1);border-color:rgba(44,122,149,.25)}
+.tab-row{background:#f1efe8}
+.msg.user{background:var(--gold-soft);border-color:rgba(168,121,44,.28);color:#3c2d0d}
+.msg.ai{background:#f4f3ee;border-color:var(--line);color:var(--ink)}
+.detailCard{background:#fff;box-shadow:var(--shadow)}
+.typeCard{background:linear-gradient(150deg,rgba(168,121,44,.09),rgba(168,121,44,.02));border-color:rgba(168,121,44,.3)}
+#chatInput{background:#f6f5f1}
+input::placeholder,textarea::placeholder{color:var(--dim2)}
+
+/* ═══════════════════ GUIDE — CHATGPT-STYLE PAGE ═══════════════════ */
+.guide-page{max-width:none!important;margin:0!important;padding:0!important}
+.guide-shell{display:grid;grid-template-columns:250px minmax(0,1fr) 396px;height:calc(100dvh - 58px);background:var(--bg)}
+
+/* — conversations sidebar — */
+.guide-side{border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0;padding:14px 11px;gap:9px;background:#fbfaf6}
+.gs-new{display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed var(--line);background:#fff;border-radius:11px;padding:11px;font:500 13px 'Outfit';color:var(--ink);cursor:pointer;transition:.15s}
+.gs-new:hover{border-color:var(--gold);color:var(--gold);border-style:solid}
+.gs-label{font:500 10px 'Space Grotesk',monospace;letter-spacing:.2em;text-transform:uppercase;color:var(--dim2);padding:6px 6px 2px}
+.gs-list{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:2px;min-height:0}
+.gs-item{display:flex;align-items:center;gap:10px;padding:9px 9px;border-radius:10px;cursor:pointer;transition:.13s}
+.gs-item:hover{background:rgba(28,26,20,.05)}
+.gs-item.on{background:var(--gold-soft)}
+.gs-ava{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font:400 13px 'Marcellus';color:#fff}
+.gs-txt{min-width:0}
+.gs-nm{font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs-mt{font-size:10.5px;color:var(--dim);font-family:'Space Grotesk',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* — chat column — */
+.guide-chat{display:flex;flex-direction:column;min-width:0;min-height:0;background:#fff}
+.gc-head{display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line)}
+.gc-back{width:34px;height:34px;flex-shrink:0;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--dim);font-size:17px;display:flex;align-items:center;justify-content:center;transition:.15s}
+.gc-back:hover{color:var(--gold);border-color:var(--gold)}
+.gc-head .cc-orb{width:38px;height:38px;border-radius:11px;font-size:16px;margin:0;flex-shrink:0}
+.gc-head-txt{min-width:0;flex:1}
+.gc-name{font:400 18px 'Fraunces',serif;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gc-sub{font-size:11px;color:var(--dim);margin-top:1px}
+.gc-toggle{display:none;flex-shrink:0;width:38px;height:34px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--dim);font-size:15px}
+.gc-toggle.on{color:var(--gold);border-color:var(--gold);background:var(--gold-soft)}
+
+.guide-chat #chatBox{height:auto;flex:1;border:none;border-radius:0;background:transparent;min-height:0}
+.guide-chat #chatLog{max-width:840px;width:100%;margin:0 auto;padding:30px 26px;gap:20px}
+.guide-chat .msg{max-width:80%}
+.guide-chat .msg.ai{align-self:flex-start;background:transparent;border:none;border-radius:0;padding:0;max-width:100%;font-size:15.5px;line-height:1.68;color:#2c2a22}
+.guide-chat .msg.ai.thinking{color:var(--dim)}
+.guide-chat #chips{max-width:840px;width:100%;margin:0 auto;padding:0 26px 14px;gap:8px}
+.guide-chat #chips .chip{background:#fff}
+.guide-chat #chatForm{max-width:840px;width:100%;margin:0 auto;padding:14px 26px 22px;border-top:1px solid var(--line)}
+.guide-chat #chatInput{border-radius:14px;padding:14px 16px;font-size:15px;background:#f6f5f1}
+.guide-chat #chatSend{border-radius:12px;width:48px;padding:0;font-size:19px;flex-shrink:0}
+
+/* — bodygraph column — */
+.guide-bg{border-left:1px solid var(--line);overflow-y:auto;padding:18px 16px 40px;display:flex;flex-direction:column;gap:14px;background:#fbfaf6;min-height:0}
+.guide-bg .typeCard{margin:0}
+.guide-bg #paper{margin:0}
+.guide-bg .detailCard{margin:0}
+
+@media(max-width:1180px){ .guide-shell{grid-template-columns:218px minmax(0,1fr) 348px} }
+@media(max-width:1000px){
+  .guide-shell{grid-template-columns:minmax(0,1fr) 340px}
+  .guide-side{display:none}
+}
+@media(max-width:760px){
+  .guide-shell{grid-template-columns:1fr;height:calc(100dvh - 56px - 66px)}
+  .guide-bg{display:none;border-left:none;border-top:1px solid var(--line)}
+  .guide-shell.showbg{grid-template-rows:minmax(0,1fr) 56vh}
+  .guide-shell.showbg .guide-bg{display:flex}
+  .gc-toggle{display:flex}
+}
 </style>
 </head>
 <body>
@@ -475,23 +556,46 @@ h1.ph{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(26px,4vw,38px
     <div class="charts-grid" id="chartsGrid"></div>
   </main>
 
-  <!-- ===== CHART DETAIL ===== -->
-  <main class="page" data-page="detail" style="display:none">
-    <button class="btn ghost sm" id="detailBack" style="margin-bottom:18px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Tutti i grafici</button>
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;flex-wrap:wrap">
-      <div class="cc-orb" id="dOrb" style="width:56px;height:56px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-family:'Marcellus',serif;font-size:24px;color:#0b0b0d">D</div>
-      <div>
-        <h1 class="ph" id="dName" style="font-size:30px">—</h1>
-        <p class="psub mono" id="dBirth">—</p>
-      </div>
-    </div>
-    <div class="detail-grid">
-      <div>
-        <div id="paper"><svg id="bg-svg" viewBox="14 14 572 850" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bodygraph"></svg></div>
-        <div class="detailCard" id="detailCard"><h3>Esplora il grafico</h3><p style="color:var(--dim);font-size:12.5px;margin-top:6px">Tocca una <b style="color:var(--gold)">porta</b> (numero), un <b style="color:var(--gold)">centro</b> (forma), o un <b style="color:var(--gold)">canale</b> (linea tra due porte) per il dettaglio.</p></div>
-      </div>
-      <div>
-        <div class="typeCard" style="margin-bottom:16px">
+  <!-- ===== CHART DETAIL · GUIDA AI (ChatGPT layout) ===== -->
+  <main class="page guide-page" data-page="detail" data-screen-label="Guida AI" style="display:none">
+    <div class="guide-shell" id="guideShell">
+
+      <!-- conversations sidebar -->
+      <aside class="guide-side">
+        <button class="gs-new" id="guideNew">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" width="16" height="16"><path d="M12 5v14M5 12h14"/></svg>
+          Nuova carta
+        </button>
+        <div class="gs-label">Le tue carte</div>
+        <div id="guideList" class="gs-list"></div>
+      </aside>
+
+      <!-- chat column -->
+      <section class="guide-chat">
+        <header class="gc-head">
+          <button class="gc-back" id="detailBack" title="Indietro">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          </button>
+          <div class="cc-orb" id="dOrb" style="display:flex;align-items:center;justify-content:center;font-family:'Marcellus',serif;color:#fff">D</div>
+          <div class="gc-head-txt">
+            <div class="gc-name" id="dName">—</div>
+            <div class="gc-sub mono" id="dBirth">—</div>
+          </div>
+          <button class="gc-toggle" id="bgToggle" title="Mostra/Nascondi grafico">◫</button>
+        </header>
+        <div id="chatBox">
+          <div id="chatLog"></div>
+          <div id="chips"></div>
+          <form id="chatForm">
+            <input id="chatInput" type="text" placeholder="Scrivi alla guida di questa carta…" autocomplete="off">
+            <button id="chatSend" type="submit" title="Invia">↑</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- bodygraph column -->
+      <aside class="guide-bg">
+        <div class="typeCard">
           <div class="t" id="dType">—</div>
           <div class="p" id="dProfile">—</div>
           <div class="kv">
@@ -502,17 +606,10 @@ h1.ph{font-family:'Fraunces',serif;font-weight:400;font-size:clamp(26px,4vw,38px
             <span class="k">Non-sé</span><span class="v" id="dNotSelf">—</span>
           </div>
         </div>
-        <div class="eyebrow">La guida di questo grafico</div>
-        <div id="chatBox">
-          <div id="chatLog"></div>
-          <div id="chips"></div>
-          <form id="chatForm">
-            <input id="chatInput" type="text" placeholder="Chiedi qualcosa su questa carta…" autocomplete="off">
-            <button id="chatSend" type="submit">Invia</button>
-          </form>
-        </div>
-        <p class="hint" style="margin-top:10px">Risposte di Claude generate sui dati reali di questa carta. Per i temi più profondi, prenditi il tuo tempo.</p>
-      </div>
+        <div id="paper"><svg id="bg-svg" viewBox="14 14 572 850" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bodygraph"></svg></div>
+        <div class="detailCard" id="detailCard"><h3>Esplora il grafico</h3><p style="color:var(--dim);font-size:12.5px;margin-top:6px">Tocca una <b style="color:var(--gold)">porta</b>, un <b style="color:var(--gold)">centro</b> o un <b style="color:var(--gold)">canale</b>: ne parli subito con la guida qui a sinistra.</p></div>
+      </aside>
+
     </div>
   </main>
 
@@ -2067,6 +2164,9 @@ function openChart(id){
   const c=MYCHARTS.find(x=>x.id===id); if(!c) return;
   CURRENT=c; CHAT=[];
   go('detail');
+  renderGuideSidebar();
+  const _sh=document.getElementById('guideShell'); if(_sh) _sh.classList.remove('showbg');
+  const _bt=document.getElementById('bgToggle'); if(_bt) _bt.classList.remove('on');
   setOrb(document.getElementById('dOrb'), c.name);
   document.getElementById('dName').textContent=c.name;
   document.getElementById('dBirth').textContent=fmtBirth(c);
@@ -2093,15 +2193,42 @@ function openChart(id){
   document.querySelectorAll('#chips .chip').forEach(b=>b.addEventListener('click',()=>sendChat(b.textContent)));
 }
 document.getElementById('detailBack').addEventListener('click',()=>go('charts'));
+document.getElementById('guideNew').addEventListener('click',()=>document.getElementById('addModal').classList.add('on'));
+document.getElementById('bgToggle').addEventListener('click',()=>{ const sh=document.getElementById('guideShell'); const on=sh.classList.toggle('showbg'); document.getElementById('bgToggle').classList.toggle('on',on); });
 
 function buildDetailSVG(chart){
   renderBodygraph('bg-svg',
     g=>{ const s=gateStateOf(g,chart); return s?{fill: s==='both'?'url(#pBoth_bg-svg)':s==='pers'?'#1f1f1f':'#e4002b'}:null; },
     name=>(chart&&chart.defCenters.has(name))?CENTER_SHAPES[name].fill:null,
-    g=>showGateDetail(g,chart),
-    n=>showCenterDetail(n,chart),
-    (key, gates)=>showChannelDetail(key, gates, chart)
+    g=>detailAndAsk(()=>showGateDetail(g,chart), `Parlami della Porta ${g} (${GATE_NAMES[g]||''}) in questa carta: cosa significa per ${CURRENT&&CURRENT.isMe?'me':(CURRENT?(CURRENT.name||'').split(' ')[0]:'questa persona')}?`),
+    n=>detailAndAsk(()=>showCenterDetail(n,chart), `Parlami del centro ${CENTER_IT[n]||n} in questa carta: come funziona e cosa comporta?`),
+    (key, gates)=>detailAndAsk(()=>showChannelDetail(key, gates, chart), `Parlami del canale ${gates[0]}\u2013${gates[1]} in questa carta.`)
   );
+}
+/* Mostra il dettaglio nel pannello a destra E porta la domanda nella chat a sinistra */
+function prefillGuide(q){ const inp=document.getElementById('chatInput'); if(inp){ inp.value=q; } }
+function detailAndAsk(renderFn, question){
+  renderFn();
+  const card=document.getElementById('detailCard');
+  if(card){
+    const b=document.createElement('button');
+    b.className='btn gold sm'; b.style.marginTop='12px';
+    b.innerHTML='Chiedi alla guida \u2192';
+    b.addEventListener('click',()=>sendChat(question));
+    card.appendChild(b);
+  }
+  prefillGuide(question);
+  // su mobile, se il grafico copre la chat, mostra comunque il suggerimento
+  const inp=document.getElementById('chatInput'); if(inp) inp.focus({preventScroll:true});
+}
+/* sidebar conversazioni (le tue carte) nello stile ChatGPT */
+function renderGuideSidebar(){
+  const box=document.getElementById('guideList'); if(!box) return;
+  box.innerHTML=MYCHARTS.map(c=>{
+    const [a,b]=orbColor(c.name);
+    return `<div class="gs-item${CURRENT&&CURRENT.id===c.id?' on':''}" data-open="${c.id}"><div class="gs-ava" style="background:linear-gradient(135deg,${a},${b})">${initials(c.name)}</div><div class="gs-txt"><div class="gs-nm">${escapeHtml(c.name)}${c.isMe?' \u00b7 tu':''}</div><div class="gs-mt">${c.chart.profKey} ${c.chart.type}</div></div></div>`;
+  }).join('');
+  box.querySelectorAll('[data-open]').forEach(el=>el.addEventListener('click',()=>openChart(el.dataset.open)));
 }
 
 // Mappa pianeti che attivano una porta (in personalità o design)
